@@ -1,0 +1,44 @@
+# CEREBRO-RED v2 - Debug/Verbose Configuration
+# Verwende mit: docker compose -f docker-compose.yml -f docker-compose.debug.yml up
+#
+# Aktiviert:
+# - Detailliertes SQL-Logging
+# - LiteLLM Debug-Modus
+# - Verbose Logging
+# - Prometheus Metrics (wenn verfügbar)
+
+services:
+  cerebro-backend:
+    environment:
+      # Verbose Logging
+      - CEREBRO_DEBUG=true
+      - CEREBRO_LOG_LEVEL=DEBUG
+      
+      # SQL Query Logging
+      - DATABASE_ECHO=true
+      
+      # LiteLLM Debug
+      - LITELLM_LOG=DEBUG
+      - LITELLM_VERBOSE=true
+      
+      # Python Logging
+      - PYTHONUNBUFFERED=1
+      - PYTHONDONTWRITEBYTECODE=0
+      
+      # Audit Logging
+      - AUDIT_LOG_LEVEL=DEBUG
+      - AUDIT_LOG_ENABLED=true
+      
+      # Verbose Output
+      - VERBOSE_MODE=true
+      
+    # Erhöhe Log-Limits
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
+        max-file: "5"
+    
+    # Mount für persistente Logs
+    # Logs werden im Container-internen /tmp gespeichert
+    # Um sie zu sehen: docker compose logs -f cerebro-backend

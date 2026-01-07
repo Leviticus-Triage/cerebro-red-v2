@@ -1,0 +1,95 @@
+services:
+  cerebro-backend:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.backend
+    image: cerebro-red-v2:latest
+    container_name: cerebro-backend
+    ports:
+      - "9000:9000"
+    environment:
+      - CEREBRO_ENV=production
+      - CEREBRO_HOST=0.0.0.0
+      - CEREBRO_PORT=9000
+      - DATABASE_URL=sqlite+aiosqlite:////tmp/cerebro.db
+      - AUDIT_LOG_PATH=/tmp/audit_logs
+      # Debug/Verbosity
+      - CEREBRO_DEBUG=true
+      - CEREBRO_LOG_LEVEL=DEBUG
+      - CEREBRO_VERBOSITY=3
+      # Ollama Integration - WICHTIG: OLLAMA_API_BASE ist die LiteLLM Variable!
+      - DEFAULT_LLM_PROVIDER=ollama
+      - OLLAMA_API_BASE=http://host.docker.internal:11434
+      - OLLAMA_BASE_URL=http://host.docker.internal:11434
+      - OLLAMA_HOST=http://host.docker.internal:11434
+      - OLLAMA_MODEL_ATTACKER=qwen3:8b
+      - OLLAMA_MODEL_TARGET=qwen2.5:3b
+      - OLLAMA_MODEL_JUDGE=qwen3:8b
+      # Azure OpenAI (optional)
+      - AZURE_OPENAI_API_KEY=${AZURE_OPENAI_API_KEY:-}
+      - AZURE_OPENAI_ENDPOINT=${AZURE_OPENAI_ENDPOINT:-}
+      # OpenAI (optional)
+      - OPENAI_API_KEY=${OPENAI_API_KEY:-}
+    volumes:
+      # - ./backend:/app  # Live code mount for development (disabled - requires Docker file sharing)
+      - cerebro-data:/app/data
+      - cerebro-experiments:/app/data/experiments
+      - cerebro-audit-logs:/app/data/audit_logs
+      - cerebro-results:/app/data/results
+    networks:
+      - cerebro-net
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    # Security options disabled for development - enable in production
+    # security_opt:
+    #   - no-new-privileges:true
+    # cap_drop:
+    #   - ALL
+    restart: unless-stopped
+    # Phase 7 Step 6: Resource limits for 44-strategy experiments
+    deploy:
+      resources:
+        limits:
+          memory: 4G
+          cpus: '2.0'
+        reservations:
+          memory: 2G
+          cpus: '1.0'
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://127.0.0.1:9000/health || exit 1"]
+      interval: 30s
+      timeout: 5s
+      start_period: 30s
+      retries: 3
+
+  cerebro-frontend:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.frontend
+    image: cerebro-frontend:latest
+    container_name: cerebro-frontend
+    ports:
+      - "3000:3000"
+    environment:
+      - VITE_API_URL=http://localhost:9000
+      - VITE_WS_URL=ws://localhost:9000
+    networks:
+      - cerebro-net
+    depends_on:
+      - cerebro-backend
+    restart: unless-stopped
+
+volumes:
+  cerebro-data:
+    driver: local
+  cerebro-experiments:
+    driver: local
+  cerebro-audit-logs:
+    driver: local
+  cerebro-results:
+    driver: local
+
+networks:
+  cerebro-net:
+    driver: bridge
+

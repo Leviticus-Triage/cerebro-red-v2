@@ -53,12 +53,15 @@ print('✅ Alle Module importierbar')
 
 ---
 
-## 📁 Wichtige Dateien
+## 📁 Important Files
 
-- **ERFOLG_FINALE_ZUSAMMENFASSUNG.md** - Vollständige Erfolgs-Übersicht
-- **backend/DATABASE_SETUP.md** - Database-Setup-Anleitung
-- **backend/TEST_FIXES_SUMMARY.md** - Alle behobenen Probleme
-- **backend/AKTUELLER_STATUS.md** - System-Status
+- **README.md** - Complete project documentation
+- **QUICK_START.md** - This file
+- **TESTING_GUIDE.md** - Testing instructions
+- **CODE_DOCUMENTATION.md** - Code structure and architecture
+- **backend/DATABASE_SETUP.md** - Database setup instructions
+- **backend/TEST_FIXES_SUMMARY.md** - Test fixes summary
+- **backend/AKTUELLER_STATUS.md** - Current system status
 
 ---
 

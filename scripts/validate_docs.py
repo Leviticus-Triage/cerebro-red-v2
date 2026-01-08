@@ -97,6 +97,11 @@ def validate_link(link_url: str, source_file: Path) -> bool:
     if link_url.startswith('mailto:'):
         return True
     
+    # Handle anchor links (file.md#anchor)
+    if '#' in link_url:
+        file_part, anchor = link_url.split('#', 1)
+        link_url = file_part
+    
     # Resolve relative path
     source_dir = source_file.parent
     target_path = (source_dir / link_url).resolve()

@@ -1,0 +1,15 @@
+Collecting reportlab
+  Downloading reportlab-4.4.7-py3-none-any.whl.metadata (1.7 kB)
+Collecting pillow>=9.0.0 (from reportlab)
+  Downloading pillow-12.0.0-cp311-cp311-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl.metadata (8.8 kB)
+Requirement already satisfied: charset-normalizer in ./.venv (from reportlab) (3.4.4)
+Downloading reportlab-4.4.7-py3-none-any.whl (2.0 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 2.0/2.0 MB 8.9 MB/s eta 0:00:00
+Downloading pillow-12.0.0-cp311-cp311-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl (7.0 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 7.0/7.0 MB 15.5 MB/s eta 0:00:00
+Installing collected packages: pillow, reportlab
+Successfully installed pillow-12.0.0 reportlab-4.4.7
+WARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv
+
+[notice] A new release of pip is available: 24.0 -> 25.3
+[notice] To update, run: pip install --upgrade pip

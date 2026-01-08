@@ -1,0 +1,155 @@
+# ============================================================================
+# CEREBRO-RED v2 .gitignore
+# ============================================================================
+# This file protects:
+# - API keys and credentials (Azure, OpenAI, Mistral, etc.)
+# - Database files and backups
+# - Environment configuration files
+# - Test artifacts and coverage reports
+# - Backup files and temporary data
+# - Certificate and key files
+# - Audit logs and recordings
+# ============================================================================
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Virtual Environments
+venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Environment Variables
+.env
+.env.local
+.env.*.local
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# Logs
+*.log
+logs/
+data/audit_logs/*.jsonl
+
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+dist/
+dist-ssr/
+*.local
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Docker
+docker-compose.override.yml
+
+# Research Data
+data/experiments/*.db
+data/results/*.json
+data/results/*.csv
+data/results/*.pdf
+
+
+# Backup Files
+*.backup
+*.backup.*
+*.bak
+.env.backup
+.env.*.backup
+backups/
+*.sh.bak
+*.py.bak
+*.js.bak
+*.ts.bak
+backend/data/*.backup
+backend/data/*.backup.*
+backend/data/experiments/*.db.backup
+
+# Security & Credentials
+*.pem
+*.key
+*.crt
+*.p12
+*.pfx
+*.cer
+id_rsa
+id_dsa
+*.pub
+secrets/
+credentials/
+.secrets
+
+# Test Artifacts
+playwright-report/
+test-results/
+.last-run.json
+coverage/
+.nyc_output/
+junit.xml
+test-output/
+frontend/test-results/
+frontend/playwright-report/
+
+# Temporary Files
+*.tmp
+*.temp
+.cache/
+.temp/
+tmp/
+temp/
+
+# Recordings & Media (keep README.md)
+recordings/*.mp4
+recordings/*.webm
+recordings/*.mov
+recordings/*.avi
+
+# Third-Party Directories (should be removed)
+llamator/
+PyRIT/
+Model-Inversion-Attack-ToolBox/
+L1B3RT4S/

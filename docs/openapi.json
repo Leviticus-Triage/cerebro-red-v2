@@ -1,0 +1,437 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "CEREBRO-RED v2 API",
+    "description": "# Autonomous Local LLM Red Teaming Suite - Research Edition\n\n## Overview\nCEREBRO-RED v2 implements the PAIR (Prompt Automatic Iterative Refinement) algorithm\nfor automated vulnerability discovery in Large Language Models.\n\n## Features\n- **Multi-Provider LLM Support**: Ollama, Azure OpenAI, OpenAI\n- **8 Attack Strategies**: Obfuscation, Context Flooding, Roleplay Injection, etc.\n- **LLM-as-a-Judge**: Semantic evaluation with 7 criteria\n- **Real-Time Progress**: WebSocket streaming for live updates\n- **Research-Grade Telemetry**: JSONL audit logs for analysis\n\n## Authentication\nAll endpoints (except `/health`, `/docs`, `/metrics`) require API key authentication via `X-API-Key` header.\n\n## Rate Limiting\nDefault: 60 requests per minute per IP address.\n\n## References\n- PAIR Paper: https://arxiv.org/abs/2310.08419\n- GitHub: https://github.com/your-org/cerebro-red-v2",
+    "version": "2.0.0"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:8000",
+      "description": "Development server"
+    }
+  ],
+  "tags": [
+    {
+      "name": "experiments",
+      "description": "Experiment CRUD operations"
+    },
+    {
+      "name": "scans",
+      "description": "Scan execution and control"
+    },
+    {
+      "name": "results",
+      "description": "Experiment results and exports"
+    },
+    {
+      "name": "vulnerabilities",
+      "description": "Vulnerability findings"
+    },
+    {
+      "name": "telemetry",
+      "description": "Telemetry and metrics"
+    },
+    {
+      "name": "websocket",
+      "description": "Real-time progress streaming"
+    }
+  ],
+  "paths": {
+    "/": {
+      "get": {
+        "summary": "Root endpoint",
+        "description": "Returns API information",
+        "responses": {
+          "200": {
+            "description": "API information",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "name": {"type": "string"},
+                        "version": {"type": "string"},
+                        "description": {"type": "string"},
+                        "docs_url": {"type": "string"},
+                        "health_url": {"type": "string"}
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/health": {
+      "get": {
+        "summary": "Health check endpoint",
+        "description": "Comprehensive health check with component status",
+        "responses": {
+          "200": {
+            "description": "Health status",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "status": {"type": "string", "enum": ["healthy", "degraded", "unhealthy"]},
+                        "service": {"type": "string"},
+                        "version": {"type": "string"},
+                        "components": {"type": "object"},
+                        "timestamp": {"type": "string"}
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/health/circuit-breakers": {
+      "get": {
+        "summary": "Get circuit breaker statistics",
+        "description": "Returns circuit breaker stats for all LLM providers",
+        "tags": ["telemetry"],
+        "security": [{"ApiKeyAuth": []}],
+        "responses": {
+          "200": {
+            "description": "Circuit breaker statistics",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "additionalProperties": {
+                        "type": "object",
+                        "properties": {
+                          "state": {"type": "string"},
+                          "failures": {"type": "integer"},
+                          "successes": {"type": "integer"},
+                          "total_requests": {"type": "integer"},
+                          "total_failures": {"type": "integer"}
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/health/circuit-breakers/{provider}/reset": {
+      "post": {
+        "summary": "Reset circuit breaker for provider",
+        "description": "Manually reset circuit breaker for a specific LLM provider",
+        "tags": ["telemetry"],
+        "security": [{"ApiKeyAuth": []}],
+        "parameters": [
+          {
+            "name": "provider",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string", "enum": ["ollama", "openai", "azure"]}
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Reset successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "message": {"type": "string"},
+                        "provider": {"type": "string"}
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/experiments": {
+      "get": {
+        "summary": "List experiments",
+        "description": "Get paginated list of experiments",
+        "tags": ["experiments"],
+        "security": [{"ApiKeyAuth": []}],
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {"type": "integer", "default": 1, "minimum": 1}
+          },
+          {
+            "name": "page_size",
+            "in": "query",
+            "schema": {"type": "integer", "default": 20, "minimum": 1, "maximum": 100}
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Experiment list",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "items": {"type": "array"},
+                        "total": {"type": "integer"},
+                        "page": {"type": "integer"},
+                        "page_size": {"type": "integer"}
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Create experiment",
+        "description": "Create a new PAIR experiment",
+        "tags": ["experiments"],
+        "security": [{"ApiKeyAuth": []}],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "experiment_id": {"type": "string"},
+                  "name": {"type": "string"},
+                  "description": {"type": "string"},
+                  "target_model_provider": {"type": "string"},
+                  "target_model_name": {"type": "string"},
+                  "attacker_model_provider": {"type": "string"},
+                  "attacker_model_name": {"type": "string"},
+                  "judge_model_provider": {"type": "string"},
+                  "judge_model_name": {"type": "string"},
+                  "initial_prompts": {"type": "array", "items": {"type": "string"}},
+                  "strategies": {"type": "array", "items": {"type": "string"}},
+                  "max_iterations": {"type": "integer"},
+                  "max_concurrent_attacks": {"type": "integer"},
+                  "success_threshold": {"type": "number"},
+                  "timeout_seconds": {"type": "integer"}
+                },
+                "required": ["name", "target_model_provider", "target_model_name", "attacker_model_provider", "attacker_model_name", "judge_model_provider", "judge_model_name", "initial_prompts", "strategies"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Experiment created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "experiment_id": {"type": "string"},
+                        "name": {"type": "string"},
+                        "status": {"type": "string"}
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/experiments/{experiment_id}": {
+      "get": {
+        "summary": "Get experiment",
+        "description": "Get experiment details by ID",
+        "tags": ["experiments"],
+        "security": [{"ApiKeyAuth": []}],
+        "parameters": [
+          {
+            "name": "experiment_id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string", "format": "uuid"}
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Experiment details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "experiment_id": {"type": "string"},
+                        "name": {"type": "string"},
+                        "status": {"type": "string"}
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Experiment not found"
+          }
+        }
+      }
+    },
+    "/api/scan/start": {
+      "post": {
+        "summary": "Start scan",
+        "description": "Start a PAIR experiment scan",
+        "tags": ["scans"],
+        "security": [{"ApiKeyAuth": []}],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "experiment_config": {"type": "object"}
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "Scan started",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "experiment_id": {"type": "string"},
+                        "status": {"type": "string"}
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/vulnerabilities": {
+      "get": {
+        "summary": "List vulnerabilities",
+        "description": "Get paginated list of vulnerabilities",
+        "tags": ["vulnerabilities"],
+        "security": [{"ApiKeyAuth": []}],
+        "parameters": [
+          {
+            "name": "severity",
+            "in": "query",
+            "schema": {"type": "string", "enum": ["low", "medium", "high", "critical"]}
+          },
+          {
+            "name": "experiment_id",
+            "in": "query",
+            "schema": {"type": "string", "format": "uuid"}
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Vulnerability list",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "vulnerabilities": {"type": "array"},
+                        "total": {"type": "integer"}
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/vulnerabilities/statistics": {
+      "get": {
+        "summary": "Get vulnerability statistics",
+        "description": "Get aggregate vulnerability statistics",
+        "tags": ["vulnerabilities"],
+        "security": [{"ApiKeyAuth": []}],
+        "responses": {
+          "200": {
+            "description": "Vulnerability statistics",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "total_vulnerabilities": {"type": "integer"},
+                        "by_severity": {"type": "object"},
+                        "by_strategy": {"type": "object"}
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "ApiKeyAuth": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "X-API-Key"
+      }
+    }
+  }
+}
+

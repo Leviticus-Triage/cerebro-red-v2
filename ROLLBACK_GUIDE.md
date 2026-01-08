@@ -19,7 +19,7 @@ This guide provides step-by-step procedures for rolling back CEREBRO-RED v2 to a
 ### Method 1: Git Log Search
 
 ```bash
-cd /mnt/nvme0n1p5/danii/hexstrike-ai-kit/cerebro-red-v2
+cd cerebro-red-v2
 
 # View recent commits with messages
 git log --oneline -20

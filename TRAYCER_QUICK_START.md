@@ -35,7 +35,7 @@ logger.info(f"[start_scan] Created background task for experiment {experiment_id
 
 ### 1. TESTE DEN FIX
 ```bash
-cd /mnt/nvme0n1p5/danii/hexstrike-ai-kit/cerebro-red-v2
+cd cerebro-red-v2
 
 # Image wurde bereits neu gebaut und gestartet
 # Starte ein Test-Experiment im Browser

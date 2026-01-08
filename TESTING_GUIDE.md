@@ -4,7 +4,7 @@
 
 ### Container Status prüfen
 ```bash
-cd /mnt/nvme0n1p5/danii/hexstrike-ai-kit/cerebro-red-v2
+cd cerebro-red-v2
 docker compose ps
 ```
 

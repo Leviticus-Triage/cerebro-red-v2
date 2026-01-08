@@ -65,7 +65,8 @@ docker compose version
 
 1. Clone repository:
    ```bash
-   cd /mnt/nvme0n1p5/danii/hexstrike-ai-kit/cerebro-red-v2
+   git clone https://github.com/Leviticus-Triage/cerebro-red-v2.git
+   cd cerebro-red-v2
    ```
 
 2. Configure environment:
@@ -1389,6 +1390,17 @@ docker compose logs cerebro-backend | grep -E "WRAPPER CALLED|run_experiment CAL
 Apache License 2.0 - See LICENSE file for details.
 
 Copyright 2024-2026 Leviticus-Triage
+
+## 🔄 Migration from hexstrike-ai-kit
+
+This repository (`cerebro-red-v2`) was extracted from the `hexstrike-ai-kit` project. If you were using the previous repository:
+
+- **Repository URL changed**: `https://github.com/Leviticus-Triage/cerebro-red-v2`
+- **Container names updated**: `cerebro-backend`, `cerebro-frontend` (previously `hexstrike-*`)
+- **Environment variables**: Use `CEREBRO_*` prefix (previously `HEXSTRIKE_*`)
+- **Image names**: `cerebro-red-v2:latest` (previously `hexstrike-ai-kit:latest`)
+
+All functionality remains the same. Update your clone URL and environment configuration.
 
 ## 🤝 Contributing
 

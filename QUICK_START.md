@@ -20,7 +20,7 @@ Alle kritischen Komponenten wurden erfolgreich implementiert und getestet.
 
 ### 1. Tests ausführen
 \`\`\`bash
-cd /mnt/nvme0n1p5/danii/hexstrike-ai-kit/cerebro-red-v2/backend
+cd ./cerebro-red-v2/backend
 source ../../venv/bin/activate
 
 # Alle Unit-Tests:
@@ -29,7 +29,7 @@ pytest tests/test_config.py tests/test_models.py tests/test_mutator_pair.py -v
 
 ### 2. Database prüfen
 \`\`\`bash
-cd /mnt/nvme0n1p5/danii/hexstrike-ai-kit/cerebro-red-v2/backend
+cd ./cerebro-red-v2/backend
 python3 -c "
 from sqlalchemy import create_engine, inspect
 engine = create_engine('sqlite:///../data/experiments/cerebro.db')
@@ -40,7 +40,7 @@ print('Tabellen:', inspector.get_table_names())
 
 ### 3. Module testen
 \`\`\`bash
-cd /mnt/nvme0n1p5/danii/hexstrike-ai-kit/cerebro-red-v2/backend
+cd ./cerebro-red-v2/backend
 python3 -c "
 import sys
 sys.path.insert(0, '.')

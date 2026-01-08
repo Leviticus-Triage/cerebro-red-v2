@@ -19,42 +19,34 @@ CEREBRO-RED v2 is a research-grade platform for automated LLM security assessmen
 
 ### High-Level Architecture
 
-```
-┌─────────────────────────────────────────────────────────────┐
-│                    Frontend (React)                         │
-│  - Experiment Management UI                                  │
-│  - Real-time Progress Monitoring                            │
-│  - Results Visualization                                    │
-└──────────────────────┬──────────────────────────────────────┘
-                       │ HTTP/WebSocket
-┌──────────────────────▼──────────────────────────────────────┐
-│                 Backend (FastAPI)                           │
-│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐     │
-│  │ Orchestrator │  │   Mutator    │  │    Judge     │     │
-│  │  (engine.py) │  │ (mutator.py) │  │  (judge.py)  │     │
-│  └──────┬───────┘  └──────┬───────┘  └──────┬───────┘     │
-│         │                  │                  │              │
-│         └──────────────────┼──────────────────┘             │
-│                            │                                 │
-│                   ┌────────▼────────┐                        │
-│                   │  Telemetry     │                        │
-│                   │ (telemetry.py) │                        │
-│                   └────────┬───────┘                        │
-└────────────────────────────┼────────────────────────────────┘
-                             │
-        ┌────────────────────┼────────────────────┐
-        │                    │                    │
-┌───────▼──────┐   ┌─────────▼─────────┐  ┌──────▼──────┐
-│   SQLite     │   │  JSONL Audit Logs │  │ LiteLLM     │
-│  Database   │   │  (Telemetry)       │  │ Gateway     │
-└──────────────┘   └───────────────────┘  └──────┬──────┘
-                                                   │
-                                    ┌──────────────┼──────────────┐
-                                    │              │              │
-                           ┌────────▼──┐  ┌───────▼────┐  ┌─────▼────┐
-                           │  Ollama   │  │ Azure      │  │  OpenAI  │
-                           │  (Local)  │  │  OpenAI    │  │  (Cloud) │
-                           └───────────┘  └────────────┘  └──────────┘
+```mermaid
+graph TD
+    A[User Browser] -->|HTTPS| B[Frontend - React]
+    B -->|REST API| C[Backend - FastAPI]
+    B -->|WebSocket| C
+    
+    C -->|SQLAlchemy| D[Database - SQLite/PostgreSQL]
+    C -->|HTTP| E[LLM Providers]
+    
+    E --> F[Ollama - Local]
+    E --> G[OpenAI API]
+    E --> H[Anthropic API]
+    
+    C --> I[PAIR Algorithm Engine]
+    I --> J[Attack Strategy Selector]
+    I --> K[Mutation Engine]
+    I --> L[LLM-as-a-Judge]
+    
+    C --> M[Demo Mode API]
+    M --> N[Mock Data Store]
+    
+    style A fill:#e3f2fd
+    style B fill:#bbdefb
+    style C fill:#90caf9
+    style D fill:#64b5f6
+    style E fill:#42a5f5
+    style I fill:#fce4ec
+    style M fill:#fff9c4
 ```
 
 ## Component Architecture
@@ -138,45 +130,53 @@ CEREBRO-RED v2 is a research-grade platform for automated LLM security assessmen
 
 ### Experiment Execution Flow
 
-```
-1. User creates experiment via API/Frontend
-   ↓
-2. Orchestrator initializes experiment
-   ↓
-3. For each strategy:
-   ├─ Mutator generates mutated prompt
-   ├─ Target LLM processes prompt
-   ├─ Judge evaluates response
-   ├─ Telemetry logs event
-   └─ If successful: Record vulnerability
-   ↓
-4. Orchestrator aggregates results
-   ↓
-5. Experiment marked complete
-   ↓
-6. Results stored in database + telemetry logs
+```mermaid
+sequenceDiagram
+    participant U as User
+    participant F as Frontend
+    participant B as Backend
+    participant P as PAIR Engine
+    participant L as LLM Provider
+    participant J as Judge
+    
+    U->>F: Create Experiment
+    F->>B: POST /api/experiments
+    B->>P: Initialize PAIR
+    P->>B: Experiment Created
+    B->>F: Return Experiment ID
+    F->>B: WS Connect
+    
+    loop For each iteration
+        P->>L: Send Attack Prompt
+        L->>P: LLM Response
+        P->>J: Evaluate Response
+        J->>P: Severity Score
+        P->>B: Progress Update
+        B->>F: WebSocket Event
+        F->>U: Update UI
+    end
+    
+    P->>B: Experiment Complete
+    B->>F: Final Results
+    F->>U: Show Vulnerabilities
 ```
 
 ### PAIR Algorithm Flow
 
-```
-Initial Prompt
-     ↓
-[Strategy Selection]
-     ↓
-[Mutation Generation]
-     ↓
-[Target LLM Query]
-     ↓
-[Judge Evaluation]
-     ↓
-{Score > Threshold?}
-     ├─ Yes → Record Vulnerability
-     └─ No → [Refinement]
-              ↓
-         [Next Iteration]
-              ↓
-         [Next Strategy]
+```mermaid
+flowchart TD
+    A[Initial Prompt] --> B[Strategy Selection]
+    B --> C[Mutation Generation]
+    C --> D[Target LLM Query]
+    D --> E[Judge Evaluation]
+    E --> F{Score > Threshold?}
+    F -->|Yes| G[Record Vulnerability]
+    F -->|No| H[Refinement]
+    H --> I[Next Iteration]
+    I --> J{More Strategies?}
+    J -->|Yes| B
+    J -->|No| K[Experiment Complete]
+    G --> J
 ```
 
 ## PAIR Algorithm Implementation

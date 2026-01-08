@@ -1,0 +1,85 @@
+version: "2.0.0"
+last_updated: "2026-01-08"
+languages:
+  - code: "en"
+    name: "English"
+    primary: true
+  - code: "de"
+    name: "Deutsch"
+    primary: false
+
+documents:
+  - id: "readme"
+    title_en: "Documentation Hub"
+    title_de: "Dokumentations-Hub"
+    path_en: "docs/en/README.md"
+    path_de: "docs/de/README.md"
+    auto_generated: false
+    description_en: "Main documentation index with navigation to all guides"
+    description_de: "Haupt-Dokumentationsindex mit Navigation zu allen Anleitungen"
+    
+  - id: "user-guide"
+    title_en: "User Guide"
+    title_de: "Benutzerhandbuch"
+    path_en: "docs/en/user-guide.md"
+    path_de: "docs/de/benutzerhandbuch.md"
+    auto_generated: false
+    description_en: "Complete guide to using CEREBRO-RED v2"
+    description_de: "Vollständige Anleitung zur Nutzung von CEREBRO-RED v2"
+    
+  - id: "configuration"
+    title_en: "Configuration Guide"
+    title_de: "Konfigurationsanleitung"
+    path_en: "docs/en/configuration.md"
+    path_de: "docs/de/konfiguration.md"
+    auto_generated: false
+    description_en: "Environment variables and settings reference"
+    description_de: "Referenz für Umgebungsvariablen und Einstellungen"
+    
+  - id: "deployment"
+    title_en: "Deployment Guide"
+    title_de: "Bereitstellungsanleitung"
+    path_en: "docs/en/deployment.md"
+    path_de: "docs/de/bereitstellung.md"
+    auto_generated: false
+    description_en: "Local and Railway deployment instructions"
+    description_de: "Anleitungen für lokale und Railway-Bereitstellung"
+    
+  - id: "architecture"
+    title_en: "Architecture Documentation"
+    title_de: "Architektur-Dokumentation"
+    path_en: "docs/en/architecture.md"
+    path_de: null
+    auto_generated: false
+    description_en: "Technical architecture and system design"
+    description_de: null
+    note: "German translation pending"
+    
+  - id: "security"
+    title_en: "Security Guide"
+    title_de: "Sicherheitsanleitung"
+    path_en: "docs/en/security.md"
+    path_de: null
+    auto_generated: false
+    description_en: "Security considerations and best practices"
+    description_de: null
+    note: "German translation pending"
+    
+  - id: "api-reference"
+    title_en: "API Reference"
+    title_de: "API-Referenz"
+    path_en: "docs/en/api-reference.md"
+    path_de: null
+    auto_generated: true
+    source: "docs/openapi.json"
+    description_en: "Auto-generated API documentation from OpenAPI schema"
+    description_de: null
+    note: "To be generated in future ticket"
+
+validation:
+  last_validated: "2026-01-08"
+  broken_links: 0
+  missing_translations: 2
+  translation_coverage:
+    en: 100
+    de: 66.7

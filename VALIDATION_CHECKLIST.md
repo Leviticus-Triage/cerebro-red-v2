@@ -94,10 +94,10 @@ Container cerebro-frontend  Started
 ```
 
 ### Service Health Check
-- **cerebro-backend**: ✅ RUNNING
-  - Status: Container running
+- **cerebro-backend**: ✅ RUNNING (healthy)
+  - Status: Container running and healthy
   - Health endpoint: `curl http://localhost:9000/health`
-  - Response: [Backend service started successfully]
+  - Response: `{"status":"healthy","service":"cerebro-red-v2","version":"2.0.0","components":{"database":"healthy","llm_providers":{"ollama":"healthy"},"telemetry":"healthy","cors":"configured"}}`
 
 - **cerebro-frontend**: ✅ STARTED
   - Status: Container started

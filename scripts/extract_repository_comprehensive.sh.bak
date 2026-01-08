@@ -1,0 +1,628 @@
+#!/bin/bash
+#
+# Repository Extraction Script for CEREBRO-RED v2
+#
+# Purpose:
+#   Extracts the cerebro-red-v2/ subdirectory from hexstrike-ai-kit repository
+#   into a standalone repository with full commit history preserved.
+#
+# Prerequisites:
+#   - git-filter-repo (install via: pip3 install git-filter-repo or brew install git-filter-repo)
+#   - git 2.22 or later
+#   - bash 4.0 or later
+#
+# Usage:
+#   ./scripts/extract_repository.sh [--dry-run] [--output DIR]
+#
+# WARNING:
+#   This script performs destructive git operations. Always backup your repository first!
+#
+# Version: 1.0.0
+# Author: CEREBRO-RED v2 Team
+
+set -euo pipefail
+
+# ============================================================================
+# Configuration
+# ============================================================================
+
+# Color codes for output
+readonly RED='\033[0;31m'
+readonly GREEN='\033[0;32m'
+readonly YELLOW='\033[1;33m'
+readonly BLUE='\033[0;34m'
+readonly NC='\033[0m' # No Color
+
+# Script metadata
+readonly SCRIPT_VERSION="1.0.0"
+readonly SCRIPT_NAME="extract_repository.sh"
+
+# Configuration variables
+readonly SOURCE_DIR="cerebro-red-v2"
+readonly THIRD_PARTY_DIRS=("llamator" "PyRIT" "Model-Inversion-Attack-ToolBox" "L1B3RT4S")
+readonly OLD_REPO_NAME="hexstrike-ai-kit"
+readonly NEW_REPO_NAME="cerebro-red-v2"
+
+# Flags
+DRY_RUN=false
+OUTPUT_DIR=""
+SKIP_CONFIRMATION=false
+
+# ============================================================================
+# Helper Functions
+# ============================================================================
+
+log_info() {
+    echo -e "${BLUE}[INFO]${NC} $(date '+%Y-%m-%d %H:%M:%S') - $1"
+}
+
+log_success() {
+    echo -e "${GREEN}[SUCCESS]${NC} $(date '+%Y-%m-%d %H:%M:%S') - $1"
+}
+
+log_error() {
+    echo -e "${RED}[ERROR]${NC} $(date '+%Y-%m-%d %H:%M:%S') - $1" >&2
+    exit 1
+}
+
+log_warning() {
+    echo -e "${YELLOW}[WARNING]${NC} $(date '+%Y-%m-%d %H:%M:%S') - $1"
+}
+
+show_help() {
+    cat << EOF
+${SCRIPT_NAME} - Extract cerebro-red-v2 subdirectory into standalone repository
+
+USAGE:
+    ${SCRIPT_NAME} [OPTIONS]
+
+OPTIONS:
+    --dry-run              Show what would be done without making changes
+    --output DIR           Specify output directory (default: /tmp/cerebro-red-v2-extracted-\$(date +%s))
+    --skip-confirmation    Skip interactive confirmation prompts
+    --help                 Show this help message
+
+EXAMPLES:
+    # Basic usage
+    ./scripts/extract_repository.sh
+
+    # Dry-run mode
+    ./scripts/extract_repository.sh --dry-run
+
+    # Custom output directory
+    ./scripts/extract_repository.sh --output /path/to/output
+
+PREREQUISITES:
+    - git-filter-repo (install: pip3 install git-filter-repo)
+    - git 2.22 or later
+    - bash 4.0 or later
+
+WARNING:
+    This script performs destructive git operations. Always backup your repository first!
+
+EOF
+}
+
+# ============================================================================
+# Prerequisite Checks
+# ============================================================================
+
+check_prerequisites() {
+    log_info "Checking prerequisites..."
+
+    # Check for git-filter-repo
+    if ! command -v git-filter-repo &> /dev/null; then
+        log_error "git-filter-repo is not installed.
+
+Installation options:
+  Ubuntu/Debian:  sudo apt-get install git-filter-repo
+  macOS:          brew install git-filter-repo
+  pip:            pip3 install git-filter-repo
+
+For more information, visit: https://github.com/newren/git-filter-repo"
+    fi
+
+    # Check git version
+    local git_version
+    git_version=$(git --version | awk '{print $3}')
+    log_info "Git version: ${git_version}"
+
+    # Check bash version
+    if [ "${BASH_VERSION%%.*}" -lt 4 ]; then
+        log_error "Bash 4.0 or later is required. Current version: ${BASH_VERSION}"
+    fi
+
+    log_success "All prerequisites met"
+}
+
+validate_git_repo() {
+    log_info "Validating git repository state..."
+
+    # Check if we're in a git repository
+    if ! git rev-parse --git-dir > /dev/null 2>&1; then
+        log_error "Not in a git repository. Please run this script from the repository root."
+    fi
+
+    # Check if we're in the hexstrike-ai-kit repository
+    local repo_root
+    repo_root=$(git rev-parse --show-toplevel)
+    local repo_name
+    repo_name=$(basename "${repo_root}")
+
+    if [ "${repo_name}" != "${OLD_REPO_NAME}" ]; then
+        log_warning "Repository name is '${repo_name}', expected '${OLD_REPO_NAME}'"
+        read -p "Continue anyway? (y/N): " -n 1 -r
+        echo
+        if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+            log_error "Aborted by user"
+        fi
+    fi
+
+    # Verify cerebro-red-v2/ directory exists
+    if [ ! -d "${SOURCE_DIR}" ]; then
+        log_error "Directory '${SOURCE_DIR}/' not found. Please run from repository root."
+    fi
+
+    # Check for uncommitted changes
+    if ! git diff-index --quiet HEAD --; then
+        log_warning "You have uncommitted changes in your repository."
+        log_warning "It's recommended to commit or stash them before proceeding."
+        if [ "${SKIP_CONFIRMATION}" = false ]; then
+            read -p "Continue anyway? (y/N): " -n 1 -r
+            echo
+            if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+                log_error "Aborted by user"
+            fi
+        fi
+    fi
+
+    # Verify third-party directories exist (for removal)
+    for dir in "${THIRD_PARTY_DIRS[@]}"; do
+        if [ -d "${dir}" ]; then
+            log_info "Found third-party directory: ${dir}/"
+        else
+            log_warning "Third-party directory '${dir}/' not found (may already be removed)"
+        fi
+    done
+
+    log_success "Repository validation passed"
+}
+
+backup_reminder() {
+    cat << EOF
+
+${YELLOW}═══════════════════════════════════════════════════════════════════════════════${NC}
+${YELLOW}                    IMPORTANT: BACKUP YOUR REPOSITORY${NC}
+${YELLOW}═══════════════════════════════════════════════════════════════════════════════${NC}
+
+This script will perform destructive git operations. Before proceeding:
+
+1. Create a backup of your repository:
+   ${BLUE}cd .. && cp -r ${OLD_REPO_NAME} ${OLD_REPO_NAME}-backup-$(date +%Y%m%d)${NC}
+
+2. Or push your current state to a remote:
+   ${BLUE}git push origin upstream-sync${NC}
+
+3. Ensure you have a clean working directory
+
+${YELLOW}═══════════════════════════════════════════════════════════════════════════════${NC}
+
+EOF
+}
+
+# ============================================================================
+# Extraction Functions
+# ============================================================================
+
+create_fresh_clone() {
+    log_info "Creating fresh clone for extraction..."
+
+    # Generate output directory if not specified
+    if [ -z "${OUTPUT_DIR}" ]; then
+        OUTPUT_DIR="/tmp/cerebro-red-v2-extracted-$(date +%s)"
+    fi
+
+    # Create parent directory if it doesn't exist
+    local parent_dir
+    parent_dir=$(dirname "${OUTPUT_DIR}")
+    mkdir -p "${parent_dir}"
+
+    if [ "${DRY_RUN}" = true ]; then
+        log_info "[DRY-RUN] Would clone repository to: ${OUTPUT_DIR}"
+        return 0
+    fi
+
+    # Get current repository path
+    local current_repo
+    current_repo=$(git rev-parse --show-toplevel)
+
+    # Clone to temporary location
+    log_info "Cloning repository from: ${current_repo}"
+    git clone --no-hardlinks "${current_repo}" "${OUTPUT_DIR}" || {
+        log_error "Failed to clone repository"
+    }
+
+    log_success "Repository cloned to: ${OUTPUT_DIR}"
+    echo "${OUTPUT_DIR}"
+}
+
+extract_subdirectory() {
+    local work_dir=$1
+    log_info "Extracting ${SOURCE_DIR}/ subdirectory..."
+
+    if [ "${DRY_RUN}" = true ]; then
+        log_info "[DRY-RUN] Would extract ${SOURCE_DIR}/ and remove path prefix"
+        return 0
+    fi
+
+    cd "${work_dir}" || log_error "Failed to change to work directory"
+
+    # Extract subdirectory and remove path prefix
+    git filter-repo \
+        --path "${SOURCE_DIR}/" \
+        --path-rename "${SOURCE_DIR}/:" \
+        --force \
+        --quiet || log_error "Failed to extract subdirectory"
+
+    log_success "Subdirectory extracted and path prefix removed"
+}
+
+remove_third_party_directories() {
+    local work_dir=$1
+    log_info "Removing third-party directories from history..."
+
+    if [ "${DRY_RUN}" = true ]; then
+        log_info "[DRY-RUN] Would remove: ${THIRD_PARTY_DIRS[*]}"
+        return 0
+    fi
+
+    cd "${work_dir}" || log_error "Failed to change to work directory"
+
+    # Remove each third-party directory from history
+    for dir in "${THIRD_PARTY_DIRS[@]}"; do
+        log_info "Removing ${dir}/ from history..."
+        if git log --all --full-history -- "${dir}/" &> /dev/null; then
+            git filter-repo \
+                --path "${dir}/" \
+                --invert-paths \
+                --force \
+                --quiet || log_warning "Failed to remove ${dir}/ (may not exist in history)"
+            log_success "Removed ${dir}/ from history"
+        else
+            log_info "No history found for ${dir}/ (skipping)"
+        fi
+    done
+
+    # Remove .gitmodules if it exists
+    if git log --all --full-history -- .gitmodules &> /dev/null; then
+        log_info "Removing .gitmodules from history..."
+        git filter-repo \
+            --path .gitmodules \
+            --invert-paths \
+            --force \
+            --quiet || log_warning "Failed to remove .gitmodules"
+        log_success "Removed .gitmodules from history"
+    fi
+
+    log_success "All third-party directories removed from history"
+}
+
+clean_commit_messages() {
+    local work_dir=$1
+    log_info "Cleaning commit messages..."
+
+    if [ "${DRY_RUN}" = true ]; then
+        log_info "[DRY-RUN] Would replace '${OLD_REPO_NAME}' with '${NEW_REPO_NAME}' in commit messages"
+        return 0
+    fi
+
+    cd "${work_dir}" || log_error "Failed to change to work directory"
+
+    # Replace old repo name with new repo name in commit messages
+    git filter-repo \
+        --message-callback "
+import re
+def callback(message, metadata):
+    message = message.replace(b'${OLD_REPO_NAME}', b'${NEW_REPO_NAME}')
+    message = message.replace(b'hexstrike-ai-kit', b'cerebro-red-v2')
+    return message
+" \
+        --force \
+        --quiet || log_error "Failed to clean commit messages"
+
+    log_success "Commit messages cleaned"
+}
+
+# ============================================================================
+# Validation Functions
+# ============================================================================
+
+validate_history() {
+    local work_dir=$1
+    log_info "Validating git history..."
+
+    cd "${work_dir}" || log_error "Failed to change to work directory"
+
+    local commit_count
+    commit_count=$(git log --oneline | wc -l | tr -d ' ')
+    log_info "Total commits in extracted repository: ${commit_count}"
+
+    if [ "${commit_count}" -eq 0 ]; then
+        log_error "No commits found in extracted repository!"
+    fi
+
+    # Check earliest and latest commit dates
+    local earliest_date
+    earliest_date=$(git log --reverse --format="%ai" | head -1)
+    local latest_date
+    latest_date=$(git log --format="%ai" | head -1)
+    log_info "Commit date range: ${earliest_date} to ${latest_date}"
+
+    log_success "Git history validation passed"
+}
+
+validate_structure() {
+    local work_dir=$1
+    log_info "Validating directory structure..."
+
+    cd "${work_dir}" || log_error "Failed to change to work directory"
+
+    # Check for expected directories
+    local expected_dirs=("backend" "frontend" "docker" "scripts")
+    for dir in "${expected_dirs[@]}"; do
+        if [ -d "${dir}" ]; then
+            log_success "Found expected directory: ${dir}/"
+        else
+            log_warning "Expected directory not found: ${dir}/"
+        fi
+    done
+
+    # Check for key files
+    local key_files=("README.md" "docker-compose.yml")
+    for file in "${key_files[@]}"; do
+        if [ -f "${file}" ]; then
+            log_success "Found key file: ${file}"
+        else
+            log_warning "Key file not found: ${file}"
+        fi
+    done
+
+    # Verify no cerebro-red-v2 prefix remains
+    if git ls-files | grep -q "^cerebro-red-v2/"; then
+        log_error "Found files with 'cerebro-red-v2/' prefix - extraction incomplete!"
+    fi
+
+    log_success "Directory structure validation passed"
+}
+
+validate_third_party_removal() {
+    local work_dir=$1
+    log_info "Validating third-party directory removal..."
+
+    cd "${work_dir}" || log_error "Failed to change to work directory"
+
+    # Check that no history remains for third-party directories
+    for dir in "${THIRD_PARTY_DIRS[@]}"; do
+        # Check for actual commits by capturing output
+        local has_commits
+        has_commits=$(git log --all --full-history --oneline -- "${dir}/" 2>/dev/null | head -1)
+        if [ -n "${has_commits}" ]; then
+            log_error "History still exists for ${dir}/ - removal incomplete!"
+        else
+            log_success "Confirmed ${dir}/ removed from history"
+        fi
+    done
+
+    # Check that no files from these directories exist
+    for dir in "${THIRD_PARTY_DIRS[@]}"; do
+        if [ -d "${dir}" ]; then
+            log_warning "Directory ${dir}/ still exists in working tree (should be removed manually)"
+        fi
+    done
+
+    log_success "Third-party removal validation passed"
+}
+
+validate_references() {
+    local work_dir=$1
+    log_info "Validating reference cleanup..."
+
+    cd "${work_dir}" || log_error "Failed to change to work directory"
+
+    # Check for remaining references to old repo name
+    local remaining_refs
+    remaining_refs=$(git log --all --grep="${OLD_REPO_NAME}" --oneline | wc -l | tr -d ' ')
+    if [ "${remaining_refs}" -gt 0 ]; then
+        log_warning "Found ${remaining_refs} commit(s) still referencing '${OLD_REPO_NAME}'"
+        log_warning "These may be intentional references"
+    else
+        log_success "No remaining references to '${OLD_REPO_NAME}' in commit messages"
+    fi
+
+    log_success "Reference validation completed"
+}
+
+# ============================================================================
+# Report Generation
+# ============================================================================
+
+generate_report() {
+    local work_dir=$1
+    log_info "Generating extraction report..."
+
+    cd "${work_dir}" || log_error "Failed to change to work directory"
+
+    local commit_count
+    commit_count=$(git log --oneline | wc -l | tr -d ' ')
+    local file_count
+    file_count=$(git ls-files | wc -l | tr -d ' ')
+    local repo_size
+    repo_size=$(du -sh .git 2>/dev/null | awk '{print $1}' || echo "unknown")
+    local earliest_date
+    earliest_date=$(git log --reverse --format="%ai" | head -1)
+    local latest_date
+    latest_date=$(git log --format="%ai" | head -1)
+
+    cat << EOF
+
+${GREEN}═══════════════════════════════════════════════════════════════════════════════${NC}
+${GREEN}                    EXTRACTION REPORT${NC}
+${GREEN}═══════════════════════════════════════════════════════════════════════════════${NC}
+
+Repository Statistics:
+  - Total commits:        ${commit_count}
+  - Total files:          ${file_count}
+  - Repository size:      ${repo_size}
+  - Date range:           ${earliest_date} to ${latest_date}
+
+Removed Third-Party Directories:
+$(for dir in "${THIRD_PARTY_DIRS[@]}"; do echo "  - ${dir}/"; done)
+
+Extracted Repository Location:
+  ${OUTPUT_DIR}
+
+${GREEN}═══════════════════════════════════════════════════════════════════════════════${NC}
+${GREEN}                    NEXT STEPS${NC}
+${GREEN}═══════════════════════════════════════════════════════════════════════════════${NC}
+
+1. Inspect the extracted repository:
+   ${BLUE}cd ${OUTPUT_DIR}${NC}
+   ${BLUE}git log --oneline${NC}
+   ${BLUE}ls -la${NC}
+
+2. Create a new GitHub repository:
+   - Go to https://github.com/new
+   - Create repository named: ${NEW_REPO_NAME}
+   - Do NOT initialize with README, .gitignore, or license
+
+3. Add remote and push:
+   ${BLUE}cd ${OUTPUT_DIR}${NC}
+   ${BLUE}git remote add origin git@github.com:YOUR_USERNAME/${NEW_REPO_NAME}.git${NC}
+   ${BLUE}git push -u origin main${NC}
+
+   (Replace 'main' with your default branch name if different)
+
+4. Verify the extraction:
+   - Check that all expected files are present
+   - Verify commit history is intact
+   - Confirm no third-party directories remain
+
+${YELLOW}Note: The extracted repository is located at:${NC}
+${BLUE}${OUTPUT_DIR}${NC}
+
+${GREEN}═══════════════════════════════════════════════════════════════════════════════${NC}
+
+EOF
+}
+
+# ============================================================================
+# Main Execution
+# ============================================================================
+
+main() {
+    # Parse command line arguments
+    while [[ $# -gt 0 ]]; do
+        case $1 in
+            --dry-run)
+                DRY_RUN=true
+                shift
+                ;;
+            --output)
+                OUTPUT_DIR="$2"
+                shift 2
+                ;;
+            --skip-confirmation)
+                SKIP_CONFIRMATION=true
+                shift
+                ;;
+            --help|-h)
+                show_help
+                exit 0
+                ;;
+            *)
+                log_error "Unknown option: $1. Use --help for usage information."
+                ;;
+        esac
+    done
+
+    # Display header
+    cat << EOF
+
+${GREEN}═══════════════════════════════════════════════════════════════════════════════${NC}
+${GREEN}        CEREBRO-RED v2 Repository Extraction Script${NC}
+${GREEN}        Version ${SCRIPT_VERSION}${NC}
+${GREEN}═══════════════════════════════════════════════════════════════════════════════${NC}
+
+EOF
+
+    if [ "${DRY_RUN}" = true ]; then
+        log_warning "DRY-RUN MODE: No changes will be made"
+    fi
+
+    # Show backup reminder
+    if [ "${SKIP_CONFIRMATION}" = false ]; then
+        backup_reminder
+        read -p "Have you backed up your repository? (y/N): " -n 1 -r
+        echo
+        if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+            log_error "Please backup your repository before proceeding"
+        fi
+    fi
+
+    # Run prerequisite checks
+    check_prerequisites
+    validate_git_repo
+
+    # Confirm before proceeding
+    if [ "${DRY_RUN}" = false ] && [ "${SKIP_CONFIRMATION}" = false ]; then
+        cat << EOF
+
+${YELLOW}This will:${NC}
+  1. Clone the repository to a temporary location
+  2. Extract the ${SOURCE_DIR}/ subdirectory
+  3. Remove third-party directories from history
+  4. Clean commit messages
+  5. Validate the extraction
+
+${YELLOW}Continue? (y/N):${NC} 
+EOF
+        read -n 1 -r
+        echo
+        if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+            log_error "Aborted by user"
+        fi
+    fi
+
+    # Get original repository root
+    local original_repo
+    original_repo=$(git rev-parse --show-toplevel)
+
+    # Create fresh clone
+    local work_dir
+    work_dir=$(create_fresh_clone)
+
+    if [ "${DRY_RUN}" = true ]; then
+        log_info "[DRY-RUN] Extraction simulation complete"
+        exit 0
+    fi
+
+    # Perform extraction
+    extract_subdirectory "${work_dir}"
+    remove_third_party_directories "${work_dir}"
+    clean_commit_messages "${work_dir}"
+
+    # Run validations
+    validate_history "${work_dir}"
+    validate_structure "${work_dir}"
+    validate_third_party_removal "${work_dir}"
+    validate_references "${work_dir}"
+
+    # Generate report
+    generate_report "${work_dir}"
+
+    log_success "Extraction completed successfully!"
+    log_info "Extracted repository location: ${work_dir}"
+}
+
+# Run main function
+main "$@"

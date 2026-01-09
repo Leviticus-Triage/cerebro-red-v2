@@ -94,4 +94,4 @@ EXPOSE 9000
 # Entrypoint handles permission fixes and user switching
 ENTRYPOINT ["/entrypoint.sh"]
 
-CMD ["python3", "-m", "uvicorn", "main:app", "--host", "0.0.0.0", "--port", "9000", "--workers", "1"]
+CMD ["sh", "-c", "python3 -m uvicorn main:app --host 0.0.0.0 --port ${PORT:-${CEREBRO_PORT:-9000}} --workers 1"]

@@ -36,34 +36,74 @@ jobs:
 
   frontend-tests:
     runs-on: ubuntu-latest
-    
+
     steps:
     - uses: actions/checkout@v3
-    
+
     - name: Set up Node.js
       uses: actions/setup-node@v3
       with:
         node-version: '20'
-    
+
     - name: Install dependencies
       run: |
         cd frontend
         npm ci
-    
+
     - name: Install Playwright
       run: |
         cd frontend
         npx playwright install --with-deps
-    
+
     - name: Run E2E tests
       run: |
         cd frontend
         npm run test:e2e
-    
+
     - name: Upload test results
       if: always()
       uses: actions/upload-artifact@v3
       with:
         name: playwright-report
         path: frontend/playwright-report/
+
+  docs-validation:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+
+    - name: Install dependencies
+      run: |
+        pip install pyyaml
+
+    - name: Validate documentation
+      run: |
+        python3 scripts/validate_docs.py
+
+    - name: Check documentation is up to date
+      run: |
+        # Export OpenAPI schema
+        cd backend
+        pip install -r requirements.txt
+        python3 export_openapi.py
+        cd ..
+
+        # Generate API docs
+        python3 scripts/generate_api_docs.py
+
+        # Check for changes
+        if ! git diff --quiet docs/; then
+          echo "❌ Documentation is out of sync with code"
+          echo "Please run ./scripts/build_docs.sh and commit changes"
+          git diff docs/
+          exit 1
+        fi
+
+        echo "✅ Documentation is up to date"
 

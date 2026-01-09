@@ -1,6 +1,6 @@
 # Architecture Documentation
 
-[🇬🇧 English](architecture.md) | [🇩🇪 Deutsch](../de/README.md)
+[🇬🇧 English](architecture.md)
 
 Technical architecture and design documentation for CEREBRO-RED v2.
 

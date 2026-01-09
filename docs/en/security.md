@@ -1,6 +1,6 @@
 # Security Guide
 
-[🇬🇧 English](security.md) | [🇩🇪 Deutsch](../de/README.md)
+[🇬🇧 English](security.md)
 
 Security considerations and best practices for CEREBRO-RED v2.
 

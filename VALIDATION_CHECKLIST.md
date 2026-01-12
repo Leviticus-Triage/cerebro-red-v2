@@ -98,11 +98,26 @@ This document validates that the `cerebro-red-v2` repository meets all acceptanc
 - **Note**: Frontend build issue is related to npm package management, not metadata/licensing
 
 ### 10. Functional Test
-- **Status**: ⏳ SKIPPED (Port 9000 already in use)
-- **Evidence**: Backend image built successfully; functional test skipped due to port conflict
-- **Health Response**: N/A (test skipped)
+- **Status**: ✅ PASS
+- **Evidence**: Both services running and responding correctly
+- **Health Response**: 
+  ```json
+  {
+    "status": "healthy",
+    "service": "cerebro-red-v2",
+    "version": "2.0.0",
+    "components": {
+      "database": "healthy",
+      "llm_providers": {"ollama": "healthy"},
+      "telemetry": "healthy",
+      "cors": "configured"
+    }
+  }
+  ```
+- **Backend Status**: ✅ RUNNING on port 9000 (healthy)
+- **Frontend Status**: ✅ RUNNING on port 3000 (HTTP 200)
 - **Test Date**: 2026-01-12
-- **Note**: Backend image is ready for deployment; functional test can be performed after stopping existing services
+- **Note**: Services were already running from previous docker-compose up; health endpoint tested directly
 
 ### 11. Environment Configuration
 - **Status**: ✅ PASS
@@ -184,6 +199,7 @@ Container cerebro-frontend  Started
 | Docker Compose test | ✅ PASS | Services started successfully |
 | Metadata validation | ✅ PASS | Author and license corrected |
 | Docker build test | ✅ PASS | Backend builds successfully |
+| Functional test | ✅ PASS | Health endpoint responds correctly |
 | Environment config | ✅ PASS | 34 variables, CEREBRO_ prefix |
 
 ---

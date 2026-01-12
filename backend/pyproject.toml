@@ -3,11 +3,11 @@ name = "cerebro-red-v2"
 version = "2.0.0"
 description = "Autonomous Local LLM Red Teaming Suite - Research Edition"
 authors = [
-    {name = "HexStrike AI Team", email = "team@hexstrike.ai"}
+    {name = "Leviticus-Triage", email = "contact@leviticus-triage.org"}
 ]
 readme = "README.md"
 requires-python = ">=3.11"
-license = {text = "MIT"}
+license = {text = "Apache-2.0"}
 keywords = ["llm", "red-teaming", "security", "adversarial", "research"]
 classifiers = [
     "Development Status :: 4 - Beta",

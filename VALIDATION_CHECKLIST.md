@@ -20,32 +20,47 @@ This document validates that the `cerebro-red-v2` repository meets all acceptanc
   ```
 
 ### 2. Third-Party Directories Removed
-- **Status**: ✅ PASS
-- **Evidence**: No `llamator/`, `PyRIT/`, `Model-Inversion-Attack-ToolBox/`, or `L1B3RT4S/` directories present
+- **Status**: ❌ FAIL
+- **Evidence**: Third-party directories still present in repository
 - **Verification Command**:
   ```bash
   for dir in llamator PyRIT Model-Inversion-Attack-ToolBox L1B3RT4S; do
     test -d "$dir" && echo "❌ $dir found" || echo "✅ $dir removed"
   done
   ```
+- **Actual Result** (2026-01-12):
+  ```
+  ❌ llamator found
+  ❌ PyRIT found
+  ❌ Model-Inversion-Attack-ToolBox found
+  ❌ L1B3RT4S found
+  ```
+- **Action Required**: Remove third-party directories before release
 
 ### 3. No HexStrike References in Documentation
-- **Status**: ✅ PASS
-- **Evidence**: All references to "HexStrike AI Kit" have been rebranded to "Cerebro-Red v2"
+- **Status**: ⚠️ PARTIAL
+- **Evidence**: Some HexStrike references still present in documentation
 - **Verification Command**:
   ```bash
   grep -r "HexStrike" --include="*.md" --include="*.yml" --include="*.yaml" . | grep -v ".git" | wc -l
-  # Should return 0 or only false positives
   ```
+- **Actual Result** (2026-01-12): `5` references found
+- **Action Required**: Review and update remaining HexStrike references (may be in migration documentation)
 
 ### 4. Clean Git Status
-- **Status**: ✅ PASS
-- **Evidence**: `git status` shows clean working tree (no untracked files except `.env.example` and build artifacts)
+- **Status**: ❌ FAIL
+- **Evidence**: Working tree has uncommitted changes
 - **Verification Command**:
   ```bash
   git status --short
-  # Should show minimal or no untracked files
   ```
+- **Actual Result** (2026-01-12):
+  ```
+  Multiple modified files (M .env.example, M .github/workflows/test.yml, M .gitignore, 
+  M CODE_DOCUMENTATION.md, M GITHUB_SETUP.md, M README.md, M backend/..., etc.)
+  Multiple untracked files (?? .env.railway, ?? Makefile, ?? backend/api/demo.py, etc.)
+  ```
+- **Action Required**: Commit or stash changes, review untracked files
 
 ### 5. Git History Confirmed
 - **Status**: ✅ PASS
@@ -57,14 +72,17 @@ This document validates that the `cerebro-red-v2` repository meets all acceptanc
   ```
 
 ### 6. Tag Created and Pushed
-- **Status**: ✅ PASS (Created, pending push)
-- **Evidence**: Tag `v2.0.0-extracted` created successfully
+- **Status**: ⚠️ PARTIAL
+- **Evidence**: Tags created locally, but v2.0.0 not pushed to remote
 - **Verification Command**:
   ```bash
-  git tag -l "v2.0.0-extracted"
-  git ls-remote --tags origin | grep v2.0.0-extracted
+  git tag -l
+  git ls-remote --tags origin | grep v2.0.0
   ```
-- **Tag Created**: `v2.0.0-extracted` with message "v2.0.0-extracted: Initial extraction and validation complete"
+- **Actual Result** (2026-01-12):
+  - Local tags: `v2.0.0`, `v2.0.0-extracted`
+  - Remote tags: `v2.0.0-extracted` (pushed), `v2.0.0` (NOT pushed)
+- **Action Required**: Push tag v2.0.0: `git push origin v2.0.0`
 
 ### 7. Docker Compose Validation
 - **Status**: ✅ PASS
@@ -90,17 +108,27 @@ This document validates that the `cerebro-red-v2` repository meets all acceptanc
 
 ### 9. Docker Build Test
 - **Status**: ✅ PASS (Backend) / ⚠️ PARTIAL (Frontend)
-- **Evidence**: Backend image builds successfully; Frontend build has npm ci issue (separate build problem)
-- **Build Time**: Backend build completed successfully
-- **Image Sizes**: 
-  - Backend: cerebro-red-v2:latest (143MB compressed)
-  - Frontend: cerebro-frontend:latest (exists but build needs package.json fix)
-- **Note**: Frontend build issue is related to npm package management, not metadata/licensing
+- **Evidence**: Backend image builds successfully; Frontend build has npm ci issue
+- **Verification Command**:
+  ```bash
+  docker build -t cerebro-red-v2:latest -f docker/Dockerfile.backend .
+  docker images | grep cerebro
+  ```
+- **Actual Result** (2026-01-12):
+  - Backend build: ✅ SUCCESS
+  - Backend image: `cerebro-red-v2:latest` (612MB, 143MB compressed)
+  - Frontend image: `cerebro-frontend:latest` (exists, 89.6MB, 24.7MB compressed)
+  - Frontend build: ⚠️ npm ci issue (separate build problem, not metadata/licensing)
+- **Build Output**: Backend build completed without errors
 
 ### 10. Functional Test
 - **Status**: ✅ PASS
-- **Evidence**: Both services running and responding correctly
-- **Health Response**: 
+- **Evidence**: Health endpoint responds correctly
+- **Verification Command**:
+  ```bash
+  curl -s http://localhost:9000/health | jq .
+  ```
+- **Actual Result** (2026-01-12):
   ```json
   {
     "status": "healthy",
@@ -111,13 +139,19 @@ This document validates that the `cerebro-red-v2` repository meets all acceptanc
       "llm_providers": {"ollama": "healthy"},
       "telemetry": "healthy",
       "cors": "configured"
-    }
+    },
+    "cors_config": {
+      "origins": ["http://localhost:3000", "http://localhost:5173", ...],
+      "credentials": true,
+      "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"]
+    },
+    "timestamp": "2026-01-12T14:26:22.194271"
   }
   ```
 - **Backend Status**: ✅ RUNNING on port 9000 (healthy)
 - **Frontend Status**: ✅ RUNNING on port 3000 (HTTP 200)
 - **Test Date**: 2026-01-12
-- **Note**: Services were already running from previous docker-compose up; health endpoint tested directly
+- **Note**: Services were already running; health endpoint tested directly
 
 ### 11. Environment Configuration
 - **Status**: ✅ PASS
@@ -129,7 +163,12 @@ This document validates that the `cerebro-red-v2` repository meets all acceptanc
 ### 12. Makefile Validation
 - **Status**: N/A
 - **Evidence**: No Makefile present in cerebro-red-v2 directory
-- **Note**: Makefile commands are not applicable for this repository
+- **Verification Command**:
+  ```bash
+  test -f Makefile && make help || echo "No Makefile found"
+  ```
+- **Actual Result** (2026-01-12): `No Makefile found`
+- **Note**: Makefile commands (`make install && make dev`) are not applicable for this repository
 
 ---
 
@@ -190,17 +229,18 @@ Container cerebro-frontend  Started
 
 | Criterion | Status | Notes |
 |-----------|--------|-------|
-| LICENSE present | ✅ PASS | Apache 2.0 |
-| Third-party removed | ✅ PASS | All directories removed |
-| No HexStrike references | ✅ PASS | Rebranded to Cerebro-Red v2 |
-| Clean git status | ✅ PASS | Working tree clean |
-| Git history confirmed | ✅ PASS | Commits present |
-| Tag created | ✅ PASS | Tag v2.0.0-extracted created |
+| LICENSE present | ✅ PASS | Apache 2.0 (verified: `test -f LICENSE`) |
+| Third-party removed | ❌ FAIL | llamator, PyRIT, Model-Inversion-Attack-ToolBox, L1B3RT4S still present |
+| No HexStrike references | ⚠️ PARTIAL | 5 references found (may be in migration docs) |
+| Clean git status | ❌ FAIL | Multiple uncommitted changes and untracked files |
+| Git history confirmed | ✅ PASS | Commits present (verified: `git log --oneline`) |
+| Tag created | ⚠️ PARTIAL | v2.0.0-extracted pushed, v2.0.0 not pushed |
 | Docker Compose test | ✅ PASS | Services started successfully |
-| Metadata validation | ✅ PASS | Author and license corrected |
-| Docker build test | ✅ PASS | Backend builds successfully |
-| Functional test | ✅ PASS | Health endpoint responds correctly |
-| Environment config | ✅ PASS | 34 variables, CEREBRO_ prefix |
+| Metadata validation | ✅ PASS | Author: Leviticus-Triage, License: Apache-2.0 |
+| Docker build test | ✅ PASS | Backend builds successfully (verified) |
+| Functional test | ✅ PASS | Health endpoint responds correctly (verified) |
+| Environment config | ✅ PASS | CEREBRO_ prefix used consistently |
+| Makefile validation | N/A | No Makefile present |
 
 ---
 
@@ -219,16 +259,29 @@ Container cerebro-frontend  Started
 
 ## Final Sign-Off
 
-**All Validation Criteria Met**: ✅ YES
+**All Validation Criteria Met**: ❌ NO
 
 **Validated by**: Automated validation + manual review  
 **Date**: 2026-01-12  
-**Status**: ✅ READY FOR RELEASE
+**Status**: ⏳ IN PROGRESS - Issues Found
 
-**Notes**:
-- Backend Docker image builds successfully
-- Frontend build has npm package management issue (separate from licensing/metadata)
-- All metadata corrected (author: Leviticus-Triage, license: Apache-2.0)
-- Environment variables properly configured with CEREBRO_ prefix
-- No hexstrike references in codebase (except documentation)
-- Tag v2.0.0-extracted exists; v2.0.0 to be created
+**Critical Issues**:
+1. ❌ Third-party directories still present (llamator, PyRIT, Model-Inversion-Attack-ToolBox, L1B3RT4S)
+2. ❌ Git working tree not clean (multiple uncommitted changes)
+3. ⚠️ HexStrike references still present (5 found - review needed)
+4. ⚠️ Tag v2.0.0 not pushed to remote
+
+**Completed Items**:
+- ✅ LICENSE file present (Apache 2.0)
+- ✅ Git repository initialized with correct remote
+- ✅ Metadata corrected (author: Leviticus-Triage, license: Apache-2.0)
+- ✅ Docker build successful (backend)
+- ✅ Health endpoint functional
+- ✅ Environment variables configured correctly
+
+**Action Items Before Release**:
+1. Remove third-party directories or document why they're included
+2. Commit or stash all changes, review untracked files
+3. Review and update remaining HexStrike references
+4. Push tag v2.0.0: `git push origin v2.0.0`
+5. Verify all commits reference `cerebro-red-v2` (not `hexstrike-ai-kit`)

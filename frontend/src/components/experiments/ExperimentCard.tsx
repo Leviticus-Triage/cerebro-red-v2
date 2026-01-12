@@ -13,6 +13,8 @@ import type { ExperimentResponse } from '@/types/api';
 import { Clock, FlaskConical, Repeat, Pause, Play, Square } from 'lucide-react';
 import { apiClient } from '@/lib/api/client';
 import { toast } from '@/lib/toast';
+import { DemoTooltip } from '@/components/common/DemoTooltip';
+import { isDemoMode } from '@/lib/config';
 
 interface ExperimentCardProps {
   experiment: ExperimentResponse;
@@ -25,9 +27,9 @@ export function ExperimentCard({ experiment }: ExperimentCardProps) {
   const handleRepeat = async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    
+
     if (isRepeating) return;
-    
+
     setIsRepeating(true);
     try {
       const newExperiment = await apiClient.repeatExperiment(experiment.experiment_id);
@@ -41,9 +43,26 @@ export function ExperimentCard({ experiment }: ExperimentCardProps) {
     }
   };
 
+  // Determine tour data attribute based on experiment status
+  const getTourAttribute = () => {
+    switch (experiment.status) {
+      case 'running':
+        return 'experiment-running';
+      case 'failed':
+        return 'experiment-failed';
+      case 'completed':
+        return 'experiment-completed';
+      default:
+        return undefined;
+    }
+  };
+
   return (
     <Link to={`/experiments/${experiment.experiment_id}`} className="block">
-      <Card className="hover:shadow-lg transition-shadow cursor-pointer">
+      <Card
+        className="hover:shadow-lg transition-shadow cursor-pointer"
+        data-tour={getTourAttribute()}
+      >
         <CardHeader>
           <div className="flex items-start justify-between">
             <div className="flex-1">
@@ -86,16 +105,18 @@ export function ExperimentCard({ experiment }: ExperimentCardProps) {
                     <Square className="h-3.5 w-3.5 text-muted-foreground" />
                   </div>
                 )}
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={handleRepeat}
-                  disabled={isRepeating}
-                  className="h-7 px-2"
-                  title="Experiment wiederholen"
-                >
-                  <Repeat className={`h-3.5 w-3.5 ${isRepeating ? 'animate-spin' : ''}`} />
-                </Button>
+                <DemoTooltip message="Demo mode is read-only. Deploy locally to repeat experiments.">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={handleRepeat}
+                    disabled={isDemoMode || isRepeating}
+                    className="h-7 px-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                    title={isDemoMode ? "Demo mode - read only" : "Experiment wiederholen"}
+                  >
+                    <Repeat className={`h-3.5 w-3.5 ${isRepeating ? 'animate-spin' : ''}`} />
+                  </Button>
+                </DemoTooltip>
               </div>
             </div>
           </div>

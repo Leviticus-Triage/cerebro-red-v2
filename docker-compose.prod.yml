@@ -1,0 +1,175 @@
+# ============================================================================
+# Cerebro-Red v2 - Production Docker Compose Configuration
+# ============================================================================
+# Hardened configuration for production deployments with security best practices
+# Usage: docker-compose -f docker-compose.prod.yml up -d
+# ============================================================================
+
+services:
+  cerebro-backend:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.backend
+    image: cerebro-red-v2:latest
+    container_name: cerebro-backend
+    ports:
+      - "9000:9000"
+    environment:
+      # Application Settings (Production)
+      - CEREBRO_ENV=production
+      - CEREBRO_HOST=0.0.0.0
+      - CEREBRO_PORT=9000
+      - CEREBRO_DEBUG=false
+      - CEREBRO_LOG_LEVEL=INFO
+      - CEREBRO_VERBOSITY=1
+
+      # Database Configuration
+      - DATABASE_URL=sqlite+aiosqlite:////app/data/cerebro.db
+      - DATABASE_ECHO=false
+      - AUDIT_LOG_PATH=/app/data/audit_logs
+
+      # LLM Provider Configuration
+      - DEFAULT_LLM_PROVIDER=${DEFAULT_LLM_PROVIDER:-ollama}
+      - OLLAMA_API_BASE=${OLLAMA_API_BASE:-http://host.docker.internal:11434}
+      - OLLAMA_BASE_URL=${OLLAMA_BASE_URL:-http://host.docker.internal:11434}
+      - OLLAMA_HOST=${OLLAMA_HOST:-http://host.docker.internal:11434}
+      - OLLAMA_MODEL_ATTACKER=${OLLAMA_MODEL_ATTACKER:-qwen3:8b}
+      - OLLAMA_MODEL_TARGET=${OLLAMA_MODEL_TARGET:-qwen2.5:3b}
+      - OLLAMA_MODEL_JUDGE=${OLLAMA_MODEL_JUDGE:-qwen3:8b}
+
+      # Azure OpenAI (Optional)
+      - AZURE_OPENAI_API_KEY=${AZURE_OPENAI_API_KEY:-}
+      - AZURE_OPENAI_ENDPOINT=${AZURE_OPENAI_ENDPOINT:-}
+      - AZURE_OPENAI_API_VERSION=${AZURE_OPENAI_API_VERSION:-}
+
+      # OpenAI (Optional)
+      - OPENAI_API_KEY=${OPENAI_API_KEY:-}
+
+      # Security Configuration
+      - API_KEY_ENABLED=${API_KEY_ENABLED:-true}
+      - API_KEY=${API_KEY:-}
+      - CORS_ORIGINS=${CORS_ORIGINS:-http://localhost:3000}
+      - RATE_LIMIT_ENABLED=${RATE_LIMIT_ENABLED:-true}
+      - RATE_LIMIT_REQUESTS_PER_MINUTE=${RATE_LIMIT_REQUESTS_PER_MINUTE:-60}
+
+      # Performance Settings
+      - MAX_CONCURRENT_EXPERIMENTS=${MAX_CONCURRENT_EXPERIMENTS:-5}
+      - MAX_CONCURRENT_PROMPTS=${MAX_CONCURRENT_PROMPTS:-5}
+      - LLM_TIMEOUT=${LLM_TIMEOUT:-60}
+      - RETRY_ATTEMPTS=${RETRY_ATTEMPTS:-3}
+      - RETRY_DELAY=${RETRY_DELAY:-5}
+
+    volumes:
+      # Data persistence (no code mounts in production)
+      - cerebro-data:/app/data
+      - cerebro-experiments:/app/data/experiments
+      - cerebro-audit-logs:/app/data/audit_logs
+      - cerebro-results:/app/data/results
+      # Temporary directories (writable for read-only root filesystem)
+      - type: tmpfs
+        target: /tmp
+        tmpfs:
+          size: 100M
+      - type: tmpfs
+        target: /var/tmp
+        tmpfs:
+          size: 100M
+
+    networks:
+      - cerebro-net
+
+    # Security Hardening
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    cap_add:
+      - NET_BIND_SERVICE
+    # read_only: true  # Enable if application supports read-only root filesystem
+
+    # Production restart policy
+    restart: always
+
+    # Resource Limits
+    deploy:
+      resources:
+        limits:
+          memory: 4G
+          cpus: '2.0'
+        reservations:
+          memory: 2G
+          cpus: '1.0'
+
+    # Health Check
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://127.0.0.1:9000/health || exit 1"]
+      interval: 30s
+      timeout: 5s
+      start_period: 30s
+      retries: 3
+
+  cerebro-frontend:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.frontend
+    image: cerebro-frontend:latest
+    container_name: cerebro-frontend
+    ports:
+      - "3000:3000"
+    environment:
+      # Frontend Configuration (Production)
+      - VITE_API_URL=${VITE_API_URL:-http://localhost:9000}
+      - VITE_WS_URL=${VITE_WS_URL:-ws://localhost:9000}
+      - NODE_ENV=production
+
+    networks:
+      - cerebro-net
+
+    depends_on:
+      cerebro-backend:
+        condition: service_healthy
+
+    # Security Hardening
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    cap_add:
+      - NET_BIND_SERVICE
+
+    # Production restart policy
+    restart: always
+
+    # Resource Limits
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: '0.5'
+        reservations:
+          memory: 256M
+          cpus: '0.25'
+
+    # Health Check
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://127.0.0.1:3000 || exit 1"]
+      interval: 30s
+      timeout: 5s
+      start_period: 15s
+      retries: 3
+
+# Named volumes for data persistence
+volumes:
+  cerebro-data:
+    driver: local
+  cerebro-experiments:
+    driver: local
+  cerebro-audit-logs:
+    driver: local
+  cerebro-results:
+    driver: local
+
+# Isolated network
+networks:
+  cerebro-net:
+    driver: bridge

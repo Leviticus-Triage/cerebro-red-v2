@@ -1,0 +1,72 @@
+name: Documentation Validation
+
+on:
+  push:
+    paths:
+      - 'docs/**'
+      - 'backend/api/**'
+      - 'backend/main.py'
+      - 'backend/export_openapi.py'
+      - 'backend/scripts/generate_api_docs.py'
+  pull_request:
+    paths:
+      - 'docs/**'
+      - 'backend/api/**'
+      - 'backend/main.py'
+      - 'backend/export_openapi.py'
+      - 'backend/scripts/generate_api_docs.py'
+
+jobs:
+  validate-docs:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      
+      - name: Install dependencies
+        run: |
+          cd backend
+          pip install -r requirements.txt || pip install fastapi uvicorn pydantic
+      
+      - name: Build documentation
+        run: |
+          chmod +x scripts/build_docs.sh
+          ./scripts/build_docs.sh
+      
+      - name: Check for changes
+        run: |
+          if [ -n "$(git status --porcelain docs/)" ]; then
+            echo "❌ Documentation has uncommitted changes"
+            git diff docs/
+            exit 1
+          fi
+          echo "✅ Documentation is up to date"
+      
+      - name: Validate OpenAPI schema
+        run: |
+          python3 -c "
+          import json
+          import sys
+          with open('docs/openapi.json') as f:
+            schema = json.load(f)
+          paths = schema.get('paths', {})
+          invalid = [p for p in paths.keys() if not p.startswith('/api/v1/') and not p.startswith('/ws/') and p not in ['/health', '/', '/docs', '/redoc', '/metrics']]
+          if invalid:
+            print(f'❌ Invalid paths found: {invalid[:5]}')
+            sys.exit(1)
+          print('✅ All paths use /api/v1/ prefix')
+          "
+      
+      - name: Check German translation
+        run: |
+          if [ ! -f "docs/de/api-referenz.md" ]; then
+            echo "⚠️  German API reference not found"
+            exit 1
+          fi
+          echo "✅ German translation exists"

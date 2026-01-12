@@ -54,21 +54,33 @@ venv.bak/
 *.swp
 *.swo
 *~
+*.sublime-project
+*.sublime-workspace
+*.code-workspace
+.project
+.classpath
+.settings/
 
 # Environment Variables
 .env
 .env.local
 .env.*.local
+.env.backup
+.env.*.backup
 
 # Database
 *.db
 *.sqlite
 *.sqlite3
+*.db-journal
+*.db-shm
+*.db-wal
 
 # Logs
 *.log
 logs/
 data/audit_logs/*.jsonl
+backend/data/audit_logs/*.jsonl
 
 # Node.js
 node_modules/
@@ -86,13 +98,15 @@ Thumbs.db
 
 # Docker
 docker-compose.override.yml
+.docker/
+docker-volumes/
+*.dockerignore.backup
 
 # Research Data
 data/experiments/*.db
 data/results/*.json
 data/results/*.csv
 data/results/*.pdf
-
 
 # Backup Files
 *.backup

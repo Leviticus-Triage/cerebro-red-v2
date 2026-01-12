@@ -531,3 +531,30 @@ export interface ApiError {
   detail?: string;
 }
 
+// ============================================================================
+// Demo Mode Types
+// ============================================================================
+
+export interface DemoModeConfig {
+  enabled: boolean;
+  message?: string;
+  features: {
+    readOnly: boolean;
+    mockData: boolean;
+  };
+}
+
+export interface HealthCheckResponse {
+  status: string;
+  service: string;
+  version: string;
+  components: {
+    database: string;
+    llm_providers: Record<string, string>;
+    telemetry: string;
+    cors: string;
+  };
+  demo_mode?: boolean;
+  timestamp: string;
+}
+

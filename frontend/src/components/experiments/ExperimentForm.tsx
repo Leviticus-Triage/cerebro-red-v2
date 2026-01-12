@@ -14,6 +14,8 @@ import { TemplateSelector } from './TemplateSelector';
 import { TemplateImportExport } from './TemplateImportExport';
 import { VerbositySelector } from './VerbositySelector';
 import { useCreateTemplate, useTemplates } from '@/hooks/useTemplates';
+import { DemoTooltip } from '@/components/common/DemoTooltip';
+import { isDemoMode } from '@/lib/config';
 
 // Simple UUID generator (crypto.randomUUID if available, fallback otherwise)
 function generateUUID(): string {
@@ -246,14 +248,17 @@ export function ExperimentForm({ onSubmit, isLoading, initialConfig }: Experimen
       
       {/* Save as Template Button */}
       <div className="flex justify-end">
-        <Button
-          type="button"
-          variant="outline"
-          onClick={handleSaveAsTemplate}
-          disabled={createTemplate.isPending}
-        >
-          {createTemplate.isPending ? 'Saving...' : 'Save as Template'}
-        </Button>
+        <DemoTooltip message="Demo mode is read-only. Deploy locally to save templates." side="top">
+          <Button
+            type="button"
+            variant="outline"
+            onClick={handleSaveAsTemplate}
+            disabled={isDemoMode || createTemplate.isPending}
+            className="disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {createTemplate.isPending ? 'Saving...' : 'Save as Template'}
+          </Button>
+        </DemoTooltip>
       </div>
       
       <Card>
@@ -377,9 +382,17 @@ export function ExperimentForm({ onSubmit, isLoading, initialConfig }: Experimen
               />
             </div>
           ))}
-          <Button type="button" variant="outline" onClick={addPrompt}>
-            Add Prompt
-          </Button>
+          <DemoTooltip message="Demo mode is read-only. Deploy locally to modify experiments." side="top">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={addPrompt}
+              disabled={isDemoMode}
+              className="disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              Add Prompt
+            </Button>
+          </DemoTooltip>
         </CardContent>
       </Card>
 
@@ -444,9 +457,15 @@ export function ExperimentForm({ onSubmit, isLoading, initialConfig }: Experimen
         </CardContent>
       </Card>
 
-      <Button type="submit" disabled={isLoading} className="w-full">
-        {isLoading ? 'Creating...' : 'Create Experiment'}
-      </Button>
+      <DemoTooltip message="Demo mode is read-only. Deploy locally to create experiments." side="top">
+        <Button
+          type="submit"
+          disabled={isDemoMode || isLoading}
+          className="w-full disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          {isDemoMode ? 'Demo Mode - Read Only' : isLoading ? 'Creating...' : 'Create Experiment'}
+        </Button>
+      </DemoTooltip>
     </form>
   );
 }

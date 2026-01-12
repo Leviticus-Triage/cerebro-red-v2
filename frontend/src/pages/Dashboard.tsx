@@ -1,17 +1,49 @@
 /**
+ * Copyright 2024-2026 Cerebro-Red v2 Contributors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/**
  * Dashboard page - Overview of experiments and statistics.
  */
 
+import { useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { FlaskConical, AlertTriangle, TrendingUp, Clock } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useExperiments } from '@/hooks/useExperiments';
 import { useVulnerabilityStatistics } from '@/hooks/useVulnerabilities';
 import { ExperimentCard } from '@/components/experiments/ExperimentCard';
+import { GuidedTour } from '@/components/common/GuidedTour';
+import { useTourStore } from '@/store/tourStore';
+import { isDemoMode } from '@/lib/config';
 
 export function Dashboard() {
-  const { data: experiments } = useExperiments(1, 5);
+  const { data: experiments, isLoading } = useExperiments(1, 5);
   const { data: vulnStats } = useVulnerabilityStatistics();
+  const { hasSeenTour, startTour } = useTourStore();
+
+  // Auto-start tour on first visit in demo mode when data is loaded
+  useEffect(() => {
+    if (isDemoMode && !hasSeenTour && !isLoading && experiments?.items && experiments.items.length > 0) {
+      // Delay tour start to ensure all elements are rendered
+      const timer = setTimeout(() => {
+        startTour();
+      }, 500);
+      return () => clearTimeout(timer);
+    }
+  }, [isDemoMode, hasSeenTour, isLoading, experiments, startTour]);
 
   const stats = [
     {
@@ -47,7 +79,7 @@ export function Dashboard() {
         <p className="text-muted-foreground">Overview of CEREBRO-RED v2 experiments</p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4" data-tour="monitoring-section">
         {stats.map((stat) => (
           <Card key={stat.title}>
             <CardHeader className="flex flex-row items-center justify-between pb-2">
@@ -84,6 +116,9 @@ export function Dashboard() {
           )}
         </CardContent>
       </Card>
+
+      {/* Guided Tour */}
+      <GuidedTour />
     </div>
   );
 }

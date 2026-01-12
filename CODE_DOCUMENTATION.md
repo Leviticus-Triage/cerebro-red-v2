@@ -344,4 +344,6 @@ When contributing code:
 
 ## License
 
-MIT License - See LICENSE file for details
+Apache License 2.0 - See [LICENSE](../../LICENSE) file for details.
+
+Copyright 2024-2026 Cerebro-Red v2 Contributors

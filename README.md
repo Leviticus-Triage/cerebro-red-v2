@@ -519,6 +519,28 @@ cerebro-red-v2/
 └── docs/             # Research documentation
 ```
 
+## 🔬 Project Status
+
+<!-- AUTO-GENERATED: Do not edit this section manually -->
+![Version](https://img.shields.io/badge/Version-2.0.0-blue)
+![Build](https://img.shields.io/badge/Build-passing-green)
+![Coverage](https://img.shields.io/badge/Coverage-N%2FA-lightgrey)
+
+**Last Updated:** 2026-01-10T00:00:00Z
+
+<!-- END AUTO-GENERATED -->
+
+## 🔬 Project Status
+
+<!-- AUTO-GENERATED: Do not edit this section manually -->
+![Version](https://img.shields.io/badge/Version-2.0.0-blue)
+![Build](https://img.shields.io/badge/Build-passing-green)
+![Coverage](https://img.shields.io/badge/Coverage-85.3%-green)
+
+**Last Updated:** 2026-01-10T12:34:56Z
+
+<!-- END AUTO-GENERATED -->
+
 ## 🔬 Development Status
 
 **Phase 1**: ✅ Project Foundation & Infrastructure

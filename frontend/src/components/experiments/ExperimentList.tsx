@@ -9,6 +9,8 @@ import { Button } from '@/components/ui/button';
 import { Plus } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useState } from 'react';
+import { DemoTooltip } from '@/components/common/DemoTooltip';
+import { isDemoMode } from '@/lib/config';
 
 export function ExperimentList() {
   const [page, setPage] = useState(1);
@@ -41,12 +43,14 @@ export function ExperimentList() {
           <h1 className="text-3xl font-bold">Experiments</h1>
           <p className="text-muted-foreground">Manage and monitor PAIR experiments</p>
         </div>
-        <Link to="/experiments/new">
-          <Button>
-            <Plus className="mr-2 h-4 w-4" />
-            New Experiment
-          </Button>
-        </Link>
+        <DemoTooltip message="Demo mode is read-only. Deploy locally to create experiments." side="bottom">
+          <Link to={isDemoMode ? '#' : '/experiments/new'} className={isDemoMode ? 'pointer-events-none' : ''}>
+            <Button disabled={isDemoMode} className="disabled:opacity-50 disabled:cursor-not-allowed">
+              <Plus className="mr-2 h-4 w-4" />
+              New Experiment
+            </Button>
+          </Link>
+        </DemoTooltip>
       </div>
 
       {experiments.length === 0 ? (

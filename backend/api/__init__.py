@@ -12,6 +12,7 @@ from .vulnerabilities import router as vulnerabilities_router
 from .telemetry import router as telemetry_router
 from .websocket import router as websocket_router
 from .debug import router as debug_router
+from .demo import router as demo_router
 
 __all__ = [
     "experiments_router",
@@ -21,5 +22,6 @@ __all__ = [
     "telemetry_router",
     "websocket_router",
     "debug_router",
+    "demo_router",
 ]
 

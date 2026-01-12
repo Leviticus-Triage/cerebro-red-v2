@@ -1,3 +1,17 @@
+# Copyright 2024-2026 Cerebro-Red v2 Contributors
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 """
 backend/utils/config.py
 =======================
@@ -24,6 +38,7 @@ class AppSettings(BaseSettings):
     env: str = Field(default="development", description="Environment (development/production)")
     host: str = Field(default="0.0.0.0", description="Host to bind server")
     port: int = Field(default=9000, ge=1, le=65535, description="Port to bind server")
+    demo_mode: bool = Field(default=False, description="Enable demo mode (read-only with mock data)")
     debug: bool = Field(default=True, description="Enable debug mode")
     log_level: str = Field(default="INFO", description="Logging level")
     
@@ -37,6 +52,18 @@ class AppSettings(BaseSettings):
     # Live Stream Settings
     stream_llm_output: bool = Field(default=True, description="Stream LLM outputs to logs")
     stream_code_flow: bool = Field(default=True, description="Log code flow events")
+
+    @field_validator("port", mode="before")
+    @classmethod
+    def get_port_from_env(cls, v):
+        """Support Railway's PORT env variable, fallback to CEREBRO_PORT."""
+        import os
+        # Railway provides PORT, check it first
+        railway_port = os.getenv("PORT")
+        if railway_port:
+            return int(railway_port)
+        # Otherwise use CEREBRO_PORT or default
+        return v
 
 
 class DatabaseSettings(BaseSettings):

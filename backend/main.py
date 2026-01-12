@@ -1,3 +1,17 @@
+# Copyright 2024-2026 Cerebro-Red v2 Contributors
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 """
 backend/main.py
 ===============
@@ -29,7 +43,8 @@ from api import (
     results_router,
     vulnerabilities_router,
     telemetry_router,
-    websocket_router
+    websocket_router,
+    demo_router
 )
 from api import templates
 from api.exceptions import (
@@ -124,6 +139,9 @@ async def lifespan(app: FastAPI):
     # Load and log settings
     settings = get_settings()
     logger.info(f"🔧 CEREBRO-RED v2 Starting...")
+    logger.info(f"   Environment: {settings.app.env}")
+    logger.info(f"   Demo Mode: {'ENABLED (read-only)' if settings.app.demo_mode else 'DISABLED'}")
+    logger.info(f"   Port: {settings.app.port}")
     logger.info(f"   Verbosity Level: {settings.app.verbosity}")
     logger.info(f"   Code Flow Enabled: {settings.app.verbosity >= 3}")
     
@@ -306,7 +324,12 @@ def configure_cors():
     origins_str = settings.security.cors_origins or "http://localhost:3000,http://localhost:5173"
     origins = [origin.strip() for origin in origins_str.split(",") if origin.strip()]
     
-    # Always include common development origins
+    # Handle wildcard '*' for unrestricted access (demo mode)
+    if '*' in origins:
+        # FastAPI CORSMiddleware requires ['*'] as list, not string
+        return ['*'], settings.security.cors_allow_credentials
+    
+    # Always include common development origins (only if not using wildcard)
     default_origins = [
         "http://localhost:3000",   # Production frontend
         "http://localhost:5173",   # Vite dev server
@@ -476,19 +499,25 @@ app.add_exception_handler(Exception, generic_exception_handler)
 # Router Registration
 # ============================================================================
 
-app.include_router(experiments_router, prefix="/api/experiments", tags=["experiments"])
-app.include_router(scans_router, prefix="/api/scan", tags=["scans"])
-app.include_router(results_router, prefix="/api/results", tags=["results"])
-app.include_router(vulnerabilities_router, prefix="/api/vulnerabilities", tags=["vulnerabilities"])
-app.include_router(telemetry_router, prefix="/api/telemetry", tags=["telemetry"])
+app.include_router(experiments_router, prefix="/api/v1/experiments", tags=["experiments"])
+app.include_router(scans_router, prefix="/api/v1/scan", tags=["scans"])
+app.include_router(results_router, prefix="/api/v1/results", tags=["results"])
+app.include_router(vulnerabilities_router, prefix="/api/v1/vulnerabilities", tags=["vulnerabilities"])
+app.include_router(telemetry_router, prefix="/api/v1/telemetry", tags=["telemetry"])
 app.include_router(websocket_router, prefix="/ws", tags=["websocket"])
-app.include_router(templates.router, prefix="/api/templates", tags=["Templates"])
+app.include_router(templates.router, prefix="/api/v1/templates", tags=["Templates"])
+
+# Demo mode endpoints (conditionally enabled, no auth required)
+settings = get_settings()
+if settings.app.demo_mode:
+    app.include_router(demo_router, prefix="/api/v1/demo", tags=["demo"])
+    logger.info("🎭 Demo mode enabled - mock data endpoints available at /api/v1/demo/experiments")
 
 # Debug endpoints (always available for testing)
 from api import debug
-app.include_router(debug.router, prefix="/api/debug", tags=["debug"])
+app.include_router(debug.router, prefix="/api/v1/debug", tags=["debug"])
 logger = logging.getLogger(__name__)
-logger.info("🐛 Debug endpoints enabled (/api/debug/force-error, /api/debug/test-logging)")
+logger.info("🐛 Debug endpoints enabled (/api/v1/debug/force-error, /api/v1/debug/test-logging)")
 
 
 # ============================================================================
@@ -625,6 +654,7 @@ async def health_check():
         "status": overall_status,
         "service": "cerebro-red-v2",
         "version": "2.0.0",
+        "demo_mode": settings.app.demo_mode,
         "components": {
             "database": db_status,
             "llm_providers": llm_status,

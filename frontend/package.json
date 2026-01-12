@@ -8,7 +8,9 @@
     "build": "tsc && vite build",
     "preview": "vite preview",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+    "lint:check": "eslint . --ext ts,tsx --max-warnings 0",
     "format": "prettier --write \"src/**/*.{ts,tsx,css}\"",
+    "format:check": "prettier --check \"src/**/*.{ts,tsx,css}\"",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui"
   },
@@ -38,6 +40,11 @@
     "postcss": "^8.4.49",
     "autoprefixer": "^10.4.20",
     "eslint": "^9.17.0",
+    "@typescript-eslint/eslint-plugin": "^8.0.0",
+    "@typescript-eslint/parser": "^8.0.0",
+    "eslint-plugin-react": "^7.37.0",
+    "eslint-plugin-react-hooks": "^5.1.0",
+    "eslint-config-prettier": "^9.1.0",
     "prettier": "^3.4.2",
     "@playwright/test": "^1.40.0"
   }

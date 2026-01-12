@@ -404,7 +404,7 @@ class RedTeamOrchestrator:
 
 ### Wichtige Hinweise
 
-1. **Keine HexStrike-Referenzen**: HexStrike ist ein separates Projekt und sollte nicht referenziert werden. Alle Referenzen zu `hexstrike_server.py` entfernen.
+1. **Keine externen Projekt-Referenzen**: Externe Projekte sollten nicht direkt referenziert werden. Alle Referenzen zu separaten Projekten entfernen.
 
 2. **Neue Strategien implementieren**: `SYCOPHANCY` und `LINGUISTIC_EVASION` benötigen Mutator-Methoden (`_mutate_sycophancy()`, `_mutate_linguistic_evasion()`)
    - **PayloadManager-Integration:** Nutze `PayloadManager.get_templates()` und `generate_payload()` mit `{original_prompt}` Substitution

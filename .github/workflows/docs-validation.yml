@@ -42,11 +42,11 @@ jobs:
       - name: Check for changes
         run: |
           if [ -n "$(git status --porcelain docs/)" ]; then
-            echo "❌ Documentation has uncommitted changes"
+            echo " Documentation has uncommitted changes"
             git diff docs/
             exit 1
           fi
-          echo "✅ Documentation is up to date"
+          echo " Documentation is up to date"
       
       - name: Validate OpenAPI schema
         run: |
@@ -68,13 +68,13 @@ jobs:
           if invalid:
             print(f'Invalid paths found: {invalid[:5]}')
             sys.exit(1)
-          print('✅ All paths use /api/v1/ prefix')
+          print(' All paths use /api/v1/ prefix')
           "
       
       - name: Check German translation
         run: |
           if [ ! -f "docs/de/api-referenz.md" ]; then
-            echo "⚠️  German API reference not found"
+            echo "  German API reference not found"
             exit 1
           fi
-          echo "✅ German translation exists"
+          echo " German translation exists"

@@ -2,15 +2,3266 @@
   "openapi": "3.1.0",
   "info": {
     "title": "CEREBRO-RED v2 API",
-    "description": "# Autonomous Local LLM Red Teaming Suite - Research Edition\n\n## Overview\nCEREBRO-RED v2 implements the PAIR (Prompt Automatic Iterative Refinement) algorithm\nfor automated vulnerability discovery in Large Language Models.\n\n## Features\n- **Multi-Provider LLM Support**: Ollama, Azure OpenAI, OpenAI\n- **8 Attack Strategies**: Obfuscation, Context Flooding, Roleplay Injection, etc.\n- **LLM-as-a-Judge**: Semantic evaluation with 7 criteria\n- **Real-Time Progress**: WebSocket streaming for live updates\n- **Research-Grade Telemetry**: JSONL audit logs for analysis\n\n## Authentication\nAll endpoints (except `/health`, `/docs`, `/metrics`) require API key authentication via `X-API-Key` header.\n\n## Rate Limiting\nDefault: 60 requests per minute per IP address.\n\n## References\n- PAIR Paper: https://arxiv.org/abs/2310.08419\n- GitHub: https://github.com/your-org/cerebro-red-v2",
-    "version": "2.0.0"
-  },
-  "servers": [
-    {
-      "url": "http://localhost:8000",
-      "description": "Development server"
+    "description": "\n    # Autonomous Local LLM Red Teaming Suite - Research Edition\n    \n    ## Overview\n    CEREBRO-RED v2 implements the PAIR (Prompt Automatic Iterative Refinement) algorithm\n    for automated vulnerability discovery in Large Language Models.\n    \n    ## Features\n    - **Multi-Provider LLM Support**: Ollama, Azure OpenAI, OpenAI\n    - **8 Attack Strategies**: Obfuscation, Context Flooding, Roleplay Injection, etc.\n    - **LLM-as-a-Judge**: Semantic evaluation with 7 criteria\n    - **Real-Time Progress**: WebSocket streaming for live updates\n    - **Research-Grade Telemetry**: JSONL audit logs for analysis\n    \n    ## Authentication\n    All endpoints (except `/health`, `/docs`, `/metrics`) require API key authentication via `X-API-Key` header.\n    \n    ## Rate Limiting\n    Default: 60 requests per minute per IP address.\n    \n    ## References\n    - PAIR Paper: https://arxiv.org/abs/2310.08419\n    - GitHub: https://github.com/your-org/cerebro-red-v2\n    ",
+    "version": "2.0.0",
+    "contact": {
+      "name": "CEREBRO-RED v2 Support",
+      "url": "https://github.com/your-org/cerebro-red-v2/issues",
+      "email": "support@cerebro-red.example.com"
+    },
+    "license": {
+      "name": "Apache 2.0",
+      "url": "https://www.apache.org/licenses/LICENSE-2.0"
     }
-  ],
+  },
+  "paths": {
+    "/{path}": {
+      "options": {
+        "summary": "Options Handler",
+        "description": "Explicit OPTIONS handler for CORS preflight debugging.\nThis is handled by CORSMiddleware, but we log it for visibility.\n\nNote: Response is automatically wrapped in {data: ...} by middleware.",
+        "operationId": "options_handler__path__options",
+        "parameters": [
+          {
+            "name": "path",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Path"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "other"
+        ]
+      }
+    },
+    "/api/v1/experiments": {
+      "post": {
+        "tags": [
+          "experiments"
+        ],
+        "summary": "Create Experiment",
+        "description": "Create a new experiment with enhanced error logging.",
+        "operationId": "create_experiment_api_v1_experiments_post",
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ExperimentConfig"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "experiments"
+        ],
+        "summary": "List Experiments",
+        "description": "List all experiments with pagination.",
+        "operationId": "list_experiments_api_v1_experiments_get",
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "description": "Page number",
+              "default": 1,
+              "title": "Page"
+            },
+            "description": "Page number"
+          },
+          {
+            "name": "page_size",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "description": "Items per page",
+              "default": 20,
+              "title": "Page Size"
+            },
+            "description": "Items per page"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/experiments/{experiment_id}": {
+      "get": {
+        "tags": [
+          "experiments"
+        ],
+        "summary": "Get Experiment",
+        "description": "Get experiment details by ID.",
+        "operationId": "get_experiment_api_v1_experiments__experiment_id__get",
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "experiment_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Experiment Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "experiments"
+        ],
+        "summary": "Update Experiment",
+        "description": "Update experiment (only status and metadata allowed).",
+        "operationId": "update_experiment_api_v1_experiments__experiment_id__put",
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "experiment_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Experiment Id"
+            }
+          },
+          {
+            "name": "status_update",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Status Update"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "anyOf": [
+                  {
+                    "type": "object",
+                    "additionalProperties": true
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "title": "Metadata"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "experiments"
+        ],
+        "summary": "Delete Experiment",
+        "description": "Delete an experiment.\n\nFirst cancels any running task, then deletes the experiment from database.",
+        "operationId": "delete_experiment_api_v1_experiments__experiment_id__delete",
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "experiment_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Experiment Id"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/experiments/{experiment_id}/repeat": {
+      "post": {
+        "tags": [
+          "experiments"
+        ],
+        "summary": "Repeat Experiment",
+        "description": "Repeat (duplicate) an existing experiment with the same configuration.\n\nCreates a new experiment with:\n- Same configuration (models, prompts, strategies, etc.)\n- New experiment_id\n- Name appended with \" (Repeat)\" or timestamp\n- Status set to \"pending\"",
+        "operationId": "repeat_experiment_api_v1_experiments__experiment_id__repeat_post",
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "experiment_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Experiment Id"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/experiments/{experiment_id}/iterations": {
+      "get": {
+        "tags": [
+          "experiments"
+        ],
+        "summary": "Get Experiment Iterations",
+        "description": "Get all iterations for an experiment with FULL details.\n\nReturns complete iteration data including:\n- Original and mutated prompts\n- Target response\n- Judge score and reasoning\n- Latency and metadata",
+        "operationId": "get_experiment_iterations_api_v1_experiments__experiment_id__iterations_get",
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "experiment_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Experiment Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/experiments/{experiment_id}/statistics": {
+      "get": {
+        "tags": [
+          "experiments"
+        ],
+        "summary": "Get Experiment Statistics",
+        "description": "Get experiment statistics.",
+        "operationId": "get_experiment_statistics_api_v1_experiments__experiment_id__statistics_get",
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "experiment_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Experiment Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/scan/start": {
+      "post": {
+        "tags": [
+          "scans"
+        ],
+        "summary": "Start Scan",
+        "description": "Start a new scan (experiment execution).\n\nRuns experiment in background and returns immediately with experiment_id.\nUse WebSocket endpoint or status endpoint to track progress.",
+        "operationId": "start_scan_api_v1_scan_start_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ScanStartRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ]
+      }
+    },
+    "/api/v1/scan/{experiment_id}/pause": {
+      "post": {
+        "tags": [
+          "scans"
+        ],
+        "summary": "Pause Scan",
+        "description": "Pause a running scan.",
+        "operationId": "pause_scan_api_v1_scan__experiment_id__pause_post",
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "experiment_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Experiment Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/scan/{experiment_id}/resume": {
+      "post": {
+        "tags": [
+          "scans"
+        ],
+        "summary": "Resume Scan",
+        "description": "Resume a paused scan.",
+        "operationId": "resume_scan_api_v1_scan__experiment_id__resume_post",
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "experiment_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Experiment Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/scan/{experiment_id}/cancel": {
+      "post": {
+        "tags": [
+          "scans"
+        ],
+        "summary": "Cancel Scan",
+        "description": "Cancel a running scan.\n\nImmediately cancels the running task and updates status to FAILED.",
+        "operationId": "cancel_scan_api_v1_scan__experiment_id__cancel_post",
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "experiment_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Experiment Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/scan/status/{experiment_id}": {
+      "get": {
+        "tags": [
+          "scans"
+        ],
+        "summary": "Get Scan Status",
+        "description": "Get current scan status and progress.",
+        "operationId": "get_scan_status_api_v1_scan_status__experiment_id__get",
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "experiment_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Experiment Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/scan/batch": {
+      "post": {
+        "tags": [
+          "scans"
+        ],
+        "summary": "Start Batch Scan",
+        "description": "Start batch scan (multiple experiments in parallel).\n\nEach experiment in the request is executed independently with its own config and prompts.\nExperiments run concurrently using asyncio.create_task within a single background task.",
+        "operationId": "start_batch_scan_api_v1_scan_batch_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BatchScanRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ]
+      }
+    },
+    "/api/v1/results/{experiment_id}": {
+      "get": {
+        "tags": [
+          "results"
+        ],
+        "summary": "Get Experiment Results",
+        "description": "Get complete experiment results including all iterations and vulnerabilities.",
+        "operationId": "get_experiment_results_api_v1_results__experiment_id__get",
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "experiment_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Experiment Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/results/{experiment_id}/summary": {
+      "get": {
+        "tags": [
+          "results"
+        ],
+        "summary": "Get Experiment Summary",
+        "description": "Get compact experiment result summary.",
+        "operationId": "get_experiment_summary_api_v1_results__experiment_id__summary_get",
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "experiment_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Experiment Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/results/{experiment_id}/export": {
+      "get": {
+        "tags": [
+          "results"
+        ],
+        "summary": "Export Experiment Results",
+        "description": "Export experiment results in specified format (JSON, CSV, or PDF).",
+        "operationId": "export_experiment_results_api_v1_results__experiment_id__export_get",
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "experiment_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Experiment Id"
+            }
+          },
+          {
+            "name": "format",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "pattern": "^(json|csv|pdf)$",
+              "default": "json",
+              "title": "Format"
+            }
+          },
+          {
+            "name": "include_prompts",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "default": true,
+              "title": "Include Prompts"
+            }
+          },
+          {
+            "name": "include_responses",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "default": true,
+              "title": "Include Responses"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/results/{experiment_id}/iterations/{iteration_id}": {
+      "get": {
+        "tags": [
+          "results"
+        ],
+        "summary": "Get Iteration Details",
+        "description": "Get detailed information for a specific iteration.",
+        "operationId": "get_iteration_details_api_v1_results__experiment_id__iterations__iteration_id__get",
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "experiment_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Experiment Id"
+            }
+          },
+          {
+            "name": "iteration_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Iteration Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/vulnerabilities/statistics": {
+      "get": {
+        "tags": [
+          "vulnerabilities"
+        ],
+        "summary": "Get Vulnerability Statistics",
+        "description": "Get aggregated vulnerability statistics.",
+        "operationId": "get_vulnerability_statistics_api_v1_vulnerabilities_statistics_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ]
+      }
+    },
+    "/api/v1/vulnerabilities": {
+      "get": {
+        "tags": [
+          "vulnerabilities"
+        ],
+        "summary": "List Vulnerabilities",
+        "description": "List all vulnerabilities with optional filtering.",
+        "operationId": "list_vulnerabilities_api_v1_vulnerabilities_get",
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "severity",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/VulnerabilitySeverity"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter by severity",
+              "title": "Severity"
+            },
+            "description": "Filter by severity"
+          },
+          {
+            "name": "experiment_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter by experiment",
+              "title": "Experiment Id"
+            },
+            "description": "Filter by experiment"
+          },
+          {
+            "name": "strategy",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/AttackStrategyType"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter by attack strategy",
+              "title": "Strategy"
+            },
+            "description": "Filter by attack strategy"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 1000,
+              "minimum": 1,
+              "description": "Maximum results",
+              "default": 100,
+              "title": "Limit"
+            },
+            "description": "Maximum results"
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "description": "Offset for pagination",
+              "default": 0,
+              "title": "Offset"
+            },
+            "description": "Offset for pagination"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/vulnerabilities/{vulnerability_id}": {
+      "get": {
+        "tags": [
+          "vulnerabilities"
+        ],
+        "summary": "Get Vulnerability",
+        "description": "Get detailed vulnerability information.",
+        "operationId": "get_vulnerability_api_v1_vulnerabilities__vulnerability_id__get",
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "vulnerability_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Vulnerability Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/vulnerabilities/by-severity/{severity}": {
+      "get": {
+        "tags": [
+          "vulnerabilities"
+        ],
+        "summary": "Get Vulnerabilities By Severity",
+        "description": "Get vulnerabilities filtered by severity level.",
+        "operationId": "get_vulnerabilities_by_severity_api_v1_vulnerabilities_by_severity__severity__get",
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "severity",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/VulnerabilitySeverity"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 1000,
+              "minimum": 1,
+              "default": 100,
+              "title": "Limit"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/vulnerabilities/by-experiment/{experiment_id}": {
+      "get": {
+        "tags": [
+          "vulnerabilities"
+        ],
+        "summary": "Get Vulnerabilities By Experiment",
+        "description": "Get all vulnerabilities for a specific experiment.",
+        "operationId": "get_vulnerabilities_by_experiment_api_v1_vulnerabilities_by_experiment__experiment_id__get",
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "experiment_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Experiment Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/telemetry/stats": {
+      "get": {
+        "tags": [
+          "telemetry"
+        ],
+        "summary": "Get Telemetry Stats",
+        "description": "Get aggregate telemetry statistics.",
+        "operationId": "get_telemetry_stats_api_v1_telemetry_stats_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ]
+      }
+    },
+    "/api/v1/telemetry/stats/{experiment_id}": {
+      "get": {
+        "tags": [
+          "telemetry"
+        ],
+        "summary": "Get Experiment Telemetry Stats",
+        "description": "Get experiment-specific telemetry statistics.",
+        "operationId": "get_experiment_telemetry_stats_api_v1_telemetry_stats__experiment_id__get",
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "experiment_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Experiment Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/telemetry/logs/{experiment_id}": {
+      "get": {
+        "tags": [
+          "telemetry"
+        ],
+        "summary": "Get Experiment Logs",
+        "description": "Get audit logs for a specific experiment.\n\nReturns JSONL-formatted log entries.",
+        "operationId": "get_experiment_logs_api_v1_telemetry_logs__experiment_id__get",
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "experiment_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Experiment Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/templates/jailbreak/update": {
+      "post": {
+        "tags": [
+          "Templates"
+        ],
+        "summary": "Update Jailbreak Templates",
+        "description": "Update jailbreak templates from external repositories.\n\nThis endpoint:\n- Updates specified repository (or all repositories if none specified)\n- Extracts templates from updated repositories\n- Merges templates into advanced_payloads.json\n- Creates backup before update (if create_backup=True)\n\nArgs:\n    repository: Optional repository name to update. If None, updates all.\n    create_backup: Whether to create backup before update\n    \nReturns:\n    Update results with templates added/updated counts",
+        "operationId": "update_jailbreak_templates_api_v1_templates_jailbreak_update_post",
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "repository",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Specific repository to update (PyRIT, L1B3RT4S, LLAMATOR, Model-Inversion-Attack-ToolBox). If None, updates all.",
+              "title": "Repository"
+            },
+            "description": "Specific repository to update (PyRIT, L1B3RT4S, LLAMATOR, Model-Inversion-Attack-ToolBox). If None, updates all."
+          },
+          {
+            "name": "create_backup",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "description": "Create backup before update",
+              "default": true,
+              "title": "Create Backup"
+            },
+            "description": "Create backup before update"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/templates/jailbreak/status": {
+      "get": {
+        "tags": [
+          "Templates"
+        ],
+        "summary": "Get Jailbreak Template Status",
+        "description": "Get status of external repositories (last update, commit hash, etc.).\n\nReturns:\n    Repository status information including:\n    - Repository existence\n    - Last commit hash\n    - Last commit date\n    - Current branch",
+        "operationId": "get_jailbreak_template_status_api_v1_templates_jailbreak_status_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ]
+      }
+    },
+    "/api/v1/templates/jailbreak/repositories": {
+      "get": {
+        "tags": [
+          "Templates"
+        ],
+        "summary": "List Template Repositories",
+        "description": "List all configured template repositories.\n\nReturns:\n    Dictionary with all repository configurations",
+        "operationId": "list_template_repositories_api_v1_templates_jailbreak_repositories_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "Templates"
+        ],
+        "summary": "Add Template Repository",
+        "description": "Add a new repository configuration.\n\nArgs:\n    repo_config: Repository configuration with:\n        - name: str (required)\n        - url: str (required)\n        - path: str (required)\n        - extraction_script: Optional[str]\n        - categories: List[str]\n        - license: str\n        - source: str\n        \nReturns:\n    Success status and repository name",
+        "operationId": "add_template_repository_api_v1_templates_jailbreak_repositories_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "additionalProperties": true,
+                "type": "object",
+                "title": "Repo Config"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ]
+      }
+    },
+    "/api/v1/templates/jailbreak/repositories/{repo_name}": {
+      "get": {
+        "tags": [
+          "Templates"
+        ],
+        "summary": "Get Template Repository",
+        "description": "Get a specific repository configuration.\n\nArgs:\n    repo_name: Name of repository\n    \nReturns:\n    Repository configuration",
+        "operationId": "get_template_repository_api_v1_templates_jailbreak_repositories__repo_name__get",
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "repo_name",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Repo Name"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Templates"
+        ],
+        "summary": "Update Template Repository",
+        "description": "Update an existing repository configuration.\n\nArgs:\n    repo_name: Name of repository to update\n    repo_config: Updated repository configuration\n    \nReturns:\n    Success status",
+        "operationId": "update_template_repository_api_v1_templates_jailbreak_repositories__repo_name__put",
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "repo_name",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Repo Name"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": true,
+                "title": "Repo Config"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Templates"
+        ],
+        "summary": "Delete Template Repository",
+        "description": "Delete a repository configuration.\n\nArgs:\n    repo_name: Name of repository to delete\n    \nReturns:\n    Success status",
+        "operationId": "delete_template_repository_api_v1_templates_jailbreak_repositories__repo_name__delete",
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "repo_name",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Repo Name"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/templates/jailbreak/repositories/{repo_name}/history": {
+      "get": {
+        "tags": [
+          "Templates"
+        ],
+        "summary": "Get Repository Update History",
+        "description": "Get update history for a specific repository.\n\nArgs:\n    repo_name: Name of repository\n    limit: Maximum number of entries to return\n    \nReturns:\n    List of update history entries",
+        "operationId": "get_repository_update_history_api_v1_templates_jailbreak_repositories__repo_name__history_get",
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "repo_name",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Repo Name"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 1000,
+              "minimum": 1,
+              "default": 100,
+              "title": "Limit"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/templates/jailbreak": {
+      "get": {
+        "tags": [
+          "Templates"
+        ],
+        "summary": "List Jailbreak Templates",
+        "description": "List all jailbreak templates from advanced_payloads.json.\n\nReturns:\n    Dictionary with categories and their templates",
+        "operationId": "list_jailbreak_templates_api_v1_templates_jailbreak_get",
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "category",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter by category",
+              "title": "Category"
+            },
+            "description": "Filter by category"
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Search in template content",
+              "title": "Search"
+            },
+            "description": "Search in template content"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/templates/jailbreak/categories": {
+      "get": {
+        "tags": [
+          "Templates"
+        ],
+        "summary": "List Jailbreak Categories",
+        "description": "List all jailbreak template categories.\n\nReturns:\n    List of category names with metadata",
+        "operationId": "list_jailbreak_categories_api_v1_templates_jailbreak_categories_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ]
+      }
+    },
+    "/api/v1/templates/jailbreak/backups": {
+      "get": {
+        "tags": [
+          "Templates"
+        ],
+        "summary": "List Jailbreak Backups",
+        "description": "List all available backup files.\n\nReturns:\n    List of backup files with metadata",
+        "operationId": "list_jailbreak_backups_api_v1_templates_jailbreak_backups_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ]
+      }
+    },
+    "/api/v1/templates/jailbreak/import": {
+      "post": {
+        "tags": [
+          "Templates"
+        ],
+        "summary": "Import Jailbreak Templates",
+        "description": "Import jailbreak templates from JSON.\n\nArgs:\n    file_content: JSON string containing templates\n    merge: If True, merge with existing. If False, replace.",
+        "operationId": "import_jailbreak_templates_api_v1_templates_jailbreak_import_post",
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "file_content",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "JSON content to import",
+              "title": "File Content"
+            },
+            "description": "JSON content to import"
+          },
+          {
+            "name": "merge",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "description": "Merge with existing templates instead of replacing",
+              "default": true,
+              "title": "Merge"
+            },
+            "description": "Merge with existing templates instead of replacing"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/templates/jailbreak/export": {
+      "get": {
+        "tags": [
+          "Templates"
+        ],
+        "summary": "Export Jailbreak Templates",
+        "description": "Export jailbreak templates as JSON.\n\nReturns:\n    JSON string of all templates or specific category",
+        "operationId": "export_jailbreak_templates_api_v1_templates_jailbreak_export_get",
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "category",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Export specific category only",
+              "title": "Category"
+            },
+            "description": "Export specific category only"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/templates/jailbreak/restore": {
+      "post": {
+        "tags": [
+          "Templates"
+        ],
+        "summary": "Restore Jailbreak Templates",
+        "description": "Restore jailbreak templates from a backup file.\n\nArgs:\n    backup_path: Path to backup file (relative to data directory or absolute)",
+        "operationId": "restore_jailbreak_templates_api_v1_templates_jailbreak_restore_post",
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "backup_path",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "Path to backup file to restore from",
+              "title": "Backup Path"
+            },
+            "description": "Path to backup file to restore from"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/templates/jailbreak/{category}": {
+      "get": {
+        "tags": [
+          "Templates"
+        ],
+        "summary": "Get Jailbreak Category",
+        "description": "Get all templates for a specific category.\n\nReturns:\n    Category data with all templates",
+        "operationId": "get_jailbreak_category_api_v1_templates_jailbreak__category__get",
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "category",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Category"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Templates"
+        ],
+        "summary": "Add Jailbreak Template",
+        "description": "Add a new template to a category.\n\nCreates category if it doesn't exist.",
+        "operationId": "add_jailbreak_template_api_v1_templates_jailbreak__category__post",
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "category",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Category"
+            }
+          },
+          {
+            "name": "template",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "Template string to add",
+              "title": "Template"
+            },
+            "description": "Template string to add"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Templates"
+        ],
+        "summary": "Delete Jailbreak Category",
+        "description": "Delete an entire category.",
+        "operationId": "delete_jailbreak_category_api_v1_templates_jailbreak__category__delete",
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "category",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Category"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/templates/jailbreak/{category}/{template_index}": {
+      "put": {
+        "tags": [
+          "Templates"
+        ],
+        "summary": "Update Jailbreak Template",
+        "description": "Update a template at a specific index in a category.",
+        "operationId": "update_jailbreak_template_api_v1_templates_jailbreak__category___template_index__put",
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "category",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Category"
+            }
+          },
+          {
+            "name": "template_index",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Template Index"
+            }
+          },
+          {
+            "name": "template",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "Updated template string",
+              "title": "Template"
+            },
+            "description": "Updated template string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Templates"
+        ],
+        "summary": "Delete Jailbreak Template",
+        "description": "Delete a template from a category.",
+        "operationId": "delete_jailbreak_template_api_v1_templates_jailbreak__category___template_index__delete",
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "category",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Category"
+            }
+          },
+          {
+            "name": "template_index",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Template Index"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/templates": {
+      "post": {
+        "tags": [
+          "Templates"
+        ],
+        "summary": "Create Template",
+        "description": "Create a new experiment template.\n\nSaves the complete ExperimentConfig as a reusable template.",
+        "operationId": "create_template_api_v1_templates_post",
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ExperimentTemplateCreate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "Templates"
+        ],
+        "summary": "List Templates",
+        "description": "List all experiment templates with pagination and filters.",
+        "operationId": "list_templates_api_v1_templates_get",
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "description": "Page number",
+              "default": 1,
+              "title": "Page"
+            },
+            "description": "Page number"
+          },
+          {
+            "name": "page_size",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "description": "Items per page",
+              "default": 20,
+              "title": "Page Size"
+            },
+            "description": "Items per page"
+          },
+          {
+            "name": "is_public",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter by public/private",
+              "title": "Is Public"
+            },
+            "description": "Filter by public/private"
+          },
+          {
+            "name": "created_by",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter by creator",
+              "title": "Created By"
+            },
+            "description": "Filter by creator"
+          },
+          {
+            "name": "tags",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Comma-separated tags to filter",
+              "title": "Tags"
+            },
+            "description": "Comma-separated tags to filter"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/templates/{template_id}": {
+      "get": {
+        "tags": [
+          "Templates"
+        ],
+        "summary": "Get Template",
+        "description": "Get template by ID.",
+        "operationId": "get_template_api_v1_templates__template_id__get",
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "template_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Template Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Templates"
+        ],
+        "summary": "Update Template",
+        "description": "Update template.",
+        "operationId": "update_template_api_v1_templates__template_id__put",
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "template_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Template Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ExperimentTemplateUpdate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Templates"
+        ],
+        "summary": "Delete Template",
+        "description": "Delete template.",
+        "operationId": "delete_template_api_v1_templates__template_id__delete",
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "template_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Template Id"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/templates/{template_id}/use": {
+      "post": {
+        "tags": [
+          "Templates"
+        ],
+        "summary": "Use Template",
+        "description": "Increment usage count and return template config.\n\nThis endpoint is called when a user loads a template into the experiment form.",
+        "operationId": "use_template_api_v1_templates__template_id__use_post",
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "template_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Template Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/debug/force-error": {
+      "post": {
+        "tags": [
+          "debug"
+        ],
+        "summary": "Force Error",
+        "description": "Force an error for testing traceback logging.\n\nArgs:\n    error_type: Type of error to raise (generic, value, key, type, zero_division)\n    \nAvailable in all environments for testing purposes.",
+        "operationId": "force_error_api_v1_debug_force_error_post",
+        "parameters": [
+          {
+            "name": "error_type",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "generic",
+              "title": "Error Type"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/debug/test-logging": {
+      "get": {
+        "tags": [
+          "debug"
+        ],
+        "summary": "Test Logging",
+        "description": "Test all logging levels to verify configuration.\n\nAvailable in all environments for testing purposes.",
+        "operationId": "test_logging_api_v1_debug_test_logging_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/metrics": {
+      "get": {
+        "summary": "Prometheus Metrics",
+        "description": "Prometheus-compatible metrics endpoint.\n\nReturns metrics in Prometheus text format.\nNo authentication required for monitoring systems.",
+        "operationId": "prometheus_metrics_metrics_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response"
+          }
+        },
+        "tags": [
+          "other"
+        ]
+      }
+    },
+    "/": {
+      "get": {
+        "summary": "Root",
+        "description": "Root endpoint.\n\nReturns:\n    dict: API information (automatically wrapped by middleware)",
+        "operationId": "root__get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        },
+        "tags": [
+          "other"
+        ]
+      }
+    },
+    "/health": {
+      "get": {
+        "summary": "Health Check",
+        "description": "Comprehensive health check endpoint.\n\nReturns:\n    - status: \"healthy\" | \"degraded\" | \"unhealthy\"\n    - components: Status of each component (database, LLM providers, telemetry)\n    - version: API version\n    - timestamp: Current timestamp\n    \nNote: Response is automatically wrapped in {data: ...} by middleware.",
+        "operationId": "health_check_health_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        },
+        "tags": [
+          "other"
+        ]
+      }
+    },
+    "/health/circuit-breakers": {
+      "get": {
+        "summary": "Get Circuit Breaker Stats",
+        "description": "Get circuit breaker statistics for all providers.\n\nReturns:\n    Dictionary with circuit breaker stats per provider including:\n    - State (closed/open/half_open)\n    - Failure/success counts\n    - Error type distribution (transient/permanent)\n    - Failure rate\n    - Circuit breaker configuration",
+        "operationId": "get_circuit_breaker_stats_health_circuit_breakers_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "tags": [
+          "other"
+        ]
+      }
+    },
+    "/health/circuit-breakers/{provider}/reset": {
+      "post": {
+        "summary": "Reset Circuit Breaker Endpoint",
+        "description": "Reset circuit breaker for a specific provider.\n\nArgs:\n    provider: LLM provider name (e.g., \"ollama\", \"openai\", \"azure\")\n    \nReturns:\n    Success message",
+        "operationId": "reset_circuit_breaker_endpoint_health_circuit_breakers__provider__reset_post",
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "provider",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Provider"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "{provider}"
+        ]
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "AttackStrategyType": {
+        "type": "string",
+        "enum": [
+          "obfuscation_base64",
+          "obfuscation_leetspeak",
+          "obfuscation_rot13",
+          "obfuscation_ascii_art",
+          "obfuscation_unicode",
+          "obfuscation_token_smuggling",
+          "obfuscation_morse",
+          "obfuscation_binary",
+          "jailbreak_dan",
+          "jailbreak_aim",
+          "jailbreak_stan",
+          "jailbreak_dude",
+          "jailbreak_developer_mode",
+          "crescendo_attack",
+          "many_shot_jailbreak",
+          "skeleton_key",
+          "direct_injection",
+          "indirect_injection",
+          "payload_splitting",
+          "virtualization",
+          "context_flooding",
+          "context_ignoring",
+          "conversation_reset",
+          "roleplay_injection",
+          "authority_manipulation",
+          "urgency_exploitation",
+          "emotional_manipulation",
+          "rephrase_semantic",
+          "sycophancy",
+          "linguistic_evasion",
+          "translation_attack",
+          "system_prompt_extraction",
+          "system_prompt_override",
+          "rag_poisoning",
+          "rag_bypass",
+          "echoleak",
+          "adversarial_suffix",
+          "gradient_based",
+          "bias_probe",
+          "hallucination_probe",
+          "misinformation_injection",
+          "mcp_tool_injection",
+          "mcp_context_poisoning",
+          "research_pre_jailbreak"
+        ],
+        "title": "AttackStrategyType",
+        "description": "Attack strategy types for prompt mutation.\n\nBased on OWASP Top 10 for LLM Applications 2025, Microsoft AI Red Team,\nNVIDIA garak, PyRIT, and latest research papers."
+      },
+      "BatchScanRequest": {
+        "properties": {
+          "experiments": {
+            "items": {
+              "$ref": "#/components/schemas/ExperimentConfig"
+            },
+            "type": "array",
+            "title": "Experiments"
+          }
+        },
+        "type": "object",
+        "required": [
+          "experiments"
+        ],
+        "title": "BatchScanRequest",
+        "description": "Request to start batch scans."
+      },
+      "ExperimentConfig": {
+        "properties": {
+          "experiment_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Experiment Id",
+            "description": "Unique experiment ID"
+          },
+          "name": {
+            "type": "string",
+            "maxLength": 200,
+            "title": "Name",
+            "description": "Experiment name"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description",
+            "description": "Experiment description"
+          },
+          "target_model_provider": {
+            "$ref": "#/components/schemas/LLMProvider",
+            "description": "Target model provider"
+          },
+          "target_model_name": {
+            "type": "string",
+            "title": "Target Model Name",
+            "description": "Target model name"
+          },
+          "attacker_model_provider": {
+            "$ref": "#/components/schemas/LLMProvider",
+            "description": "Attacker model provider"
+          },
+          "attacker_model_name": {
+            "type": "string",
+            "title": "Attacker Model Name",
+            "description": "Attacker model name"
+          },
+          "judge_model_provider": {
+            "$ref": "#/components/schemas/LLMProvider",
+            "description": "Judge model provider"
+          },
+          "judge_model_name": {
+            "type": "string",
+            "title": "Judge Model Name",
+            "description": "Judge model name"
+          },
+          "initial_prompts": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "maxItems": 100,
+            "minItems": 1,
+            "title": "Initial Prompts",
+            "description": "Initial prompts to test"
+          },
+          "strategies": {
+            "items": {
+              "$ref": "#/components/schemas/AttackStrategyType"
+            },
+            "type": "array",
+            "minItems": 1,
+            "title": "Strategies",
+            "description": "Attack strategies to use"
+          },
+          "max_iterations": {
+            "type": "integer",
+            "maximum": 100.0,
+            "minimum": 1.0,
+            "title": "Max Iterations",
+            "description": "Maximum iterations",
+            "default": 20
+          },
+          "max_concurrent_attacks": {
+            "type": "integer",
+            "maximum": 20.0,
+            "minimum": 1.0,
+            "title": "Max Concurrent Attacks",
+            "description": "Maximum concurrent attacks",
+            "default": 5
+          },
+          "success_threshold": {
+            "type": "number",
+            "maximum": 10.0,
+            "minimum": 0.0,
+            "title": "Success Threshold",
+            "description": "Success threshold score",
+            "default": 7.0
+          },
+          "timeout_seconds": {
+            "type": "integer",
+            "minimum": 1.0,
+            "title": "Timeout Seconds",
+            "description": "Experiment timeout in seconds",
+            "default": 3600
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At",
+            "description": "Creation timestamp"
+          },
+          "metadata": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Metadata",
+            "description": "Additional metadata"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name",
+          "target_model_provider",
+          "target_model_name",
+          "attacker_model_provider",
+          "attacker_model_name",
+          "judge_model_provider",
+          "judge_model_name",
+          "initial_prompts",
+          "strategies"
+        ],
+        "title": "ExperimentConfig",
+        "description": "Experiment configuration model."
+      },
+      "ExperimentTemplateCreate": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "maxLength": 200,
+            "title": "Name",
+            "description": "Template name"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 1000
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description",
+            "description": "Template description"
+          },
+          "config": {
+            "$ref": "#/components/schemas/ExperimentConfig",
+            "description": "Experiment configuration to save"
+          },
+          "tags": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Tags",
+            "description": "Tags for categorization"
+          },
+          "is_public": {
+            "type": "boolean",
+            "title": "Is Public",
+            "description": "Whether template is public",
+            "default": false
+          },
+          "created_by": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Created By",
+            "description": "User who created template"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name",
+          "config"
+        ],
+        "title": "ExperimentTemplateCreate",
+        "description": "Model for creating experiment templates."
+      },
+      "ExperimentTemplateUpdate": {
+        "properties": {
+          "name": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 200
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 1000
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "config": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ExperimentConfig"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "tags": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tags"
+          },
+          "is_public": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Is Public"
+          }
+        },
+        "type": "object",
+        "title": "ExperimentTemplateUpdate",
+        "description": "Model for updating experiment templates."
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "LLMProvider": {
+        "type": "string",
+        "enum": [
+          "ollama",
+          "azure",
+          "openai"
+        ],
+        "title": "LLMProvider",
+        "description": "LLM provider types."
+      },
+      "ScanStartRequest": {
+        "properties": {
+          "experiment_config": {
+            "$ref": "#/components/schemas/ExperimentConfig"
+          }
+        },
+        "type": "object",
+        "required": [
+          "experiment_config"
+        ],
+        "title": "ScanStartRequest",
+        "description": "Request to start a new scan."
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      },
+      "VulnerabilitySeverity": {
+        "type": "string",
+        "enum": [
+          "low",
+          "medium",
+          "high",
+          "critical"
+        ],
+        "title": "VulnerabilitySeverity",
+        "description": "Vulnerability severity levels."
+      }
+    },
+    "securitySchemes": {
+      "APIKeyHeader": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "X-API-Key"
+      }
+    }
+  },
   "tags": [
     {
       "name": "experiments",
@@ -37,401 +3288,14 @@
       "description": "Real-time progress streaming"
     }
   ],
-  "paths": {
-    "/": {
-      "get": {
-        "summary": "Root endpoint",
-        "description": "Returns API information",
-        "responses": {
-          "200": {
-            "description": "API information",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "data": {
-                      "type": "object",
-                      "properties": {
-                        "name": {"type": "string"},
-                        "version": {"type": "string"},
-                        "description": {"type": "string"},
-                        "docs_url": {"type": "string"},
-                        "health_url": {"type": "string"}
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
+  "servers": [
+    {
+      "url": "http://localhost:9000/api/v1",
+      "description": "Local development server"
     },
-    "/health": {
-      "get": {
-        "summary": "Health check endpoint",
-        "description": "Comprehensive health check with component status",
-        "responses": {
-          "200": {
-            "description": "Health status",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "data": {
-                      "type": "object",
-                      "properties": {
-                        "status": {"type": "string", "enum": ["healthy", "degraded", "unhealthy"]},
-                        "service": {"type": "string"},
-                        "version": {"type": "string"},
-                        "components": {"type": "object"},
-                        "timestamp": {"type": "string"}
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/health/circuit-breakers": {
-      "get": {
-        "summary": "Get circuit breaker statistics",
-        "description": "Returns circuit breaker stats for all LLM providers",
-        "tags": ["telemetry"],
-        "security": [{"ApiKeyAuth": []}],
-        "responses": {
-          "200": {
-            "description": "Circuit breaker statistics",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "data": {
-                      "type": "object",
-                      "additionalProperties": {
-                        "type": "object",
-                        "properties": {
-                          "state": {"type": "string"},
-                          "failures": {"type": "integer"},
-                          "successes": {"type": "integer"},
-                          "total_requests": {"type": "integer"},
-                          "total_failures": {"type": "integer"}
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/health/circuit-breakers/{provider}/reset": {
-      "post": {
-        "summary": "Reset circuit breaker for provider",
-        "description": "Manually reset circuit breaker for a specific LLM provider",
-        "tags": ["telemetry"],
-        "security": [{"ApiKeyAuth": []}],
-        "parameters": [
-          {
-            "name": "provider",
-            "in": "path",
-            "required": true,
-            "schema": {"type": "string", "enum": ["ollama", "openai", "azure"]}
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Reset successful",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "data": {
-                      "type": "object",
-                      "properties": {
-                        "message": {"type": "string"},
-                        "provider": {"type": "string"}
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/experiments": {
-      "get": {
-        "summary": "List experiments",
-        "description": "Get paginated list of experiments",
-        "tags": ["experiments"],
-        "security": [{"ApiKeyAuth": []}],
-        "parameters": [
-          {
-            "name": "page",
-            "in": "query",
-            "schema": {"type": "integer", "default": 1, "minimum": 1}
-          },
-          {
-            "name": "page_size",
-            "in": "query",
-            "schema": {"type": "integer", "default": 20, "minimum": 1, "maximum": 100}
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Experiment list",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "data": {
-                      "type": "object",
-                      "properties": {
-                        "items": {"type": "array"},
-                        "total": {"type": "integer"},
-                        "page": {"type": "integer"},
-                        "page_size": {"type": "integer"}
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      },
-      "post": {
-        "summary": "Create experiment",
-        "description": "Create a new PAIR experiment",
-        "tags": ["experiments"],
-        "security": [{"ApiKeyAuth": []}],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "experiment_id": {"type": "string"},
-                  "name": {"type": "string"},
-                  "description": {"type": "string"},
-                  "target_model_provider": {"type": "string"},
-                  "target_model_name": {"type": "string"},
-                  "attacker_model_provider": {"type": "string"},
-                  "attacker_model_name": {"type": "string"},
-                  "judge_model_provider": {"type": "string"},
-                  "judge_model_name": {"type": "string"},
-                  "initial_prompts": {"type": "array", "items": {"type": "string"}},
-                  "strategies": {"type": "array", "items": {"type": "string"}},
-                  "max_iterations": {"type": "integer"},
-                  "max_concurrent_attacks": {"type": "integer"},
-                  "success_threshold": {"type": "number"},
-                  "timeout_seconds": {"type": "integer"}
-                },
-                "required": ["name", "target_model_provider", "target_model_name", "attacker_model_provider", "attacker_model_name", "judge_model_provider", "judge_model_name", "initial_prompts", "strategies"]
-              }
-            }
-          }
-        },
-        "responses": {
-          "201": {
-            "description": "Experiment created",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "data": {
-                      "type": "object",
-                      "properties": {
-                        "experiment_id": {"type": "string"},
-                        "name": {"type": "string"},
-                        "status": {"type": "string"}
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/experiments/{experiment_id}": {
-      "get": {
-        "summary": "Get experiment",
-        "description": "Get experiment details by ID",
-        "tags": ["experiments"],
-        "security": [{"ApiKeyAuth": []}],
-        "parameters": [
-          {
-            "name": "experiment_id",
-            "in": "path",
-            "required": true,
-            "schema": {"type": "string", "format": "uuid"}
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Experiment details",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "data": {
-                      "type": "object",
-                      "properties": {
-                        "experiment_id": {"type": "string"},
-                        "name": {"type": "string"},
-                        "status": {"type": "string"}
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Experiment not found"
-          }
-        }
-      }
-    },
-    "/api/scan/start": {
-      "post": {
-        "summary": "Start scan",
-        "description": "Start a PAIR experiment scan",
-        "tags": ["scans"],
-        "security": [{"ApiKeyAuth": []}],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "experiment_config": {"type": "object"}
-                }
-              }
-            }
-          }
-        },
-        "responses": {
-          "202": {
-            "description": "Scan started",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "data": {
-                      "type": "object",
-                      "properties": {
-                        "experiment_id": {"type": "string"},
-                        "status": {"type": "string"}
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/vulnerabilities": {
-      "get": {
-        "summary": "List vulnerabilities",
-        "description": "Get paginated list of vulnerabilities",
-        "tags": ["vulnerabilities"],
-        "security": [{"ApiKeyAuth": []}],
-        "parameters": [
-          {
-            "name": "severity",
-            "in": "query",
-            "schema": {"type": "string", "enum": ["low", "medium", "high", "critical"]}
-          },
-          {
-            "name": "experiment_id",
-            "in": "query",
-            "schema": {"type": "string", "format": "uuid"}
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Vulnerability list",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "data": {
-                      "type": "object",
-                      "properties": {
-                        "vulnerabilities": {"type": "array"},
-                        "total": {"type": "integer"}
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/vulnerabilities/statistics": {
-      "get": {
-        "summary": "Get vulnerability statistics",
-        "description": "Get aggregate vulnerability statistics",
-        "tags": ["vulnerabilities"],
-        "security": [{"ApiKeyAuth": []}],
-        "responses": {
-          "200": {
-            "description": "Vulnerability statistics",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "data": {
-                      "type": "object",
-                      "properties": {
-                        "total_vulnerabilities": {"type": "integer"},
-                        "by_severity": {"type": "object"},
-                        "by_strategy": {"type": "object"}
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
+    {
+      "url": "https://api.cerebro-red.example.com/api/v1",
+      "description": "Production server"
     }
-  },
-  "components": {
-    "securitySchemes": {
-      "ApiKeyAuth": {
-        "type": "apiKey",
-        "in": "header",
-        "name": "X-API-Key"
-      }
-    }
-  }
+  ]
 }
-

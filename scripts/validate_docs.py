@@ -57,7 +57,15 @@ def validate_openapi_schema(schema_path: Path) -> list[str]:
     
     # Check paths start with /api/v1
     paths = schema.get('paths', {})
-    invalid_paths = [p for p in paths.keys() if not p.startswith('/api/v1/') and not p.startswith('/ws/') and p not in ['/health', '/', '/docs', '/redoc', '/metrics']]
+    allowed_paths = ['/health', '/', '/docs', '/redoc', '/metrics']
+    invalid_paths = [
+        p for p in paths.keys() 
+        if not p.startswith('/api/v1/') 
+        and not p.startswith('/ws/') 
+        and not p.startswith('/health/')  # Allow /health/* subpaths
+        and p not in allowed_paths
+        and not p.startswith('/{')  # Allow catch-all routes like /{path}
+    ]
     if invalid_paths:
         errors.append(f"Paths not using /api/v1/ prefix: {invalid_paths[:5]}")
     

@@ -254,7 +254,7 @@ async def lifespan(app: FastAPI):
         logger.info(" Automatic template updates enabled (daily at 2 AM UTC)")
         update_task = asyncio.create_task(scheduled_template_update())
     else:
-        logger.info("ℹ Automatic template updates disabled (set TEMPLATE_UPDATE_AUTO_UPDATE=true to enable)")
+        logger.info("Automatic template updates disabled (set TEMPLATE_UPDATE_AUTO_UPDATE=true to enable)")
     
     yield
     

@@ -56,9 +56,17 @@ jobs:
           with open('docs/openapi.json') as f:
             schema = json.load(f)
           paths = schema.get('paths', {})
-          invalid = [p for p in paths.keys() if not p.startswith('/api/v1/') and not p.startswith('/ws/') and p not in ['/health', '/', '/docs', '/redoc', '/metrics']]
+          allowed_paths = ['/health', '/', '/docs', '/redoc', '/metrics']
+          invalid = [
+            p for p in paths.keys() 
+            if not p.startswith('/api/v1/') 
+            and not p.startswith('/ws/') 
+            and not p.startswith('/health/')  # Allow /health/* subpaths
+            and p not in allowed_paths
+            and not p.startswith('/{')  # Allow catch-all routes like /{path}
+          ]
           if invalid:
-            print(f'❌ Invalid paths found: {invalid[:5]}')
+            print(f'Invalid paths found: {invalid[:5]}')
             sys.exit(1)
           print('✅ All paths use /api/v1/ prefix')
           "

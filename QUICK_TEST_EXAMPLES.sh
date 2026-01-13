@@ -41,13 +41,13 @@ echo ""
 echo ""
 
 # Test 1: Health Check (wiederholen für saubere Ausgabe)
-echo "1️⃣ Health Check"
+echo "1⃣ Health Check"
 curl -s "$API_URL/health" | jq . || echo "Fehler beim Health Check"
 echo ""
 echo ""
 
 # Test 2: Experiment erstellen (Ollama)
-echo "2️⃣ Experiment erstellen (Ollama)"
+echo "2⃣ Experiment erstellen (Ollama)"
 EXPERIMENT_ID=$(uuidgen 2>/dev/null || python3 -c "import uuid; print(uuid.uuid4())")
 RESPONSE=$(curl -s -w "\n%{http_code}" -X POST "$API_URL/api/experiments" \
   -H "Content-Type: application/json" \
@@ -86,7 +86,7 @@ echo ""
 echo ""
 
 # Test 3: Scan starten
-echo "3️⃣ Scan starten"
+echo "3⃣ Scan starten"
 SCAN_RESPONSE=$(curl -s -w "\n%{http_code}" -X POST "$API_URL/api/scan/start" \
   -H "Content-Type: application/json" \
   -H "X-API-Key: $API_KEY" \
@@ -126,7 +126,7 @@ echo ""
 echo ""
 
 # Test 4: Scan Status prüfen
-echo "4️⃣ Scan Status prüfen"
+echo "4⃣ Scan Status prüfen"
 sleep 2
 STATUS_RESPONSE=$(curl -s -w "\n%{http_code}" -X GET "$API_URL/api/scan/status/$EXPERIMENT_ID" \
   -H "X-API-Key: $API_KEY")
@@ -138,7 +138,7 @@ if [ "$STATUS_HTTP_CODE" = "200" ]; then
     echo " Status abgerufen (HTTP $STATUS_HTTP_CODE)"
     echo "$STATUS_BODY" | jq . 2>/dev/null || echo "$STATUS_BODY"
 else
-    echo "️  Status nicht verfügbar (HTTP $STATUS_HTTP_CODE)"
+    echo "  Status nicht verfügbar (HTTP $STATUS_HTTP_CODE)"
     echo "$STATUS_BODY" | jq . 2>/dev/null || echo "$STATUS_BODY"
     echo ""
     echo " Tipp: Scan wurde möglicherweise noch nicht gestartet"

@@ -163,7 +163,7 @@ test.describe('Phase 7: All 44 Strategies E2E', () => {
     console.log(` Selected: ${selectedCount}/44 strategies`);
     
     if (failedSelections.length > 0) {
-      console.log(`️  Failed to select (${failedSelections.length}):`);
+      console.log(`  Failed to select (${failedSelections.length}):`);
       failedSelections.slice(0, 10).forEach(s => console.log(`   - ${s}`));
     }
     
@@ -256,10 +256,10 @@ test.describe('Phase 7: All 44 Strategies E2E', () => {
         console.log(` Restored ${restoredCount}/10 sampled strategies from template`);
         expect(restoredCount).toBeGreaterThanOrEqual(8);
       } else {
-        console.log('️  Template selector not found, skipping load test');
+        console.log('  Template selector not found, skipping load test');
       }
     } else {
-      console.log('️  Save as Template button not found, skipping template test');
+      console.log('  Save as Template button not found, skipping template test');
     }
   });
 
@@ -295,15 +295,15 @@ test.describe('Phase 7: All 44 Strategies E2E', () => {
         
         console.log(` ${visibleStrategies}/10 sampled strategies visible in monitor`);
       } else {
-        console.log('️  Strategy usage panel not found');
+        console.log('  Strategy usage panel not found');
       }
     } else {
-      console.log('️  No experiments available for monitoring test');
+      console.log('  No experiments available for monitoring test');
     }
   });
 
   test('should handle strategy selection errors gracefully', async ({ page }) => {
-    console.log('️ Testing error handling for strategy selection...');
+    console.log(' Testing error handling for strategy selection...');
     
     // Try to submit without selecting any strategies
     await page.fill('#name', 'Error Test');
@@ -336,7 +336,7 @@ test.describe('Phase 7: All 44 Strategies E2E', () => {
     if (errorVisible) {
       console.log(' Validation error displayed correctly');
     } else {
-      console.log('️  No validation error shown (may allow empty strategy list)');
+      console.log('  No validation error shown (may allow empty strategy list)');
     }
   });
 });
@@ -409,7 +409,7 @@ test.describe('Phase 7: Strategy Enum Validation', () => {
         console.log(' All enum values are valid');
       }
     } else {
-      console.log('️  Could not capture API payload');
+      console.log('  Could not capture API payload');
     }
   });
 });

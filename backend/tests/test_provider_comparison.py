@@ -20,11 +20,11 @@ async def test_provider_latency_comparison():
             # Skip if provider is not configured
             if provider == "azure" and not settings.azure_openai.api_key:
                 results[provider] = {"error": "Azure OpenAI not configured"}
-                print(f"⏭️  {provider}: Skipped (not configured)")
+                print(f"⏭  {provider}: Skipped (not configured)")
                 continue
             if provider == "openai" and not settings.openai.api_key:
                 results[provider] = {"error": "OpenAI not configured"}
-                print(f"⏭️  {provider}: Skipped (not configured)")
+                print(f"⏭  {provider}: Skipped (not configured)")
                 continue
             
             # Temporarily set provider (for testing only)

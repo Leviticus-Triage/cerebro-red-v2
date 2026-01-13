@@ -42,10 +42,10 @@ async def test_provider_comparison():
         # Check if provider is configured
         settings = get_settings()
         if provider == "azure" and not settings.azure_openai.api_key:
-            print(f"⏭️  {provider}: Skipped (not configured)")
+            print(f"⏭  {provider}: Skipped (not configured)")
             continue
         if provider == "openai" and not settings.openai.api_key:
-            print(f"⏭️  {provider}: Skipped (not configured)")
+            print(f"⏭  {provider}: Skipped (not configured)")
             continue
         
         # Temporarily set provider (for testing only)

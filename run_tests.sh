@@ -31,7 +31,7 @@ run_backend_tests() {
     TEST_PATH="$1"
     echo "Checking test file: $TEST_PATH"
     if ! docker compose exec cerebro-backend test -f "$TEST_PATH" 2>/dev/null; then
-        echo "️  Test file not found in container: $TEST_PATH"
+        echo "  Test file not found in container: $TEST_PATH"
         echo "Listing available test files:"
         docker compose exec cerebro-backend find tests -name "*.py" -type f 2>/dev/null || echo "No tests directory found"
         return 1

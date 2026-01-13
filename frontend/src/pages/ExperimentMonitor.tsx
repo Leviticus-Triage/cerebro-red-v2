@@ -565,7 +565,7 @@ const ExperimentMonitor: React.FC = () => {
         break;
 
       default:
-        console.log('[MONITOR] ️ Unknown message type:', message.type);
+        console.log('[MONITOR]  Unknown message type:', message.type);
     }
     
     console.log('[MONITOR] ========== handleMessage COMPLETE ==========');

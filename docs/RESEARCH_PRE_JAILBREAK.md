@@ -41,7 +41,7 @@ Alle referenzierten CVEs sind **gepatcht** und sicher für Research:
 | CVE-2024-21412 | Print Spooler RCE | spoolsv.exe | Februar 2024 |
 | CVE-2024-21338 | Kernel Memory Corruption | ntoskrnl.exe | Januar 2024 |
 
-## ️ Obfuskierungstechniken
+##  Obfuskierungstechniken
 
 Die Strategie verwendet folgende Advanced Obfuskierungstechniken:
 
@@ -119,7 +119,7 @@ for turn in conversation:
     print(f"Stage {turn.turn_number}: {turn.mutated_prompt[:200]}...")
 ```
 
-## ️ Ethische Überlegungen
+##  Ethische Überlegungen
 
 ###  Erlaubte Verwendung
 

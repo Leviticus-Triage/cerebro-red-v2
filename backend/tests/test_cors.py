@@ -101,7 +101,7 @@ def test_cors_multiple_origins(client):
                 print(f" Origin allowed: {origin}")
             else:
                 # May or may not be allowed depending on config
-                print(f"️  Origin {origin}: {response.status_code}")
+                print(f"  Origin {origin}: {response.status_code}")
 
 
 @pytest.mark.auth
@@ -251,5 +251,5 @@ def test_cors_credentials(client):
             credentials = response.headers["access-control-allow-credentials"]
             print(f" CORS Credentials: {credentials}")
         else:
-            print("️  CORS Credentials header not present")
+            print("  CORS Credentials header not present")
 

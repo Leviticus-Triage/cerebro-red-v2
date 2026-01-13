@@ -171,14 +171,14 @@ async def lifespan(app: FastAPI):
     logger.info(f"   {audit_result['recommendation']}")
     
     if audit_result['missing_strategies']:
-        logger.warning(f"️ Missing templates for {len(audit_result['missing_strategies'])} strategies:")
+        logger.warning(f" Missing templates for {len(audit_result['missing_strategies'])} strategies:")
         for strategy in audit_result['missing_strategies'][:5]:  # Show first 5
             logger.warning(f"   - {strategy}")
         if len(audit_result['missing_strategies']) > 5:
             logger.warning(f"   ... and {len(audit_result['missing_strategies']) - 5} more")
     
     if audit_result['under_covered_strategies']:
-        logger.warning(f"️ Under-covered (<3 templates) for {len(audit_result['under_covered_strategies'])} strategies:")
+        logger.warning(f" Under-covered (<3 templates) for {len(audit_result['under_covered_strategies'])} strategies:")
         for strategy in audit_result['under_covered_strategies'][:5]:
             logger.warning(f"   - {strategy}")
     
@@ -236,7 +236,7 @@ async def lifespan(app: FastAPI):
                     )
                 else:
                     failed_repos = [r["repo_name"] for r in result.get("repositories", []) if not r.get("success")]
-                    update_logger.warning(f"️ Scheduled template update had failures: {', '.join(failed_repos)}")
+                    update_logger.warning(f" Scheduled template update had failures: {', '.join(failed_repos)}")
                 
                 # Wait until next 2 AM UTC (24 hours)
                 await asyncio.sleep(24 * 3600)
@@ -254,7 +254,7 @@ async def lifespan(app: FastAPI):
         logger.info(" Automatic template updates enabled (daily at 2 AM UTC)")
         update_task = asyncio.create_task(scheduled_template_update())
     else:
-        logger.info("ℹ️ Automatic template updates disabled (set TEMPLATE_UPDATE_AUTO_UPDATE=true to enable)")
+        logger.info("ℹ Automatic template updates disabled (set TEMPLATE_UPDATE_AUTO_UPDATE=true to enable)")
     
     yield
     

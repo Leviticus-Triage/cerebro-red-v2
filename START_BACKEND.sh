@@ -18,12 +18,12 @@ if [ "$HTTP_CODE" = "200" ]; then
     echo "$BODY" | jq . 2>/dev/null || echo "$BODY"
     exit 0
 elif [ "$HTTP_CODE" != "" ]; then
-    echo "️  Port 8000 antwortet, aber Health-Check fehlgeschlagen (HTTP $HTTP_CODE)"
+    echo "  Port 8000 antwortet, aber Health-Check fehlgeschlagen (HTTP $HTTP_CODE)"
     echo "   Möglicherweise läuft ein anderer Service auf Port 8000"
     echo ""
 fi
 
-echo "️  Backend läuft nicht. Starte Backend..."
+echo "  Backend läuft nicht. Starte Backend..."
 echo ""
 
 # Prüfe Docker

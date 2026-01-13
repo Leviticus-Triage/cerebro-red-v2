@@ -112,7 +112,7 @@ def test_enum_naming_convention():
             invalid_names.append(value)
     
     if invalid_names:
-        print(f"\n️  Invalid enum names (not snake_case):")
+        print(f"\n  Invalid enum names (not snake_case):")
         for name in sorted(invalid_names):
             print(f"     - {name}")
         pytest.fail(f"{len(invalid_names)} enum values don't follow snake_case convention")
@@ -167,7 +167,7 @@ grep -A 100 "export enum AttackStrategyType" frontend/src/types/api.ts | \\
   grep '= "' | awk -F'"' '{print $2}' | sort > /tmp/frontend_strategies.txt
 
 # Compare
-echo "️  Comparing enums..."
+echo "  Comparing enums..."
 if diff /tmp/backend_strategies.txt /tmp/frontend_strategies.txt > /dev/null; then
     BACKEND_COUNT=$(wc -l < /tmp/backend_strategies.txt)
     echo " Enums synchronized: $BACKEND_COUNT strategies match"
@@ -216,12 +216,12 @@ def test_all_strategies_documented():
             undocumented.append(strategy)
     
     if undocumented:
-        print(f"\n️  Strategies missing from documentation:")
+        print(f"\n  Strategies missing from documentation:")
         for strategy in sorted(undocumented)[:10]:  # Show first 10
             print(f"     - {strategy}")
         print(f"\n   Total undocumented: {len(undocumented)}/{len(backend_values)}")
         # Don't fail, just warn
-        print(f"   ️  Warning: Some strategies are not documented")
+        print(f"     Warning: Some strategies are not documented")
     else:
         print(f" All {len(backend_values)} strategies are documented")
 

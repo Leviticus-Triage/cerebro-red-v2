@@ -67,7 +67,7 @@ def check_env_file():
     with open(env_path) as f:
         content = f.read()
         if "DEFAULT_LLM_PROVIDER" not in content:
-            print(f"️  .env scheint nicht konfiguriert zu sein")
+            print(f"  .env scheint nicht konfiguriert zu sein")
             print(f"   Lösung: nano ../.env")
             return False
     
@@ -111,13 +111,13 @@ def check_ollama():
             if "qwen3:8b" in result.stdout:
                 print(f" qwen3:8b verfügbar")
             else:
-                print(f"️  qwen3:8b nicht gefunden")
+                print(f"  qwen3:8b nicht gefunden")
                 print(f"   Lösung: ollama pull qwen3:8b")
             
             if "qwen3:14b" in result.stdout:
                 print(f" qwen3:14b verfügbar")
             else:
-                print(f"️  qwen3:14b nicht gefunden")
+                print(f"  qwen3:14b nicht gefunden")
                 print(f"   Lösung: ollama pull qwen3:14b")
             
             return True
@@ -142,7 +142,7 @@ def check_database():
         print(f" Database existiert: {db_path}")
         return True
     else:
-        print(f"️  Database nicht initialisiert: {db_path}")
+        print(f"  Database nicht initialisiert: {db_path}")
         print(f"   Lösung: alembic upgrade head")
         return False
 
@@ -209,7 +209,7 @@ def main():
         print(" Alle Checks bestanden! Sie können jetzt Tests ausführen:")
         print("   pytest tests/test_ollama_connectivity.py -v -s")
     else:
-        print("️  Einige Checks fehlgeschlagen. Bitte beheben Sie die Fehler oben.")
+        print("  Einige Checks fehlgeschlagen. Bitte beheben Sie die Fehler oben.")
         print("   Siehe: START_HIER.md für detaillierte Anleitung")
     
     return 0 if all_ok else 1

@@ -182,7 +182,7 @@ def add_missing_categories():
             print(f"    Updated {category} ({len(templates)} templates)")
             updated_count += 1
         else:
-            print(f"   ️  Skipping {category} (already has {len(payloads['categories'][category])} templates)")
+            print(f"     Skipping {category} (already has {len(payloads['categories'][category])} templates)")
     
     # Update metadata
     if "metadata" not in payloads:

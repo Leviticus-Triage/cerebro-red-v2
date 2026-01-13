@@ -360,7 +360,7 @@ for turn in conversation:
 
 ---
 
-## ️ Disclaimer
+##  Disclaimer
 
 Diese Angriffstechniken sind **ausschließlich für autorisierte Sicherheitstests** bestimmt.
 

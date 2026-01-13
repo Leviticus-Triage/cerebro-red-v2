@@ -174,7 +174,7 @@ def test_experiment_lifecycle_complete(client, api_headers, experiment_config):
         assert "data" in data
         print(f" Step 4: Scan status retrieved")
     else:
-        print(f"️  Step 4: Scan status not found (expected for mock)")
+        print(f"  Step 4: Scan status not found (expected for mock)")
     
     # Step 5: Get experiment results
     response = client.get(

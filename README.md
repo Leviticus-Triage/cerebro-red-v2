@@ -11,7 +11,7 @@ A research-grade framework for automated vulnerability discovery in local LLMs u
 - **Telemetry-First** architecture for whitepaper-grade analysis
 - Multi-provider LLM support (Ollama, Azure OpenAI, OpenAI)
 
-## ️ Architecture
+##  Architecture
 
 ### Tech Stack
 
@@ -357,7 +357,7 @@ docker compose logs cerebro-backend --tail=200 | grep -E "POST /api/scan/start|D
 docker compose logs -f cerebro-backend
 ```
 
-## ️ Development Workflow
+##  Development Workflow
 
 ### Live Code Reload (Development Mode)
 
@@ -992,7 +992,7 @@ async def start_scan(
 - Verify Docker volume mount is working: `docker compose exec cerebro-backend cat /app/main.py | head -5`
 - Rebuild image: `docker compose build cerebro-backend --no-cache && docker compose up -d cerebro-backend`
 
-## ️ Cloud OpenAI Test Run
+##  Cloud OpenAI Test Run
 
 This section provides step-by-step instructions for testing CEREBRO-RED v2 with OpenAI's cloud API, including full OpenAI and hybrid (Ollama + OpenAI) configurations.
 
@@ -1218,9 +1218,9 @@ CEREBRO-RED v2 provides comprehensive real-time monitoring of all LLM interactio
 -  **Judge LLM Responses**: Judge's scoring and reasoning
 
 **Metadata for Each Interaction:**
-- ⏱️ Latency (milliseconds)
+- ⏱ Latency (milliseconds)
 -  Token count
-- ️ Model name and provider (Ollama, OpenAI, Azure)
+-  Model name and provider (Ollama, OpenAI, Azure)
 -  Role (Attacker, Target, Judge)
 
 **Interactive Features:**
@@ -1262,7 +1262,7 @@ The Live Logs panel organizes events into 6 tabs:
 
 1. ** LLM Requests**: All prompts sent to Attacker, Target, and Judge LLMs
 2. ** LLM Responses**: All responses with latency and token counts
-3. **️ Judge Evaluations**: Scores (0-10), reasoning, and 7 sub-scores
+3. ** Judge Evaluations**: Scores (0-10), reasoning, and 7 sub-scores
 4. ** Task Queue**: Task status, dependencies, and queue position
 5. ** Code Flow**: Execution flow with function calls and parameters (Level 3 only)
 6. ** Errors**: All errors with context and metadata
@@ -1434,5 +1434,5 @@ This is a research project. Contributions welcome for:
 
 ---
 
-**Built with ️ for LLM Security Research**
+**Built with  for LLM Security Research**
 

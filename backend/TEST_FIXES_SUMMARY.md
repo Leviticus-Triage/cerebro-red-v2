@@ -28,7 +28,7 @@
 -  `detect_refusal_patterns`: Reihenfolge der Checks korrigiert (partial vor standard)
 - **Datei:** `backend/core/scoring.py`
 
-## ️ Bekannte Probleme (nicht behoben)
+##  Bekannte Probleme (nicht behoben)
 
 ### 1. Ollama-URL
 - **Problem:** Tests verwenden `host.docker.internal:11434`, aber lokal sollte es `localhost:11434` sein

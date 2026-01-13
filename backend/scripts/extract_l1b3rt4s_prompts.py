@@ -68,7 +68,7 @@ def categorize_l1b3rt4s_prompt(prompt_data: Dict[str, Any]) -> str:
     prompt_lower = prompt_data['prompt'].lower()
     
     # Emoji encoding
-    if any(char in prompt_data['prompt'] for char in ['', '️', '️', '', '']):
+    if any(char in prompt_data['prompt'] for char in ['', '', '', '', '']):
         return 'obfuscation_unicode'
     
     # Leetspeak + dividers (GODMODE patterns)

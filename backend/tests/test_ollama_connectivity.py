@@ -49,5 +49,5 @@ async def test_ollama_latency():
     
     # Warn if latency is too high
     if response.latency_ms > 10000:  # 10 seconds
-        print(f"️  Warning: High latency detected ({response.latency_ms}ms)")
+        print(f"  Warning: High latency detected ({response.latency_ms}ms)")
 

@@ -160,7 +160,7 @@ def main():
     venv_python = sys.executable  # Use current Python (might be venv)
     
     # Step 1: Regenerate OpenAPI schema
-    print("1️⃣  Regenerating OpenAPI schema...")
+    print("1⃣  Regenerating OpenAPI schema...")
     code, stdout, stderr = run_command(
         [venv_python, 'export_openapi.py'],
         cwd=backend_dir
@@ -171,7 +171,7 @@ def main():
         print("    OpenAPI schema regenerated")
     
     # Step 2: Regenerate API documentation
-    print("2️⃣  Regenerating API documentation...")
+    print("2⃣  Regenerating API documentation...")
     code, stdout, stderr = run_command(
         [venv_python, 'scripts/generate_api_docs.py'],
         cwd=backend_dir
@@ -182,7 +182,7 @@ def main():
         print("    API documentation regenerated")
     
     # Step 3: Check for uncommitted changes
-    print("3️⃣  Checking for uncommitted changes...")
+    print("3⃣  Checking for uncommitted changes...")
     api_ref_path = docs_dir / "en" / "api-reference.md"
     if check_git_diff(api_ref_path):
         errors.append(f"Uncommitted changes detected in {api_ref_path}. Run 'git diff' to see changes.")
@@ -190,7 +190,7 @@ def main():
         print("    No uncommitted changes")
     
     # Step 4: Validate OpenAPI schema
-    print("4️⃣  Validating OpenAPI schema...")
+    print("4⃣  Validating OpenAPI schema...")
     schema_path = docs_dir / "openapi.json"
     schema_errors = validate_openapi_schema(schema_path)
     if schema_errors:
@@ -199,7 +199,7 @@ def main():
         print("    OpenAPI schema is valid")
     
     # Step 5: Validate Markdown links
-    print("5️⃣  Validating Markdown links...")
+    print("5⃣  Validating Markdown links...")
     link_errors = validate_markdown_links(api_ref_path)
     if link_errors:
         warnings.extend(link_errors[:10])  # Limit warnings
@@ -207,7 +207,7 @@ def main():
         print("    All links are valid")
     
     # Step 6: Check German translation parity
-    print("6️⃣  Checking German translation parity...")
+    print("6⃣  Checking German translation parity...")
     de_path = docs_dir / "de" / "api-referenz.md"
     parity_errors = check_german_parity(api_ref_path, de_path)
     if parity_errors:
@@ -224,7 +224,7 @@ def main():
         return 1
     
     if warnings:
-        print("️  Validation completed with warnings:")
+        print("  Validation completed with warnings:")
         for warning in warnings[:10]:
             print(f"   - {warning}")
         if len(warnings) > 10:

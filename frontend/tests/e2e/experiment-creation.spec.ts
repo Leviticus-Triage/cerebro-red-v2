@@ -139,7 +139,7 @@ test.describe('Experiment Creation Flow', () => {
       
       console.log(' Step 5: Scan started');
     } else {
-      console.log('️  Step 5: Start Scan button not visible (may already be running)');
+      console.log('  Step 5: Start Scan button not visible (may already be running)');
     }
 
     // Step 6: Check that progress is displayed
@@ -147,7 +147,7 @@ test.describe('Experiment Creation Flow', () => {
     if (await progressIndicator.isVisible()) {
       console.log(' Step 6: Progress indicator visible');
     } else {
-      console.log('️  Step 6: Progress indicator not visible');
+      console.log('  Step 6: Progress indicator not visible');
     }
   });
 
@@ -175,7 +175,7 @@ test.describe('Experiment Creation Flow', () => {
     if (hasError) {
       console.log(' Validation errors displayed for empty form');
     } else {
-      console.log('️  Validation errors not found (form may have different validation)');
+      console.log('  Validation errors not found (form may have different validation)');
     }
   });
 
@@ -345,7 +345,7 @@ test.describe('Scan Status Display', () => {
         console.log(' Iterations section visible');
       }
     } else {
-      console.log('️  No experiments available for testing');
+      console.log('  No experiments available for testing');
     }
   });
 });
@@ -401,7 +401,7 @@ test.describe('Vulnerabilities Display', () => {
       
       console.log(' Severity filter applied');
     } else {
-      console.log('️  Severity filter not available');
+      console.log('  Severity filter not available');
     }
   });
 });

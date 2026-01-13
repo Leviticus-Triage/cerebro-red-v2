@@ -31,7 +31,7 @@ print("\n" + "=" * 60)
 if not settings.security.api_key_enabled:
     print(" API Key Authentication ist DEAKTIVIERT")
     print(" Backend sollte Requests ohne API-Key akzeptieren")
-    print("\n️  WICHTIG: Backend muss NEU GESTARTET werden!")
+    print("\n  WICHTIG: Backend muss NEU GESTARTET werden!")
     print("   Im Backend-Terminal: Strg+C, dann:")
     print("   uvicorn main:app --host 0.0.0.0 --port 8889 --reload")
 else:

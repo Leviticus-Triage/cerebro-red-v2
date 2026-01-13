@@ -30,7 +30,7 @@ if [ -n "$VENV_PYTHON" ]; then
     echo " Using venv Python: $PYTHON_CMD"
 else
     PYTHON_CMD="python3"
-    echo "️  Using system Python (consider activating venv first)"
+    echo "  Using system Python (consider activating venv first)"
     echo "   To activate venv: source ../venv/bin/activate"
 fi
 echo ""
@@ -39,7 +39,7 @@ echo " Building API documentation..."
 echo ""
 
 # Step 1: Export OpenAPI schema
-echo "1️⃣  Exporting OpenAPI schema..."
+echo "1⃣  Exporting OpenAPI schema..."
 cd "$BACKEND_DIR"
 $PYTHON_CMD export_openapi.py || {
     echo " Failed to export OpenAPI schema"
@@ -49,7 +49,7 @@ $PYTHON_CMD export_openapi.py || {
 echo ""
 
 # Step 2: Generate API documentation
-echo "2️⃣  Generating API documentation..."
+echo "2⃣  Generating API documentation..."
 $PYTHON_CMD scripts/generate_api_docs.py || {
     echo " Failed to generate API documentation"
     exit 1
@@ -57,7 +57,7 @@ $PYTHON_CMD scripts/generate_api_docs.py || {
 echo ""
 
 # Step 3: Validate documentation
-echo "3️⃣  Validating documentation..."
+echo "3⃣  Validating documentation..."
 cd "$PROJECT_ROOT"
 $PYTHON_CMD scripts/validate_docs.py || {
     echo " Documentation validation failed"

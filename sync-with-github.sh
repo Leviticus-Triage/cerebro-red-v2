@@ -51,7 +51,7 @@ if [ "$REMOTE_COMMITS" -gt 0 ]; then
     echo "Options:"
     echo "1. Pull and merge (recommended if you want to keep both histories)"
     echo "2. Pull with rebase (if you want linear history)"
-    echo "3. Force push (️ DANGEROUS - will overwrite remote)"
+    echo "3. Force push ( DANGEROUS - will overwrite remote)"
     echo ""
     read -p "Choose option (1/2/3): " choice
     
@@ -65,7 +65,7 @@ if [ "$REMOTE_COMMITS" -gt 0 ]; then
             git pull origin main --rebase
             ;;
         3)
-            echo "️ WARNING: Force pushing will overwrite remote commits!"
+            echo " WARNING: Force pushing will overwrite remote commits!"
             read -p "Are you sure? (yes/no): " confirm
             if [ "$confirm" = "yes" ]; then
                 git push -f origin main

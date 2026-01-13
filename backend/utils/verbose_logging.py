@@ -206,7 +206,7 @@ class VerboseLogger:
         """Log judge evaluation."""
         self.log(
             "INFO",
-            f"️ Judge Score: {score:.2f}/10",
+            f" Judge Score: {score:.2f}/10",
             component="JUDGE",
             extra_data={
                 "prompt_preview": prompt[:100] + "..." if len(prompt) > 100 else prompt,

@@ -70,13 +70,13 @@ class LiveLogger:
         "llm_response": "",
         "llm_stream": "",
         "iteration": "",
-        "attack": "️",
-        "judge": "️",
+        "attack": "",
+        "judge": "",
         "mutation": "",
         "score": "",
         "success": "",
         "failure": "",
-        "warning": "️",
+        "warning": "",
         "error": "",
         "code_flow": "",
         "experiment": "",
@@ -165,7 +165,7 @@ class LiveLogger:
             print(self._color(f"   EXPERIMENT: {name}", "bold"))
             print(self._color(f"   ID: {experiment_id}", "dim"))
             print(self._color(f"   Target: {target_model}", "cyan"))
-            print(self._color(f"  ️  Strategies: {', '.join(strategies)}", "yellow"))
+            print(self._color(f"    Strategies: {', '.join(strategies)}", "yellow"))
             print(self._color("=" * 70, "green"))
     
     def experiment_end(self, experiment_id: str, status: str, 
@@ -186,7 +186,7 @@ class LiveLogger:
         if self._verbosity >= VerbosityLevel.VERBOSE:
             print(self._color("=" * 70, color))
             print(self._color(f"  {icon} EXPERIMENT {status.upper()}", "bold"))
-            print(self._color(f"  ⏱️  Duration: {duration_seconds:.1f}s", "dim"))
+            print(self._color(f"  ⏱  Duration: {duration_seconds:.1f}s", "dim"))
             print(self._color(f"   Iterations: {iterations}", "dim"))
             print(self._color("=" * 70, color))
     

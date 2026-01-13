@@ -32,9 +32,9 @@ def load_audit_logs(log_dir: Path) -> List[Dict[str, Any]]:
                         entry = json.loads(line)
                         entries.append(entry)
                     except json.JSONDecodeError as e:
-                        print(f"️  JSON-Fehler in {log_file}:{line_num}: {e}", file=sys.stderr)
+                        print(f"  JSON-Fehler in {log_file}:{line_num}: {e}", file=sys.stderr)
         except Exception as e:
-            print(f"️  Fehler beim Lesen von {log_file}: {e}", file=sys.stderr)
+            print(f"  Fehler beim Lesen von {log_file}: {e}", file=sys.stderr)
     
     return entries
 
@@ -149,7 +149,7 @@ def print_statistics(stats: Dict[str, Any]):
     
     # Latenz-Statistiken
     if stats['latencies']:
-        print(f"⏱️  Latenz-Statistiken (ms):")
+        print(f"⏱  Latenz-Statistiken (ms):")
         for model, latencies in sorted(stats['latencies'].items()):
             avg_latency = sum(latencies) / len(latencies)
             min_latency = min(latencies)
@@ -182,7 +182,7 @@ def print_statistics(stats: Dict[str, Any]):
     
     # Fehler
     if stats['errors']:
-        print(f"️  Fehler gefunden: {len(stats['errors'])}")
+        print(f"  Fehler gefunden: {len(stats['errors'])}")
         print(f"  Letzte 5 Fehler:")
         for error in stats['errors'][-5:]:
             timestamp = error.get('timestamp', 'Unknown')

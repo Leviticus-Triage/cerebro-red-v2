@@ -125,7 +125,7 @@ def validate_and_enrich(schema: Dict[str, Any]) -> Dict[str, Any]:
         raise ValueError(f"Schema validation failed with {len(errors)} errors")
     
     if warnings:
-        print(f"️  Validation warnings ({len(warnings)}):")
+        print(f"  Validation warnings ({len(warnings)}):")
         for warning in warnings[:10]:  # Show first 10
             print(f"   - {warning}")
         if len(warnings) > 10:

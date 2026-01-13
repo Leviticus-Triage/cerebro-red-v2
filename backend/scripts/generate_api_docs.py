@@ -488,7 +488,7 @@ def load_manual_sections(template_file: Path) -> Dict[str, str]:
     Returns a dictionary mapping section headers to content.
     """
     if not template_file.exists():
-        print(f"️  Manual sections template not found: {template_file}")
+        print(f"  Manual sections template not found: {template_file}")
         return {}
     
     with open(template_file, 'r', encoding='utf-8') as f:

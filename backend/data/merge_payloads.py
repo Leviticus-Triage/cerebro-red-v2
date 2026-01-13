@@ -56,7 +56,7 @@ def merge_payloads():
     
     for category, templates in advanced_categories.items():
         if category in payloads["categories"]:
-            print(f"   ️  Skipping {category} (already exists)")
+            print(f"     Skipping {category} (already exists)")
             skipped_count += 1
         else:
             payloads["categories"][category] = templates
@@ -83,7 +83,7 @@ def merge_payloads():
     print("═" * 79)
     print()
     print(f" Merged {merged_count} new categories")
-    print(f"️  Skipped {skipped_count} existing categories")
+    print(f"  Skipped {skipped_count} existing categories")
     print(f" Total categories: {len(payloads['categories'])}")
     print(f" Backup saved: {backup_file.name}")
     print()

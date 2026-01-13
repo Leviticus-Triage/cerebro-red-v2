@@ -23,7 +23,7 @@
 -  Alembic Migrationen korrigiert (UUID → String(36))
 -  Automatische Verzeichnis-Erstellung in `alembic/env.py`
 
-## ️ Bekannte Probleme
+##  Bekannte Probleme
 
 ### 1. Database-Initialisierung
 - **Problem:** `init_db()` hängt sich auf (möglicherweise async-Problem)

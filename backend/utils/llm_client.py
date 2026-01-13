@@ -292,7 +292,7 @@ class LLMClient:
                     
                     verbose_logger.log(
                         "WARNING",
-                        f"⏱️ Timeout, retrying in {delay:.2f}s (attempt {attempt+1}/{self.retry_attempts})",
+                        f"⏱ Timeout, retrying in {delay:.2f}s (attempt {attempt+1}/{self.retry_attempts})",
                         component="LLM",
                         extra_data={"provider": provider.value, "delay_ms": int(delay*1000)}
                     )
@@ -335,7 +335,7 @@ class LLMClient:
                     
                     verbose_logger.log(
                         "WARNING",
-                        f"️ API error, retrying in {delay:.2f}s (attempt {attempt+1}/{self.retry_attempts})",
+                        f" API error, retrying in {delay:.2f}s (attempt {attempt+1}/{self.retry_attempts})",
                         component="LLM",
                         extra_data={"provider": provider.value, "delay_ms": int(delay*1000), "error": str(e)}
                     )

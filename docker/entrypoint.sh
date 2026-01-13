@@ -39,7 +39,7 @@ if curl -s --connect-timeout 5 "${OLLAMA_API_BASE:-http://host.docker.internal:1
     echo " Available Ollama models:"
     curl -s "${OLLAMA_API_BASE:-http://host.docker.internal:11434}/api/tags" | python3 -c "import sys,json; d=json.load(sys.stdin); print('   ' + '\n   '.join(m['name'] for m in d.get('models',[])) if d.get('models') else '   (no models)')" 2>/dev/null || echo "   (could not list models)"
 else
-    echo "️  WARNING: Cannot reach Ollama at ${OLLAMA_API_BASE:-http://host.docker.internal:11434}"
+    echo "  WARNING: Cannot reach Ollama at ${OLLAMA_API_BASE:-http://host.docker.internal:11434}"
     echo "   Make sure Ollama is running on the host and the URL is correct"
 fi
 echo ""

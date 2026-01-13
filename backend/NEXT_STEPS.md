@@ -8,7 +8,7 @@ Alle kritischen Import-Probleme wurden behoben. Sie können jetzt mit den Tests 
 
 ##  Schritt-für-Schritt Anleitung
 
-### 1️⃣ **Venv aktivieren** (wichtig!)
+### 1⃣ **Venv aktivieren** (wichtig!)
 
 ```bash
 source /mnt/nvme0n1p5/danii/hexstrike-ai-kit/venv/bin/activate
@@ -22,7 +22,7 @@ which python3
 
 ---
 
-### 2️⃣ **In Backend-Verzeichnis wechseln**
+### 2⃣ **In Backend-Verzeichnis wechseln**
 
 ```bash
 cd /mnt/nvme0n1p5/danii/hexstrike-ai-kit/cerebro-red-v2/backend
@@ -30,7 +30,7 @@ cd /mnt/nvme0n1p5/danii/hexstrike-ai-kit/cerebro-red-v2/backend
 
 ---
 
-### 3️⃣ **Quick Import Test**
+### 3⃣ **Quick Import Test**
 
 ```bash
 python3 -c "from core.models import ExperimentConfig; from core.mutator import PromptMutator; from core.judge import SecurityJudge; print(' Alle Imports OK')"
@@ -40,7 +40,7 @@ python3 -c "from core.models import ExperimentConfig; from core.mutator import P
 
 ---
 
-### 4️⃣ **Tests ausführen**
+### 4⃣ **Tests ausführen**
 
 #### A) Einzelner Test (empfohlen zum Start)
 
@@ -74,7 +74,7 @@ pytest tests/test_mutator_pair.py -v
 
 ---
 
-### 5️⃣ **E2E Tests (mit Ollama)**
+### 5⃣ **E2E Tests (mit Ollama)**
 
 **Voraussetzung:** Ollama muss laufen und Modelle müssen verfügbar sein.
 

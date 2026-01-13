@@ -154,9 +154,9 @@ class CircuitBreaker:
             return
         
         emoji_map = {
-            CircuitState.CLOSED: "🟢",
-            CircuitState.OPEN: "🔴",
-            CircuitState.HALF_OPEN: "🟡"
+            CircuitState.CLOSED: "",
+            CircuitState.OPEN: "",
+            CircuitState.HALF_OPEN: ""
         }
         
         verbose_logger.log(
@@ -456,7 +456,7 @@ def get_circuit_breaker(provider: str) -> CircuitBreaker:
             # Log circuit breaker creation
             verbose_logger.log(
                 "INFO",
-                f"🔧 Circuit Breaker created for '{provider}' (threshold={cb_settings.failure_threshold}, timeout={cb_settings.timeout}s)",
+                f" Circuit Breaker created for '{provider}' (threshold={cb_settings.failure_threshold}, timeout={cb_settings.timeout}s)",
                 component="CIRCUIT_BREAKER"
             )
         

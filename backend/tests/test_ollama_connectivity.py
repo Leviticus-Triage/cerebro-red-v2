@@ -22,7 +22,7 @@ async def test_ollama_connection():
     assert response.content is not None
     assert len(response.content) > 0
     assert response.provider.value == "ollama"
-    print(f"✅ Ollama connection successful: {response.model}")
+    print(f" Ollama connection successful: {response.model}")
 
 @pytest.mark.asyncio
 async def test_ollama_all_roles():
@@ -34,7 +34,7 @@ async def test_ollama_all_roles():
         messages = [{"role": "user", "content": f"Test for {role} role"}]
         response = await llm_client.complete(messages, role=role)
         assert response is not None
-        print(f"✅ {role.capitalize()} role working: {response.model}")
+        print(f" {role.capitalize()} role working: {response.model}")
 
 @pytest.mark.asyncio
 async def test_ollama_latency():
@@ -45,9 +45,9 @@ async def test_ollama_latency():
     response = await llm_client.complete(messages, role="target")
     
     assert response.latency_ms > 0
-    print(f"✅ Ollama latency: {response.latency_ms}ms")
+    print(f" Ollama latency: {response.latency_ms}ms")
     
     # Warn if latency is too high
     if response.latency_ms > 10000:  # 10 seconds
-        print(f"⚠️  Warning: High latency detected ({response.latency_ms}ms)")
+        print(f"️  Warning: High latency detected ({response.latency_ms}ms)")
 

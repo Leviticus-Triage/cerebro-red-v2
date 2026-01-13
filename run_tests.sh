@@ -11,13 +11,13 @@ echo ""
 
 # Check if Docker is running
 if ! docker info > /dev/null 2>&1; then
-    echo "❌ Docker is not running. Please start Docker first."
+    echo " Docker is not running. Please start Docker first."
     exit 1
 fi
 
 # Function to run backend tests in Docker
 run_backend_tests() {
-    echo "🔧 Running backend tests in Docker container..."
+    echo " Running backend tests in Docker container..."
     echo ""
     
     # Start backend container if not running
@@ -31,7 +31,7 @@ run_backend_tests() {
     TEST_PATH="$1"
     echo "Checking test file: $TEST_PATH"
     if ! docker compose exec cerebro-backend test -f "$TEST_PATH" 2>/dev/null; then
-        echo "⚠️  Test file not found in container: $TEST_PATH"
+        echo "️  Test file not found in container: $TEST_PATH"
         echo "Listing available test files:"
         docker compose exec cerebro-backend find tests -name "*.py" -type f 2>/dev/null || echo "No tests directory found"
         return 1
@@ -44,7 +44,7 @@ run_backend_tests() {
 
 # Function to run frontend tests
 run_frontend_tests() {
-    echo "🎨 Running frontend E2E tests..."
+    echo " Running frontend E2E tests..."
     echo ""
     cd frontend
     npx playwright test "$1"

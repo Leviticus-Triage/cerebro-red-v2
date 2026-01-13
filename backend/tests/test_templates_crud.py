@@ -218,7 +218,7 @@ async def test_template_with_all_44_strategies():
         assert loaded_config.max_iterations == 50
         assert loaded_config.target_model_name == "qwen2.5:3b"
         
-        print(f"✅ Template with all 44 strategies saved and loaded successfully")
+        print(f" Template with all 44 strategies saved and loaded successfully")
 
 
 @pytest.mark.asyncio
@@ -278,4 +278,4 @@ async def test_template_multi_strategy_selection():
         assert len(loaded_config.strategies) == 10
         assert set(loaded_config.strategies) == set(selected_strategies)
         
-        print(f"✅ Template with 10 strategies saved and loaded successfully")
+        print(f" Template with 10 strategies saved and loaded successfully")

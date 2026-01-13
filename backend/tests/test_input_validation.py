@@ -38,7 +38,7 @@ def test_sql_injection_prevention():
             # Check that malicious SQL is not executed (would cause 500 error)
             assert response.status_code != 500
     
-    print("✅ SQL injection prevention working")
+    print(" SQL injection prevention working")
 
 def test_xss_prevention():
     """Test that XSS is prevented."""
@@ -62,5 +62,5 @@ def test_xss_prevention():
         # Should either reject or sanitize
         assert response.status_code in [200, 400, 422]
     
-    print("✅ XSS prevention working")
+    print(" XSS prevention working")
 

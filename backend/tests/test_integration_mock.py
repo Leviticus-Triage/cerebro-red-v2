@@ -76,5 +76,5 @@ async def test_full_pair_loop_mock():
     # Note: Full orchestrator test would require database setup
     # This is a simplified version that validates the mocks work
     assert mock_llm_client.complete is not None
-    print("✅ Full PAIR loop with mocks setup successful")
+    print(" Full PAIR loop with mocks setup successful")
 

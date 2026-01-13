@@ -18,7 +18,7 @@ def load_audit_logs(log_dir: Path) -> List[Dict[str, Any]]:
     entries = []
     
     if not log_dir.exists():
-        print(f"❌ Log-Verzeichnis nicht gefunden: {log_dir}")
+        print(f" Log-Verzeichnis nicht gefunden: {log_dir}")
         return entries
     
     for log_file in sorted(log_dir.glob("audit_*.jsonl")):
@@ -32,9 +32,9 @@ def load_audit_logs(log_dir: Path) -> List[Dict[str, Any]]:
                         entry = json.loads(line)
                         entries.append(entry)
                     except json.JSONDecodeError as e:
-                        print(f"⚠️  JSON-Fehler in {log_file}:{line_num}: {e}", file=sys.stderr)
+                        print(f"️  JSON-Fehler in {log_file}:{line_num}: {e}", file=sys.stderr)
         except Exception as e:
-            print(f"⚠️  Fehler beim Lesen von {log_file}: {e}", file=sys.stderr)
+            print(f"️  Fehler beim Lesen von {log_file}: {e}", file=sys.stderr)
     
     return entries
 
@@ -113,12 +113,12 @@ def analyze_experiments(entries: List[Dict[str, Any]]) -> Dict[str, Any]:
 def print_statistics(stats: Dict[str, Any]):
     """Drucke formatierte Statistiken."""
     print("=" * 70)
-    print("📊 CEREBRO-RED v2 - Log-Analyse Report")
+    print(" CEREBRO-RED v2 - Log-Analyse Report")
     print("=" * 70)
     print()
     
     # Übersicht
-    print(f"📈 Übersicht:")
+    print(f" Übersicht:")
     print(f"  • Experimente: {len(stats['total_experiments'])}")
     print(f"  • Log-Einträge: {stats['total_entries']}")
     print(f"  • Event-Typen: {len(stats['event_types'])}")
@@ -126,14 +126,14 @@ def print_statistics(stats: Dict[str, Any]):
     
     # Event-Typen
     if stats['event_types']:
-        print(f"📋 Event-Typen:")
+        print(f" Event-Typen:")
         for event_type, count in sorted(stats['event_types'].items(), key=lambda x: -x[1]):
             print(f"  • {event_type:30s} {count:6d}")
         print()
     
     # Strategien
     if stats['strategies']:
-        print(f"🎯 Strategie-Verteilung:")
+        print(f" Strategie-Verteilung:")
         for strategy, count in sorted(stats['strategies'].items(), key=lambda x: -x[1]):
             scores = stats['success_scores'].get(strategy, [])
             if scores:
@@ -162,7 +162,7 @@ def print_statistics(stats: Dict[str, Any]):
     
     # Token-Statistiken
     if stats['tokens_used']:
-        print(f"🔢 Token-Verbrauch:")
+        print(f" Token-Verbrauch:")
         for model, tokens_list in sorted(stats['tokens_used'].items()):
             total_tokens = sum(tokens_list)
             avg_tokens = total_tokens / len(tokens_list)
@@ -172,7 +172,7 @@ def print_statistics(stats: Dict[str, Any]):
     
     # Model-Verteilung
     if any(stats['models'].values()):
-        print(f"🤖 Model-Verteilung:")
+        print(f" Model-Verteilung:")
         for role in ['target', 'attacker', 'judge']:
             if stats['models'][role]:
                 print(f"  {role.capitalize()} Models:")
@@ -182,7 +182,7 @@ def print_statistics(stats: Dict[str, Any]):
     
     # Fehler
     if stats['errors']:
-        print(f"⚠️  Fehler gefunden: {len(stats['errors'])}")
+        print(f"️  Fehler gefunden: {len(stats['errors'])}")
         print(f"  Letzte 5 Fehler:")
         for error in stats['errors'][-5:]:
             timestamp = error.get('timestamp', 'Unknown')
@@ -192,7 +192,7 @@ def print_statistics(stats: Dict[str, Any]):
             print(f"      Experiment: {exp_id}")
         print()
     else:
-        print(f"✅ Keine Fehler gefunden")
+        print(f" Keine Fehler gefunden")
         print()
 
 
@@ -223,11 +223,11 @@ def main():
     args = parser.parse_args()
     
     # Logs laden
-    print(f"📂 Lade Logs aus: {args.log_dir}")
+    print(f" Lade Logs aus: {args.log_dir}")
     entries = load_audit_logs(args.log_dir)
     
     if not entries:
-        print("❌ Keine Log-Einträge gefunden!")
+        print(" Keine Log-Einträge gefunden!")
         sys.exit(1)
     
     # Analysieren
@@ -265,7 +265,7 @@ def main():
         
         if args.output:
             args.output.write_text(output_str)
-            print(f"✅ JSON-Report gespeichert: {args.output}")
+            print(f" JSON-Report gespeichert: {args.output}")
         else:
             print(output_str)
     else:
@@ -280,7 +280,7 @@ def main():
                     print_statistics(stats)
                 
                 f.write(output_buffer.getvalue())
-                print(f"✅ Report gespeichert: {args.output}")
+                print(f" Report gespeichert: {args.output}")
         else:
             print_statistics(stats)
 

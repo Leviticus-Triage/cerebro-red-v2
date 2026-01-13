@@ -33,7 +33,7 @@ echo ""
 
 # Check if .env file exists
 if [ ! -f "$ENV_FILE" ]; then
-    echo -e "${RED}✗ Error: ${ENV_FILE} not found${NC}"
+    echo -e "${RED} Error: ${ENV_FILE} not found${NC}"
     echo ""
     echo "Please create .env file from template:"
     echo "  cp .env.example .env"
@@ -56,15 +56,15 @@ check_var() {
 
     if [ -z "$var_value" ]; then
         if [ "$required" = "true" ]; then
-            echo -e "${RED}✗ ${var_name}${NC} - ${var_desc} (REQUIRED)"
+            echo -e "${RED} ${var_name}${NC} - ${var_desc} (REQUIRED)"
             ERRORS=$((ERRORS + 1))
         else
-            echo -e "${YELLOW}⚠ ${var_name}${NC} - ${var_desc} (optional, not set)"
+            echo -e "${YELLOW} ${var_name}${NC} - ${var_desc} (optional, not set)"
             WARNINGS=$((WARNINGS + 1))
         fi
         return 1
     else
-        echo -e "${GREEN}✓ ${var_name}${NC} - ${var_desc}"
+        echo -e "${GREEN} ${var_name}${NC} - ${var_desc}"
         echo "$var_value"
         return 0
     fi
@@ -76,13 +76,13 @@ validate_port() {
     local port_value="$2"
 
     if ! [[ "$port_value" =~ ^[0-9]+$ ]]; then
-        echo -e "${RED}✗ ${var_name}=${port_value}${NC} - Must be a number"
+        echo -e "${RED} ${var_name}=${port_value}${NC} - Must be a number"
         ERRORS=$((ERRORS + 1))
         return 1
     fi
 
     if [ "$port_value" -lt 1024 ] || [ "$port_value" -gt 65535 ]; then
-        echo -e "${YELLOW}⚠ ${var_name}=${port_value}${NC} - Port should be between 1024-65535"
+        echo -e "${YELLOW} ${var_name}=${port_value}${NC} - Port should be between 1024-65535"
         WARNINGS=$((WARNINGS + 1))
         return 1
     fi
@@ -96,7 +96,7 @@ validate_boolean() {
     local bool_value="$2"
 
     if [[ ! "$bool_value" =~ ^(true|false|True|False|TRUE|FALSE|0|1)$ ]]; then
-        echo -e "${RED}✗ ${var_name}=${bool_value}${NC} - Must be true/false"
+        echo -e "${RED} ${var_name}=${bool_value}${NC} - Must be true/false"
         ERRORS=$((ERRORS + 1))
         return 1
     fi
@@ -110,7 +110,7 @@ validate_log_level() {
     local level_value="$2"
 
     if [[ ! "$level_value" =~ ^(DEBUG|INFO|WARNING|ERROR|CRITICAL)$ ]]; then
-        echo -e "${RED}✗ ${var_name}=${level_value}${NC} - Must be DEBUG, INFO, WARNING, ERROR, or CRITICAL"
+        echo -e "${RED} ${var_name}=${level_value}${NC} - Must be DEBUG, INFO, WARNING, ERROR, or CRITICAL"
         ERRORS=$((ERRORS + 1))
         return 1
     fi
@@ -129,38 +129,38 @@ check_production_config() {
         # Check DEBUG mode
         local debug_value=$(grep "^CEREBRO_DEBUG=" "$ENV_FILE" 2>/dev/null | cut -d'=' -f2)
         if [[ "$debug_value" =~ ^(true|True|TRUE|1)$ ]]; then
-            echo -e "${RED}✗ CEREBRO_DEBUG=true in production${NC} - Should be false"
+            echo -e "${RED} CEREBRO_DEBUG=true in production${NC} - Should be false"
             ERRORS=$((ERRORS + 1))
         else
-            echo -e "${GREEN}✓ CEREBRO_DEBUG=false${NC}"
+            echo -e "${GREEN} CEREBRO_DEBUG=false${NC}"
         fi
 
         # Check CORS
         local cors_value=$(grep "^CORS_ORIGINS=" "$ENV_FILE" 2>/dev/null | cut -d'=' -f2)
         if [ "$cors_value" = "*" ]; then
-            echo -e "${RED}✗ CORS_ORIGINS=*${NC} - Wildcard CORS in production is insecure"
+            echo -e "${RED} CORS_ORIGINS=*${NC} - Wildcard CORS in production is insecure"
             ERRORS=$((ERRORS + 1))
         else
-            echo -e "${GREEN}✓ CORS_ORIGINS configured${NC}"
+            echo -e "${GREEN} CORS_ORIGINS configured${NC}"
         fi
 
         # Check API key
         local api_enabled=$(grep "^API_KEY_ENABLED=" "$ENV_FILE" 2>/dev/null | cut -d'=' -f2)
         local api_key=$(grep "^API_KEY=" "$ENV_FILE" 2>/dev/null | cut -d'=' -f2)
         if [[ "$api_enabled" =~ ^(true|True|TRUE|1)$ ]] && [ -z "$api_key" ]; then
-            echo -e "${RED}✗ API_KEY_ENABLED=true but API_KEY is empty${NC}"
+            echo -e "${RED} API_KEY_ENABLED=true but API_KEY is empty${NC}"
             ERRORS=$((ERRORS + 1))
         else
-            echo -e "${GREEN}✓ API authentication configured${NC}"
+            echo -e "${GREEN} API authentication configured${NC}"
         fi
 
         # Check log level
         local log_level=$(grep "^CEREBRO_LOG_LEVEL=" "$ENV_FILE" 2>/dev/null | cut -d'=' -f2)
         if [ "$log_level" = "DEBUG" ]; then
-            echo -e "${YELLOW}⚠ CEREBRO_LOG_LEVEL=DEBUG${NC} - Consider INFO or WARNING for production"
+            echo -e "${YELLOW} CEREBRO_LOG_LEVEL=DEBUG${NC} - Consider INFO or WARNING for production"
             WARNINGS=$((WARNINGS + 1))
         else
-            echo -e "${GREEN}✓ CEREBRO_LOG_LEVEL=${log_level}${NC}"
+            echo -e "${GREEN} CEREBRO_LOG_LEVEL=${log_level}${NC}"
         fi
     fi
 }
@@ -207,7 +207,7 @@ case "$llm_provider" in
         ;;
     *)
         if [ -n "$llm_provider" ]; then
-            echo -e "${YELLOW}⚠ Unknown LLM provider: ${llm_provider}${NC}"
+            echo -e "${YELLOW} Unknown LLM provider: ${llm_provider}${NC}"
             WARNINGS=$((WARNINGS + 1))
         fi
         ;;
@@ -233,21 +233,21 @@ echo -e "${BLUE}  Validation Summary${NC}"
 echo -e "${BLUE}════════════════════════════════════════════════════════════════════════════${NC}"
 echo ""
 echo -e "Total checks: ${CHECKS}"
-echo -e "${GREEN}✓ Passed: $((CHECKS - ERRORS - WARNINGS))${NC}"
+echo -e "${GREEN} Passed: $((CHECKS - ERRORS - WARNINGS))${NC}"
 
 if [ $WARNINGS -gt 0 ]; then
-    echo -e "${YELLOW}⚠ Warnings: ${WARNINGS}${NC}"
+    echo -e "${YELLOW} Warnings: ${WARNINGS}${NC}"
 fi
 
 if [ $ERRORS -gt 0 ]; then
-    echo -e "${RED}✗ Errors: ${ERRORS}${NC}"
+    echo -e "${RED} Errors: ${ERRORS}${NC}"
     echo ""
     echo "Please fix the errors above and try again."
     echo ""
     exit 1
 else
     echo ""
-    echo -e "${GREEN}✓ Environment validation passed!${NC}"
+    echo -e "${GREEN} Environment validation passed!${NC}"
     echo ""
     exit 0
 fi

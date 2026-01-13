@@ -108,7 +108,7 @@ async def test_throughput_benchmark():
     total_iterations = sum(r.get("total_iterations", 0) for r in results)
     throughput_per_minute = (total_iterations / total_time) * 60 if total_time > 0 else 0
     
-    print(f"\n📊 Throughput Benchmark Results:")
+    print(f"\n Throughput Benchmark Results:")
     print(f"   - Total Experiments: {num_experiments}")
     print(f"   - Total Iterations: {total_iterations}")
     print(f"   - Total Time: {total_time:.2f}s")

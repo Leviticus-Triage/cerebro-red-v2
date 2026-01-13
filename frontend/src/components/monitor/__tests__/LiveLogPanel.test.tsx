@@ -136,8 +136,8 @@ describe('LiveLogPanel', () => {
   it('should display export buttons', () => {
     render(<LiveLogPanel logs={mockLogs} />);
     
-    expect(screen.getByText('📥 JSON')).toBeInTheDocument();
-    expect(screen.getByText('📊 CSV')).toBeInTheDocument();
+    expect(screen.getByText(' JSON')).toBeInTheDocument();
+    expect(screen.getByText(' CSV')).toBeInTheDocument();
   });
 
   it('should handle empty logs gracefully', () => {

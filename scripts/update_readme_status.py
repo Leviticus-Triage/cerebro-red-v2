@@ -43,7 +43,7 @@ def parse_readme(readme_path: Path) -> Tuple[str, int, int]:
     section_end = None
     
     for i, line in enumerate(lines):
-        if line.strip() == "## 🔬 Development Status":
+        if line.strip() == "##  Development Status":
             section_start = i
             break
     
@@ -97,7 +97,7 @@ def generate_status_section(
         formatted_timestamp = timestamp if timestamp else datetime.now(timezone.utc).isoformat().replace('+00:00', 'Z')
     
     # Generate section
-    section = f"""## 🔬 Project Status
+    section = f"""##  Project Status
 
 <!-- AUTO-GENERATED: Do not edit this section manually -->
 {version_badge}
@@ -108,48 +108,48 @@ def generate_status_section(
 
 <!-- END AUTO-GENERATED -->
 
-## 🔬 Development Status
+##  Development Status
 
-**Phase 1**: ✅ Project Foundation & Infrastructure
+**Phase 1**:  Project Foundation & Infrastructure
 - [x] Project structure
 - [x] Requirements & dependencies
 - [x] Docker setup
 - [x] Environment configuration
 
-**Phase 2**: ✅ Data Models & Database Schema
+**Phase 2**:  Data Models & Database Schema
 - [x] SQLAlchemy ORM models
 - [x] Alembic migrations
 - [x] Performance indexes
 
-**Phase 3**: ✅ Prompt Mutator with PAIR Algorithm
+**Phase 3**:  Prompt Mutator with PAIR Algorithm
 - [x] 8 attack strategies implemented
 - [x] PAIR semantic rephrase (core algorithm)
 - [x] Mutation history tracking
 
-**Phase 4**: ✅ Security Judge with LLM-as-a-Judge
+**Phase 4**:  Security Judge with LLM-as-a-Judge
 - [x] 7-criteria evaluation
 - [x] Chain-of-Thought reasoning
 - [x] Regex fallback patterns
 
-**Phase 5**: ✅ Async Orchestration Engine
+**Phase 5**:  Async Orchestration Engine
 - [x] RedTeamOrchestrator implementation
 - [x] Batch processing with exponential backoff
 - [x] Real-time WebSocket progress
 - [x] Circuit breaker pattern
 
-**Phase 6**: ✅ FastAPI REST API
+**Phase 6**:  FastAPI REST API
 - [x] Complete CRUD operations
 - [x] WebSocket streaming
 - [x] OpenAPI documentation
 - [x] API key authentication
 
-**Phase 7**: ✅ React Frontend
+**Phase 7**:  React Frontend
 - [x] Modern dashboard UI
 - [x] Real-time progress visualization
 - [x] Vulnerability analytics
 - [x] Export functionality
 
-**Phase 8**: ✅ Research-Grade Quality Review
+**Phase 8**:  Research-Grade Quality Review
 - [x] Comprehensive test suites
 - [x] E2E testing (backend + frontend)
 - [x] Benchmark tests
@@ -167,10 +167,10 @@ def validate_readme_format(content: str) -> bool:
     if "# CEREBRO-RED v2" not in content and "# CEREBRO-RED" not in content:
         errors.append("Missing title section")
     
-    if "## 🎯" not in content and "Quick Start" not in content.lower():
+    if "## " not in content and "Quick Start" not in content.lower():
         errors.append("Missing quickstart section")
     
-    if "## 🔬 Development Status" not in content:
+    if "##  Development Status" not in content:
         errors.append("Missing Development Status section")
     
     # Check markdown structure (basic validation)
@@ -184,7 +184,7 @@ def validate_readme_format(content: str) -> bool:
         errors.append("Unbalanced code blocks")
     
     if errors:
-        print("❌ README validation failed:", file=sys.stderr)
+        print(" README validation failed:", file=sys.stderr)
         for error in errors:
             print(f"  - {error}", file=sys.stderr)
         return False
@@ -212,7 +212,7 @@ def update_readme(
         return False
     
     if dry_run:
-        print("📝 Dry run - would update README:")
+        print(" Dry run - would update README:")
         print("=" * 60)
         print('\n'.join(new_section.split('\n')[:20]))
         print("=" * 60)
@@ -311,20 +311,20 @@ def main():
         
         if success:
             if args.dry_run:
-                print("✅ Dry run completed successfully")
+                print(" Dry run completed successfully")
             else:
-                print("✅ README updated successfully")
+                print(" README updated successfully")
                 print(f"   Version: {version}")
                 print(f"   Build: {build_status}")
                 print(f"   Coverage: {coverage}")
                 print(f"   Timestamp: {timestamp}")
             sys.exit(0)
         else:
-            print("❌ Failed to update README")
+            print(" Failed to update README")
             sys.exit(1)
     
     except Exception as e:
-        print(f"❌ Error: {e}", file=sys.stderr)
+        print(f" Error: {e}", file=sys.stderr)
         import traceback
         traceback.print_exc()
         sys.exit(1)

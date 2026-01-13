@@ -152,7 +152,7 @@ def main():
     errors = []
     warnings = []
     
-    print("🔍 Validating API documentation...")
+    print(" Validating API documentation...")
     print()
     
     # Try to find venv Python
@@ -168,7 +168,7 @@ def main():
     if code != 0:
         errors.append(f"Failed to export OpenAPI schema: {stderr}")
     else:
-        print("   ✅ OpenAPI schema regenerated")
+        print("    OpenAPI schema regenerated")
     
     # Step 2: Regenerate API documentation
     print("2️⃣  Regenerating API documentation...")
@@ -179,7 +179,7 @@ def main():
     if code != 0:
         errors.append(f"Failed to generate API docs: {stderr}")
     else:
-        print("   ✅ API documentation regenerated")
+        print("    API documentation regenerated")
     
     # Step 3: Check for uncommitted changes
     print("3️⃣  Checking for uncommitted changes...")
@@ -187,7 +187,7 @@ def main():
     if check_git_diff(api_ref_path):
         errors.append(f"Uncommitted changes detected in {api_ref_path}. Run 'git diff' to see changes.")
     else:
-        print("   ✅ No uncommitted changes")
+        print("    No uncommitted changes")
     
     # Step 4: Validate OpenAPI schema
     print("4️⃣  Validating OpenAPI schema...")
@@ -196,7 +196,7 @@ def main():
     if schema_errors:
         errors.extend(schema_errors)
     else:
-        print("   ✅ OpenAPI schema is valid")
+        print("    OpenAPI schema is valid")
     
     # Step 5: Validate Markdown links
     print("5️⃣  Validating Markdown links...")
@@ -204,7 +204,7 @@ def main():
     if link_errors:
         warnings.extend(link_errors[:10])  # Limit warnings
     else:
-        print("   ✅ All links are valid")
+        print("    All links are valid")
     
     # Step 6: Check German translation parity
     print("6️⃣  Checking German translation parity...")
@@ -213,24 +213,24 @@ def main():
     if parity_errors:
         warnings.extend(parity_errors)
     else:
-        print("   ✅ German translation structure matches")
+        print("    German translation structure matches")
     
     # Report results
     print()
     if errors:
-        print("❌ Validation failed with errors:")
+        print(" Validation failed with errors:")
         for error in errors:
             print(f"   - {error}")
         return 1
     
     if warnings:
-        print("⚠️  Validation completed with warnings:")
+        print("️  Validation completed with warnings:")
         for warning in warnings[:10]:
             print(f"   - {warning}")
         if len(warnings) > 10:
             print(f"   ... and {len(warnings) - 10} more warnings")
     
-    print("✅ All validations passed!")
+    print(" All validations passed!")
     return 0
 
 

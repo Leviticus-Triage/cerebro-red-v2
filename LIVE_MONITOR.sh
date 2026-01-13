@@ -36,7 +36,7 @@ print_logo() {
     echo -e "${CYAN}${BOLD}"
     echo "╔═══════════════════════════════════════════════════════════╗"
     echo "║                                                           ║"
-    echo "║   🧠 CEREBRO-RED v2 - Live Monitoring                     ║"
+    echo "║    CEREBRO-RED v2 - Live Monitoring                     ║"
     echo "║                                                           ║"
     echo "╚═══════════════════════════════════════════════════════════╝"
     echo -e "${NC}"
@@ -46,7 +46,7 @@ print_logo() {
 MODE=${1:-all}
 print_logo
 
-echo -e "${YELLOW}📊 Mode: ${BOLD}$MODE${NC}"
+echo -e "${YELLOW} Mode: ${BOLD}$MODE${NC}"
 echo -e "${DIM}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
 echo ""
 
@@ -54,7 +54,7 @@ cd /mnt/nvme0n1p5/danii/hexstrike-ai-kit/cerebro-red-v2
 
 case $MODE in
     "docker"|"d")
-        echo -e "${GREEN}🐳 Docker Backend Logs (Live)${NC}"
+        echo -e "${GREEN} Docker Backend Logs (Live)${NC}"
         echo -e "${DIM}Zeigt alle Backend-Aktivitäten${NC}"
         echo ""
         docker compose logs -f cerebro-backend 2>&1 | while read line; do
@@ -76,7 +76,7 @@ case $MODE in
         ;;
     
     "audit"|"a")
-        echo -e "${BLUE}📋 Audit Logs (Live)${NC}"
+        echo -e "${BLUE} Audit Logs (Live)${NC}"
         echo -e "${DIM}Strukturierte Events im JSONL-Format${NC}"
         echo ""
         
@@ -84,7 +84,7 @@ case $MODE in
         LATEST_LOG=$(docker compose exec cerebro-backend ls -t /app/data/audit_logs/ 2>/dev/null | head -1)
         
         if [ -z "$LATEST_LOG" ]; then
-            echo -e "${YELLOW}⚠️  Keine Audit-Logs gefunden. Starte ein Experiment zuerst.${NC}"
+            echo -e "${YELLOW}️  Keine Audit-Logs gefunden. Starte ein Experiment zuerst.${NC}"
             exit 1
         fi
         
@@ -100,31 +100,31 @@ case $MODE in
             
             case $EVENT in
                 "experiment_start")
-                    echo -e "${GREEN}${BOLD}🧪 EXPERIMENT STARTED${NC}"
+                    echo -e "${GREEN}${BOLD} EXPERIMENT STARTED${NC}"
                     echo "$line" | jq -r '"   ID: \(.experiment_id)\n   Name: \(.experiment_name // "N/A")"' 2>/dev/null
                     ;;
                 "experiment_complete"|"experiment_completed")
-                    echo -e "${GREEN}${BOLD}✅ EXPERIMENT COMPLETED${NC}"
+                    echo -e "${GREEN}${BOLD} EXPERIMENT COMPLETED${NC}"
                     ;;
                 "iteration_start")
-                    echo -e "${CYAN}🔄 Iteration $ITER started${NC} ${DIM}(Strategy: $STRATEGY)${NC}"
+                    echo -e "${CYAN} Iteration $ITER started${NC} ${DIM}(Strategy: $STRATEGY)${NC}"
                     ;;
                 "iteration_complete"|"iteration_completed")
                     if [ "$SCORE" != "N/A" ] && [ "$SCORE" != "null" ]; then
                         if (( $(echo "$SCORE >= 7" | bc -l 2>/dev/null || echo 0) )); then
-                            echo -e "${GREEN}✅ Iteration $ITER: Score $SCORE${NC}"
+                            echo -e "${GREEN} Iteration $ITER: Score $SCORE${NC}"
                         else
-                            echo -e "${YELLOW}❌ Iteration $ITER: Score $SCORE${NC}"
+                            echo -e "${YELLOW} Iteration $ITER: Score $SCORE${NC}"
                         fi
                     else
-                        echo -e "${YELLOW}🔄 Iteration $ITER completed${NC}"
+                        echo -e "${YELLOW} Iteration $ITER completed${NC}"
                     fi
                     ;;
                 "mutation")
-                    echo -e "${MAGENTA}🧬 Mutation applied${NC} ${DIM}($STRATEGY)${NC}"
+                    echo -e "${MAGENTA} Mutation applied${NC} ${DIM}($STRATEGY)${NC}"
                     ;;
                 "judge_evaluation")
-                    echo -e "${BLUE}⚖️  Judge Score: $SCORE${NC}"
+                    echo -e "${BLUE}️  Judge Score: $SCORE${NC}"
                     ;;
                 "llm_request")
                     echo -e "${DIM}→ LLM Request${NC}"
@@ -133,11 +133,11 @@ case $MODE in
                     echo -e "${DIM}← LLM Response${NC}"
                     ;;
                 "vulnerability_found")
-                    echo -e "${RED}${BOLD}🚨 VULNERABILITY FOUND!${NC}"
+                    echo -e "${RED}${BOLD} VULNERABILITY FOUND!${NC}"
                     echo "$line" | jq '.' 2>/dev/null
                     ;;
                 "error")
-                    echo -e "${RED}❌ ERROR: $(echo "$line" | jq -r '.error_type // .message // "Unknown"')${NC}"
+                    echo -e "${RED} ERROR: $(echo "$line" | jq -r '.error_type // .message // "Unknown"')${NC}"
                     ;;
                 *)
                     echo -e "${DIM}• $EVENT${NC}"
@@ -147,7 +147,7 @@ case $MODE in
         ;;
     
     "verbose"|"v")
-        echo -e "${MAGENTA}📝 Verbose Logs (Live)${NC}"
+        echo -e "${MAGENTA} Verbose Logs (Live)${NC}"
         echo -e "${DIM}Detaillierte LLM und Code Flow Logs${NC}"
         echo ""
         
@@ -155,7 +155,7 @@ case $MODE in
         VERBOSE_LOG=$(docker compose exec cerebro-backend ls -t /tmp/cerebro_logs/ 2>/dev/null | head -1)
         
         if [ -z "$VERBOSE_LOG" ]; then
-            echo -e "${YELLOW}⚠️  Keine Verbose-Logs gefunden.${NC}"
+            echo -e "${YELLOW}️  Keine Verbose-Logs gefunden.${NC}"
             echo -e "${DIM}Starte ein Experiment mit CEREBRO_VERBOSITY=3${NC}"
             exit 1
         fi
@@ -167,7 +167,7 @@ case $MODE in
         ;;
     
     "llm"|"l")
-        echo -e "${CYAN}🤖 LLM Requests/Responses (Live)${NC}"
+        echo -e "${CYAN} LLM Requests/Responses (Live)${NC}"
         echo -e "${DIM}Nur LLM-bezogene Events${NC}"
         echo ""
         
@@ -183,7 +183,7 @@ case $MODE in
         ;;
     
     "errors"|"e")
-        echo -e "${RED}🚨 Errors Only (Live)${NC}"
+        echo -e "${RED} Errors Only (Live)${NC}"
         echo ""
         
         docker compose logs -f cerebro-backend 2>&1 | grep --line-buffered -iE "error|exception|failed|traceback|critical" | while read line; do
@@ -192,7 +192,7 @@ case $MODE in
         ;;
     
     "all"|*)
-        echo -e "${GREEN}📊 All Logs (Combined View)${NC}"
+        echo -e "${GREEN} All Logs (Combined View)${NC}"
         echo -e "${DIM}Docker Backend + Key Events${NC}"
         echo ""
         echo -e "${YELLOW}Tipp: Für spezifische Logs nutze:${NC}"
@@ -212,11 +212,11 @@ case $MODE in
                 echo -e "${RED}$line${NC}"
             elif echo "$line" | grep -q "WARNING"; then
                 echo -e "${YELLOW}$line${NC}"
-            elif echo "$line" | grep -qE "Iteration.*started|🚀"; then
+            elif echo "$line" | grep -qE "Iteration.*started|"; then
                 echo -e "${CYAN}${BOLD}$line${NC}"
-            elif echo "$line" | grep -qE "Score|⚖️|Judge"; then
+            elif echo "$line" | grep -qE "Score|️|Judge"; then
                 echo -e "${BLUE}$line${NC}"
-            elif echo "$line" | grep -qE "SUCCESS|Jailbreak|Vulnerability|✅"; then
+            elif echo "$line" | grep -qE "SUCCESS|Jailbreak|Vulnerability|"; then
                 echo -e "${GREEN}${BOLD}$line${NC}"
             elif echo "$line" | grep -qE "LLM|→|←|Request|Response"; then
                 echo -e "${MAGENTA}$line${NC}"

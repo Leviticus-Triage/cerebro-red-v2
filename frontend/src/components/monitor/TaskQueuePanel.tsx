@@ -64,7 +64,7 @@ export const TaskQueuePanel: React.FC<TaskQueuePanelProps> = ({ tasks }) => {
             )}
             {hasDependencies && (
               <span className="px-1.5 py-0.5 bg-amber-900/30 text-amber-400 rounded text-[10px]">
-                🔗 {task.dependencies!.length} dep{task.dependencies!.length > 1 ? 's' : ''}
+                 {task.dependencies!.length} dep{task.dependencies!.length > 1 ? 's' : ''}
               </span>
             )}
             {task.startedAt && (
@@ -87,7 +87,7 @@ export const TaskQueuePanel: React.FC<TaskQueuePanelProps> = ({ tasks }) => {
       {/* Header */}
       <div className="flex items-center justify-between px-4 py-2 bg-slate-900/80 border-b border-slate-800">
         <div className="flex items-center gap-2">
-          <span className="text-lg">📋</span>
+          <span className="text-lg"></span>
           <h3 className="font-semibold text-slate-200">Task Queue</h3>
         </div>
         <div className="flex items-center gap-2 text-xs">
@@ -109,7 +109,7 @@ export const TaskQueuePanel: React.FC<TaskQueuePanelProps> = ({ tasks }) => {
         {runningTasks.length > 0 && (
           <div className="space-y-2">
             <h4 className="text-xs font-semibold text-cyan-400 uppercase tracking-wider">
-              🔄 Running
+               Running
             </h4>
             {runningTasks.map(renderTask)}
           </div>

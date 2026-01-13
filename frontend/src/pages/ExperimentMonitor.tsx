@@ -263,7 +263,7 @@ const ExperimentMonitor: React.FC = () => {
         
         console.log('[MONITOR] Parsed log:', requestLog);
         addLog(requestLog);
-        console.log('[MONITOR] ✅ llm_request log added');
+        console.log('[MONITOR]  llm_request log added');
         break;
 
       case 'llm_response':
@@ -289,7 +289,7 @@ const ExperimentMonitor: React.FC = () => {
         
         console.log('[MONITOR] Parsed log:', responseLog);
         addLog(responseLog);
-        console.log('[MONITOR] ✅ llm_response log added');
+        console.log('[MONITOR]  llm_response log added');
         break;
 
       case 'llm_error':
@@ -347,7 +347,7 @@ const ExperimentMonitor: React.FC = () => {
         
         console.log('[MONITOR] Parsed log:', judgeLog);
         addLog(judgeLog);
-        console.log('[MONITOR] ✅ judge_evaluation log added');
+        console.log('[MONITOR]  judge_evaluation log added');
         break;
 
       case 'iteration_complete':
@@ -565,7 +565,7 @@ const ExperimentMonitor: React.FC = () => {
         break;
 
       default:
-        console.log('[MONITOR] ⚠️ Unknown message type:', message.type);
+        console.log('[MONITOR] ️ Unknown message type:', message.type);
     }
     
     console.log('[MONITOR] ========== handleMessage COMPLETE ==========');

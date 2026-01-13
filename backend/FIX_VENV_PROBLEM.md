@@ -1,4 +1,4 @@
-# 🔧 Problem: Falsches Python/Pytest wird verwendet
+#  Problem: Falsches Python/Pytest wird verwendet
 
 ## Problem
 
@@ -36,7 +36,7 @@ which pytest
 # Sollte zeigen: .../venv/bin/pytest
 
 # Prüfen Sie, ob pydantic installiert ist
-python3 -c "import pydantic; print('✅ Pydantic:', pydantic.__version__)"
+python3 -c "import pydantic; print(' Pydantic:', pydantic.__version__)"
 ```
 
 ### Schritt 3: Dependencies installieren (falls nötig)

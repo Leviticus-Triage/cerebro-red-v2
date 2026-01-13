@@ -24,7 +24,7 @@ def merge_payloads():
     print()
     
     # Load existing payloads
-    print(f"📖 Loading {payloads_file.name}...")
+    print(f" Loading {payloads_file.name}...")
     with open(payloads_file, 'r', encoding='utf-8') as f:
         payloads = json.load(f)
     
@@ -32,7 +32,7 @@ def merge_payloads():
     print(f"   Found {len(existing_categories)} existing categories")
     
     # Load advanced payloads
-    print(f"📖 Loading {advanced_file.name}...")
+    print(f" Loading {advanced_file.name}...")
     with open(advanced_file, 'r', encoding='utf-8') as f:
         advanced = json.load(f)
     
@@ -42,12 +42,12 @@ def merge_payloads():
     print(f"   Found {len(advanced_categories)} advanced categories")
     
     # Backup original
-    print(f"💾 Creating backup: {backup_file.name}...")
+    print(f" Creating backup: {backup_file.name}...")
     with open(backup_file, 'w', encoding='utf-8') as f:
         json.dump(payloads, f, indent=2, ensure_ascii=False)
     
     # Merge categories
-    print(f"🔀 Merging categories...")
+    print(f" Merging categories...")
     if "categories" not in payloads:
         payloads["categories"] = {}
     
@@ -56,11 +56,11 @@ def merge_payloads():
     
     for category, templates in advanced_categories.items():
         if category in payloads["categories"]:
-            print(f"   ⚠️  Skipping {category} (already exists)")
+            print(f"   ️  Skipping {category} (already exists)")
             skipped_count += 1
         else:
             payloads["categories"][category] = templates
-            print(f"   ✓ Added {category} ({len(templates)} templates)")
+            print(f"    Added {category} ({len(templates)} templates)")
             merged_count += 1
     
     # Update metadata
@@ -73,7 +73,7 @@ def merge_payloads():
     payloads["metadata"]["merge_date"] = datetime.now().isoformat()
     
     # Save merged file
-    print(f"💾 Saving merged payloads to {payloads_file.name}...")
+    print(f" Saving merged payloads to {payloads_file.name}...")
     with open(payloads_file, 'w', encoding='utf-8') as f:
         json.dump(payloads, f, indent=2, ensure_ascii=False)
     
@@ -82,10 +82,10 @@ def merge_payloads():
     print("  MERGE COMPLETE")
     print("═" * 79)
     print()
-    print(f"✅ Merged {merged_count} new categories")
-    print(f"⚠️  Skipped {skipped_count} existing categories")
-    print(f"📊 Total categories: {len(payloads['categories'])}")
-    print(f"💾 Backup saved: {backup_file.name}")
+    print(f" Merged {merged_count} new categories")
+    print(f"️  Skipped {skipped_count} existing categories")
+    print(f" Total categories: {len(payloads['categories'])}")
+    print(f" Backup saved: {backup_file.name}")
     print()
     print("Next steps:")
     print("  1. Rebuild Docker image: docker compose build cerebro-backend")

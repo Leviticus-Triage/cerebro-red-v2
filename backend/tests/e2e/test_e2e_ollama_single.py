@@ -103,7 +103,7 @@ async def test_single_prompt_attack_ollama():
     assert result["total_iterations"] > 0
     assert "statistics" in result
     
-    print(f"\n✅ E2E Test Results:")
+    print(f"\n E2E Test Results:")
     print(f"   - Experiment ID: {result['experiment_id']}")
     print(f"   - Total Iterations: {result['total_iterations']}")
     print(f"   - Successful Attacks: {len(result.get('successful_attacks', []))}")

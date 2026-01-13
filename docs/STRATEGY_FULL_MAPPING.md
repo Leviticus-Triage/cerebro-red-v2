@@ -16,50 +16,50 @@ This document provides a complete mapping of all 44 attack strategies implemente
 
 | # | Frontend Strategy Name | Backend Enum Value | Implementation Location | Source Repo/Template | Test Status |
 |---|------------------------|-------------------|------------------------|---------------------|-------------|
-| 1 | Obfuscation Base64 | `obfuscation_base64` | `mutator.py::_mutate_obfuscation_base64()` | Hardcoded fallback | ✅ Pass |
-| 2 | Obfuscation Leetspeak | `obfuscation_leetspeak` | `mutator.py::_mutate_obfuscation_leetspeak()` | Hardcoded fallback | ✅ Pass |
-| 3 | Obfuscation ROT13 | `obfuscation_rot13` | `mutator.py::_mutate_obfuscation_rot13()` | Hardcoded fallback | ✅ Pass |
-| 4 | Obfuscation ASCII Art | `obfuscation_ascii_art` | `mutator.py::_mutate_obfuscation_ascii_art()` | `advanced_payloads.json` | ✅ Pass |
-| 5 | Obfuscation Unicode | `obfuscation_unicode` | `mutator.py::_mutate_obfuscation_unicode()` | `advanced_payloads.json` | ✅ Pass |
-| 6 | Obfuscation Token Smuggling | `obfuscation_token_smuggling` | `mutator.py::_mutate_obfuscation_token_smuggling()` | `advanced_payloads.json` | ✅ Pass |
-| 7 | Obfuscation Morse | `obfuscation_morse` | `mutator.py::_mutate_obfuscation_morse()` | `payloads.json` | ✅ Pass |
-| 8 | Obfuscation Binary | `obfuscation_binary` | `mutator.py::_mutate_obfuscation_binary()` | `payloads.json` | ✅ Pass |
-| 9 | Jailbreak DAN | `jailbreak_dan` | `mutator.py::_mutate_jailbreak_dan()` | PyRIT, `advanced_payloads.json` | ✅ Pass |
-| 10 | Jailbreak AIM | `jailbreak_aim` | `mutator.py::_mutate_jailbreak_aim()` | PyRIT, `advanced_payloads.json` | ✅ Pass |
-| 11 | Jailbreak STAN | `jailbreak_stan` | `mutator.py::_mutate_jailbreak_stan()` | PyRIT, `advanced_payloads.json` | ✅ Pass |
-| 12 | Jailbreak DUDE | `jailbreak_dude` | `mutator.py::_mutate_jailbreak_dude()` | PyRIT, `payloads.json` | ✅ Pass |
-| 13 | Jailbreak Developer Mode | `jailbreak_developer_mode` | `mutator.py::_mutate_jailbreak_developer_mode()` | PyRIT, `payloads.json` | ✅ Pass |
-| 14 | Crescendo Attack | `crescendo_attack` | `mutator.py::_mutate_crescendo_attack()` | NVIDIA garak, `payloads.json` | ✅ Pass |
-| 15 | Many-Shot Jailbreak | `many_shot_jailbreak` | `mutator.py::_mutate_many_shot_jailbreak()` | Anthropic Research, `advanced_payloads.json` | ✅ Pass |
-| 16 | Skeleton Key | `skeleton_key` | `mutator.py::_mutate_skeleton_key()` | Microsoft AI Red Team, `advanced_payloads.json` | ✅ Pass |
-| 17 | Direct Injection | `direct_injection` | `mutator.py::_mutate_direct_injection()` | OWASP LLM01, `advanced_payloads.json` | ✅ Pass |
-| 18 | Indirect Injection | `indirect_injection` | `mutator.py::_mutate_indirect_injection()` | OWASP LLM01, `advanced_payloads.json` | ✅ Pass |
-| 19 | Payload Splitting | `payload_splitting` | `mutator.py::_mutate_payload_splitting()` | L1B3RT4S, `advanced_payloads.json` | ✅ Pass |
-| 20 | Virtualization | `virtualization` | `mutator.py::_mutate_virtualization()` | PyRIT, `advanced_payloads.json` | ✅ Pass |
-| 21 | Context Flooding | `context_flooding` | `mutator.py::_mutate_context_flooding()` | LLAMATOR, `payloads.json` | ✅ Pass |
-| 22 | Context Ignoring | `context_ignoring` | `mutator.py::_mutate_context_ignoring()` | OWASP LLM01, `advanced_payloads.json` | ✅ Pass |
-| 23 | Conversation Reset | `conversation_reset` | `mutator.py::_mutate_conversation_reset()` | PyRIT, `advanced_payloads.json` | ✅ Pass |
-| 24 | Roleplay Injection | `roleplay_injection` | `mutator.py::_mutate_roleplay_injection()` | NVIDIA garak, `payloads.json` | ✅ Pass |
-| 25 | Authority Manipulation | `authority_manipulation` | `mutator.py::_mutate_authority_manipulation()` | AI Red Team Handbook, `advanced_payloads.json` | ✅ Pass |
-| 26 | Urgency Exploitation | `urgency_exploitation` | `mutator.py::_mutate_urgency_exploitation()` | AI Red Team Handbook, `advanced_payloads.json` | ✅ Pass |
-| 27 | Emotional Manipulation | `emotional_manipulation` | `mutator.py::_mutate_emotional_manipulation()` | AI Red Team Handbook, `advanced_payloads.json` | ✅ Pass |
-| 28 | Rephrase Semantic | `rephrase_semantic` | `mutator.py::_mutate_rephrase_semantic()` | Hardcoded fallback | ✅ Pass |
-| 29 | Sycophancy | `sycophancy` | `mutator.py::_mutate_sycophancy()` | FiveStars LLM Security, `payloads.json` | ✅ Pass |
-| 30 | Linguistic Evasion | `linguistic_evasion` | `mutator.py::_mutate_linguistic_evasion()` | L1B3RT4S, `payloads.json` | ✅ Pass |
-| 31 | Translation Attack | `translation_attack` | `mutator.py::_mutate_translation_attack()` | OWASP LLM01, `advanced_payloads.json` | ✅ Pass |
-| 32 | System Prompt Extraction | `system_prompt_extraction` | `mutator.py::_mutate_system_prompt_extraction()` | OWASP LLM07, `payloads.json` | ✅ Pass |
-| 33 | System Prompt Override | `system_prompt_override` | `mutator.py::_mutate_system_prompt_override()` | OWASP LLM07, `advanced_payloads.json` | ✅ Pass |
-| 34 | RAG Poisoning | `rag_poisoning` | `mutator.py::_mutate_rag_poisoning()` | OWASP LLM03, `payloads.json` | ✅ Pass |
-| 35 | RAG Bypass | `rag_bypass` | `mutator.py::_mutate_rag_bypass()` | OWASP LLM03, `advanced_payloads.json` | ✅ Pass |
-| 36 | EchoLeak | `echoleak` | `mutator.py::_mutate_echoleak()` | Model-Inversion-Attack-ToolBox, `advanced_payloads.json` | ✅ Pass |
-| 37 | Adversarial Suffix | `adversarial_suffix` | `mutator.py::_mutate_adversarial_suffix()` | GCG (Zou et al.), `payloads.json` | ✅ Pass |
-| 38 | Gradient Based | `gradient_based` | `mutator.py::_mutate_gradient_based()` | Model-Inversion-Attack-ToolBox, `payloads.json` | ✅ Pass |
-| 39 | Bias Probe | `bias_probe` | `mutator.py::_mutate_bias_probe()` | FiveStars LLM Security, `advanced_payloads.json` | ✅ Pass |
-| 40 | Hallucination Probe | `hallucination_probe` | `mutator.py::_mutate_hallucination_probe()` | OWASP LLM09, `advanced_payloads.json` | ✅ Pass |
-| 41 | Misinformation Injection | `misinformation_injection` | `mutator.py::_mutate_misinformation_injection()` | OWASP LLM09, `payloads.json` | ✅ Pass |
-| 42 | MCP Tool Injection | `mcp_tool_injection` | `mutator.py::_mutate_mcp_tool_injection()` | Securing the MCP, `advanced_payloads.json` | ✅ Pass |
-| 43 | MCP Context Poisoning | `mcp_context_poisoning` | `mutator.py::_mutate_mcp_context_poisoning()` | Securing the MCP, `payloads.json` | ✅ Pass |
-| 44 | Research Pre-Jailbreak | `research_pre_jailbreak` | `mutator.py::_mutate_research_pre_jailbreak()` | Custom (Offensive ML Playbook), `advanced_payloads.json` | ✅ Pass |
+| 1 | Obfuscation Base64 | `obfuscation_base64` | `mutator.py::_mutate_obfuscation_base64()` | Hardcoded fallback |  Pass |
+| 2 | Obfuscation Leetspeak | `obfuscation_leetspeak` | `mutator.py::_mutate_obfuscation_leetspeak()` | Hardcoded fallback |  Pass |
+| 3 | Obfuscation ROT13 | `obfuscation_rot13` | `mutator.py::_mutate_obfuscation_rot13()` | Hardcoded fallback |  Pass |
+| 4 | Obfuscation ASCII Art | `obfuscation_ascii_art` | `mutator.py::_mutate_obfuscation_ascii_art()` | `advanced_payloads.json` |  Pass |
+| 5 | Obfuscation Unicode | `obfuscation_unicode` | `mutator.py::_mutate_obfuscation_unicode()` | `advanced_payloads.json` |  Pass |
+| 6 | Obfuscation Token Smuggling | `obfuscation_token_smuggling` | `mutator.py::_mutate_obfuscation_token_smuggling()` | `advanced_payloads.json` |  Pass |
+| 7 | Obfuscation Morse | `obfuscation_morse` | `mutator.py::_mutate_obfuscation_morse()` | `payloads.json` |  Pass |
+| 8 | Obfuscation Binary | `obfuscation_binary` | `mutator.py::_mutate_obfuscation_binary()` | `payloads.json` |  Pass |
+| 9 | Jailbreak DAN | `jailbreak_dan` | `mutator.py::_mutate_jailbreak_dan()` | PyRIT, `advanced_payloads.json` |  Pass |
+| 10 | Jailbreak AIM | `jailbreak_aim` | `mutator.py::_mutate_jailbreak_aim()` | PyRIT, `advanced_payloads.json` |  Pass |
+| 11 | Jailbreak STAN | `jailbreak_stan` | `mutator.py::_mutate_jailbreak_stan()` | PyRIT, `advanced_payloads.json` |  Pass |
+| 12 | Jailbreak DUDE | `jailbreak_dude` | `mutator.py::_mutate_jailbreak_dude()` | PyRIT, `payloads.json` |  Pass |
+| 13 | Jailbreak Developer Mode | `jailbreak_developer_mode` | `mutator.py::_mutate_jailbreak_developer_mode()` | PyRIT, `payloads.json` |  Pass |
+| 14 | Crescendo Attack | `crescendo_attack` | `mutator.py::_mutate_crescendo_attack()` | NVIDIA garak, `payloads.json` |  Pass |
+| 15 | Many-Shot Jailbreak | `many_shot_jailbreak` | `mutator.py::_mutate_many_shot_jailbreak()` | Anthropic Research, `advanced_payloads.json` |  Pass |
+| 16 | Skeleton Key | `skeleton_key` | `mutator.py::_mutate_skeleton_key()` | Microsoft AI Red Team, `advanced_payloads.json` |  Pass |
+| 17 | Direct Injection | `direct_injection` | `mutator.py::_mutate_direct_injection()` | OWASP LLM01, `advanced_payloads.json` |  Pass |
+| 18 | Indirect Injection | `indirect_injection` | `mutator.py::_mutate_indirect_injection()` | OWASP LLM01, `advanced_payloads.json` |  Pass |
+| 19 | Payload Splitting | `payload_splitting` | `mutator.py::_mutate_payload_splitting()` | L1B3RT4S, `advanced_payloads.json` |  Pass |
+| 20 | Virtualization | `virtualization` | `mutator.py::_mutate_virtualization()` | PyRIT, `advanced_payloads.json` |  Pass |
+| 21 | Context Flooding | `context_flooding` | `mutator.py::_mutate_context_flooding()` | LLAMATOR, `payloads.json` |  Pass |
+| 22 | Context Ignoring | `context_ignoring` | `mutator.py::_mutate_context_ignoring()` | OWASP LLM01, `advanced_payloads.json` |  Pass |
+| 23 | Conversation Reset | `conversation_reset` | `mutator.py::_mutate_conversation_reset()` | PyRIT, `advanced_payloads.json` |  Pass |
+| 24 | Roleplay Injection | `roleplay_injection` | `mutator.py::_mutate_roleplay_injection()` | NVIDIA garak, `payloads.json` |  Pass |
+| 25 | Authority Manipulation | `authority_manipulation` | `mutator.py::_mutate_authority_manipulation()` | AI Red Team Handbook, `advanced_payloads.json` |  Pass |
+| 26 | Urgency Exploitation | `urgency_exploitation` | `mutator.py::_mutate_urgency_exploitation()` | AI Red Team Handbook, `advanced_payloads.json` |  Pass |
+| 27 | Emotional Manipulation | `emotional_manipulation` | `mutator.py::_mutate_emotional_manipulation()` | AI Red Team Handbook, `advanced_payloads.json` |  Pass |
+| 28 | Rephrase Semantic | `rephrase_semantic` | `mutator.py::_mutate_rephrase_semantic()` | Hardcoded fallback |  Pass |
+| 29 | Sycophancy | `sycophancy` | `mutator.py::_mutate_sycophancy()` | FiveStars LLM Security, `payloads.json` |  Pass |
+| 30 | Linguistic Evasion | `linguistic_evasion` | `mutator.py::_mutate_linguistic_evasion()` | L1B3RT4S, `payloads.json` |  Pass |
+| 31 | Translation Attack | `translation_attack` | `mutator.py::_mutate_translation_attack()` | OWASP LLM01, `advanced_payloads.json` |  Pass |
+| 32 | System Prompt Extraction | `system_prompt_extraction` | `mutator.py::_mutate_system_prompt_extraction()` | OWASP LLM07, `payloads.json` |  Pass |
+| 33 | System Prompt Override | `system_prompt_override` | `mutator.py::_mutate_system_prompt_override()` | OWASP LLM07, `advanced_payloads.json` |  Pass |
+| 34 | RAG Poisoning | `rag_poisoning` | `mutator.py::_mutate_rag_poisoning()` | OWASP LLM03, `payloads.json` |  Pass |
+| 35 | RAG Bypass | `rag_bypass` | `mutator.py::_mutate_rag_bypass()` | OWASP LLM03, `advanced_payloads.json` |  Pass |
+| 36 | EchoLeak | `echoleak` | `mutator.py::_mutate_echoleak()` | Model-Inversion-Attack-ToolBox, `advanced_payloads.json` |  Pass |
+| 37 | Adversarial Suffix | `adversarial_suffix` | `mutator.py::_mutate_adversarial_suffix()` | GCG (Zou et al.), `payloads.json` |  Pass |
+| 38 | Gradient Based | `gradient_based` | `mutator.py::_mutate_gradient_based()` | Model-Inversion-Attack-ToolBox, `payloads.json` |  Pass |
+| 39 | Bias Probe | `bias_probe` | `mutator.py::_mutate_bias_probe()` | FiveStars LLM Security, `advanced_payloads.json` |  Pass |
+| 40 | Hallucination Probe | `hallucination_probe` | `mutator.py::_mutate_hallucination_probe()` | OWASP LLM09, `advanced_payloads.json` |  Pass |
+| 41 | Misinformation Injection | `misinformation_injection` | `mutator.py::_mutate_misinformation_injection()` | OWASP LLM09, `payloads.json` |  Pass |
+| 42 | MCP Tool Injection | `mcp_tool_injection` | `mutator.py::_mutate_mcp_tool_injection()` | Securing the MCP, `advanced_payloads.json` |  Pass |
+| 43 | MCP Context Poisoning | `mcp_context_poisoning` | `mutator.py::_mutate_mcp_context_poisoning()` | Securing the MCP, `payloads.json` |  Pass |
+| 44 | Research Pre-Jailbreak | `research_pre_jailbreak` | `mutator.py::_mutate_research_pre_jailbreak()` | Custom (Offensive ML Playbook), `advanced_payloads.json` |  Pass |
 
 ---
 
@@ -230,4 +230,4 @@ Run the enum sync test to verify frontend/backend consistency:
 
 **Document Version**: 1.0  
 **Last Validated**: 2024-12-29  
-**Validation Status**: ✅ All 44 strategies functional and tested
+**Validation Status**:  All 44 strategies functional and tested

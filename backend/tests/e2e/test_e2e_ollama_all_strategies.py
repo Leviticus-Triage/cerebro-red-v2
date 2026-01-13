@@ -105,7 +105,7 @@ async def test_strategy_e2e_ollama(strategy):
         assert result.get("status") in ["COMPLETED", "FAILED"], f"{strategy.value} has invalid status"
         
         # Collect metrics
-        print(f"✅ {strategy.value}: {execution_time:.2f}s, {result.get('total_iterations', 0)} iterations")
+        print(f" {strategy.value}: {execution_time:.2f}s, {result.get('total_iterations', 0)} iterations")
 
 
 @pytest.mark.e2e
@@ -193,9 +193,9 @@ async def test_all_strategies_ollama_legacy():
                 "iterations": result.get("total_iterations", 0)
             }
             
-            print(f"✅ {strategy.value}: {result.get('total_iterations', 0)} iterations")
+            print(f" {strategy.value}: {result.get('total_iterations', 0)} iterations")
     
     # All strategies should complete without errors
     assert all(r["success"] for r in results.values())
-    print(f"\n✅ All 8 strategies (legacy test) completed successfully")
+    print(f"\n All 8 strategies (legacy test) completed successfully")
 

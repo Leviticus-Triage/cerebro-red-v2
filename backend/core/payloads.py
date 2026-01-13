@@ -474,9 +474,9 @@ class PayloadManager:
             "under_covered_strategies": under_covered_strategies,
             "strategy_details": strategy_details,
             "recommendation": (
-                "✅ Excellent coverage (>90%)" if coverage_percent >= 90 else
-                "⚠️ Good coverage (70-90%)" if coverage_percent >= 70 else
-                "❌ Poor coverage (<70%) - Add more templates"
+                " Excellent coverage (>90%)" if coverage_percent >= 90 else
+                "️ Good coverage (70-90%)" if coverage_percent >= 70 else
+                " Poor coverage (<70%) - Add more templates"
             )
         }
 

@@ -17,7 +17,7 @@ export function DemoModeBanner() {
     <div className="bg-yellow-50 border-b-2 border-yellow-400 text-yellow-800 dark:bg-yellow-900/20 dark:border-yellow-600 dark:text-yellow-200 px-6 py-3">
       <div className="flex items-center justify-center gap-2 text-sm font-medium">
         <span className="text-lg" role="img" aria-label="Target">
-          🎯
+          
         </span>
         <span className="font-bold">Demo Mode</span>
         <span className="hidden sm:inline">—</span>

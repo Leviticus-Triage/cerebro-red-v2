@@ -106,7 +106,7 @@ async def test_single_prompt_attack_azure():
     assert result["experiment_id"] == experiment_id
     assert result["total_iterations"] > 0
     
-    print(f"\n✅ Azure E2E Test Results:")
+    print(f"\n Azure E2E Test Results:")
     print(f"   - Experiment ID: {result['experiment_id']}")
     print(f"   - Total Iterations: {result['total_iterations']}")
     print(f"   - Vulnerabilities Found: {len(result.get('vulnerabilities_found', []))}")

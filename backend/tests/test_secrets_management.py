@@ -34,7 +34,7 @@ def test_secrets_not_exposed():
         assert "OPENAI_API_KEY" not in data_str
         assert "sk-" not in data_str  # OpenAI API key prefix
     
-    print("✅ Secrets not exposed in API responses")
+    print(" Secrets not exposed in API responses")
 
 def test_env_vars_not_exposed():
     """Test that environment variables are not exposed."""
@@ -54,5 +54,5 @@ def test_env_vars_not_exposed():
     for var in sensitive_vars:
         assert var not in data_str or "your-" in data_str.lower()  # Allow placeholder values
     
-    print("✅ Environment variables not exposed")
+    print(" Environment variables not exposed")
 

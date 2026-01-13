@@ -55,7 +55,7 @@ def test_enum_count_matches():
     backend_values = extract_backend_enum_values()
     frontend_values = extract_frontend_enum_values()
     
-    print(f"\n📊 Enum Count:")
+    print(f"\n Enum Count:")
     print(f"   Backend: {len(backend_values)} strategies")
     print(f"   Frontend: {len(frontend_values)} strategies")
     
@@ -80,7 +80,7 @@ def test_enum_values_match_exactly():
     only_in_frontend = frontend_values - backend_values
     
     if only_in_backend or only_in_frontend:
-        print(f"\n❌ Enum Synchronization Errors:")
+        print(f"\n Enum Synchronization Errors:")
         
         if only_in_backend:
             print(f"\n   Only in Backend ({len(only_in_backend)}):")
@@ -94,7 +94,7 @@ def test_enum_values_match_exactly():
         
         pytest.fail(f"Enum mismatch: {len(only_in_backend)} backend-only, {len(only_in_frontend)} frontend-only")
     
-    print(f"✅ All {len(backend_values)} enum values match exactly")
+    print(f" All {len(backend_values)} enum values match exactly")
 
 
 def test_enum_naming_convention():
@@ -112,12 +112,12 @@ def test_enum_naming_convention():
             invalid_names.append(value)
     
     if invalid_names:
-        print(f"\n⚠️  Invalid enum names (not snake_case):")
+        print(f"\n️  Invalid enum names (not snake_case):")
         for name in sorted(invalid_names):
             print(f"     - {name}")
         pytest.fail(f"{len(invalid_names)} enum values don't follow snake_case convention")
     
-    print(f"✅ All {len(backend_values)} enum values follow snake_case")
+    print(f" All {len(backend_values)} enum values follow snake_case")
 
 
 def test_no_duplicate_enum_values():
@@ -131,12 +131,12 @@ def test_no_duplicate_enum_values():
     
     if len(backend_values) != len(unique_values):
         duplicates = [v for v in unique_values if backend_values.count(v) > 1]
-        print(f"\n❌ Duplicate enum values found:")
+        print(f"\n Duplicate enum values found:")
         for dup in duplicates:
             print(f"     - {dup} (appears {backend_values.count(dup)} times)")
         pytest.fail(f"{len(duplicates)} duplicate enum values")
     
-    print(f"✅ All {len(backend_values)} enum values are unique")
+    print(f" All {len(backend_values)} enum values are unique")
 
 
 def test_generate_enum_sync_script():
@@ -154,26 +154,26 @@ def test_generate_enum_sync_script():
 
 set -e
 
-echo "🔍 Checking AttackStrategyType enum synchronization..."
+echo " Checking AttackStrategyType enum synchronization..."
 
 # Extract backend enum values
-echo "📦 Extracting backend enum values..."
+echo " Extracting backend enum values..."
 grep -A 100 "class AttackStrategyType" backend/core/models.py | \\
   grep '= "' | awk -F'"' '{print $2}' | sort > /tmp/backend_strategies.txt
 
 # Extract frontend enum values
-echo "🎨 Extracting frontend enum values..."
+echo " Extracting frontend enum values..."
 grep -A 100 "export enum AttackStrategyType" frontend/src/types/api.ts | \\
   grep '= "' | awk -F'"' '{print $2}' | sort > /tmp/frontend_strategies.txt
 
 # Compare
-echo "⚖️  Comparing enums..."
+echo "️  Comparing enums..."
 if diff /tmp/backend_strategies.txt /tmp/frontend_strategies.txt > /dev/null; then
     BACKEND_COUNT=$(wc -l < /tmp/backend_strategies.txt)
-    echo "✅ Enums synchronized: $BACKEND_COUNT strategies match"
+    echo " Enums synchronized: $BACKEND_COUNT strategies match"
     exit 0
 else
-    echo "❌ Enum mismatch detected:"
+    echo " Enum mismatch detected:"
     echo ""
     echo "Differences:"
     diff /tmp/backend_strategies.txt /tmp/frontend_strategies.txt || true
@@ -189,7 +189,7 @@ fi
     
     script_path.chmod(0o755)
     
-    print(f"\n📝 Generated enum sync script: {script_path}")
+    print(f"\n Generated enum sync script: {script_path}")
     print(f"   Run: ./backend/scripts/check_enum_sync.sh")
 
 
@@ -216,14 +216,14 @@ def test_all_strategies_documented():
             undocumented.append(strategy)
     
     if undocumented:
-        print(f"\n⚠️  Strategies missing from documentation:")
+        print(f"\n️  Strategies missing from documentation:")
         for strategy in sorted(undocumented)[:10]:  # Show first 10
             print(f"     - {strategy}")
         print(f"\n   Total undocumented: {len(undocumented)}/{len(backend_values)}")
         # Don't fail, just warn
-        print(f"   ⚠️  Warning: Some strategies are not documented")
+        print(f"   ️  Warning: Some strategies are not documented")
     else:
-        print(f"✅ All {len(backend_values)} strategies are documented")
+        print(f" All {len(backend_values)} strategies are documented")
 
 
 if __name__ == "__main__":

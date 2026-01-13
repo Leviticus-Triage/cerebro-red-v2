@@ -66,22 +66,22 @@ class LiveLogger:
     
     # Event Type Icons
     ICONS = {
-        "llm_request": "🤖",
-        "llm_response": "💬",
-        "llm_stream": "📡",
-        "iteration": "🔄",
-        "attack": "⚔️",
-        "judge": "⚖️",
-        "mutation": "🧬",
-        "score": "📊",
-        "success": "✅",
-        "failure": "❌",
-        "warning": "⚠️",
-        "error": "🚨",
-        "code_flow": "📍",
-        "experiment": "🧪",
-        "database": "💾",
-        "websocket": "🔌",
+        "llm_request": "",
+        "llm_response": "",
+        "llm_stream": "",
+        "iteration": "",
+        "attack": "️",
+        "judge": "️",
+        "mutation": "",
+        "score": "",
+        "success": "",
+        "failure": "",
+        "warning": "️",
+        "error": "",
+        "code_flow": "",
+        "experiment": "",
+        "database": "",
+        "websocket": "",
     }
     
     def __init__(self):
@@ -162,17 +162,17 @@ class LiveLogger:
         
         if self._verbosity >= VerbosityLevel.VERBOSE:
             print(self._color("=" * 70, "green"))
-            print(self._color(f"  🧪 EXPERIMENT: {name}", "bold"))
-            print(self._color(f"  📋 ID: {experiment_id}", "dim"))
-            print(self._color(f"  🎯 Target: {target_model}", "cyan"))
-            print(self._color(f"  ⚔️  Strategies: {', '.join(strategies)}", "yellow"))
+            print(self._color(f"   EXPERIMENT: {name}", "bold"))
+            print(self._color(f"   ID: {experiment_id}", "dim"))
+            print(self._color(f"   Target: {target_model}", "cyan"))
+            print(self._color(f"  ️  Strategies: {', '.join(strategies)}", "yellow"))
             print(self._color("=" * 70, "green"))
     
     def experiment_end(self, experiment_id: str, status: str, 
                        duration_seconds: float, iterations: int):
         """Log experiment end event."""
         color = "green" if status == "completed" else "red"
-        icon = "✅" if status == "completed" else "❌"
+        icon = "" if status == "completed" else ""
         
         self._log(
             VerbosityLevel.NORMAL,
@@ -187,7 +187,7 @@ class LiveLogger:
             print(self._color("=" * 70, color))
             print(self._color(f"  {icon} EXPERIMENT {status.upper()}", "bold"))
             print(self._color(f"  ⏱️  Duration: {duration_seconds:.1f}s", "dim"))
-            print(self._color(f"  🔄 Iterations: {iterations}", "dim"))
+            print(self._color(f"   Iterations: {iterations}", "dim"))
             print(self._color("=" * 70, color))
     
     def iteration_start(self, iteration_num: int, strategy: str, prompt: str):
@@ -201,7 +201,7 @@ class LiveLogger:
         )
         
         if self._verbosity >= VerbosityLevel.DEBUG:
-            print(self._color(f"\n  📝 Prompt Preview: {prompt[:100]}...", "dim"))
+            print(self._color(f"\n   Prompt Preview: {prompt[:100]}...", "dim"))
     
     def iteration_end(self, iteration_num: int, success: bool, score: float):
         """Log iteration end."""
@@ -231,7 +231,7 @@ class LiveLogger:
         
         if self._verbosity >= VerbosityLevel.DEBUG and prompt_preview:
             preview = prompt_preview[:200].replace("\n", " ")
-            print(self._color(f"     📤 Prompt: {preview}...", "dim"))
+            print(self._color(f"      Prompt: {preview}...", "dim"))
     
     def llm_response(self, model: str, role: str, response_preview: str = "",
                      tokens: int = 0, latency_ms: float = 0):
@@ -249,7 +249,7 @@ class LiveLogger:
         
         if self._verbosity >= VerbosityLevel.DEBUG and response_preview:
             preview = response_preview[:200].replace("\n", " ")
-            print(self._color(f"     📥 Response: {preview}...", "dim"))
+            print(self._color(f"      Response: {preview}...", "dim"))
     
     def llm_stream_chunk(self, chunk: str):
         """Log LLM streaming chunk (for streaming responses)."""
@@ -271,8 +271,8 @@ class LiveLogger:
         )
         
         if self._verbosity >= VerbosityLevel.DEBUG:
-            print(self._color(f"     🔹 Original: {original[:80]}...", "dim"))
-            print(self._color(f"     🔸 Mutated:  {mutated[:80]}...", "dim"))
+            print(self._color(f"      Original: {original[:80]}...", "dim"))
+            print(self._color(f"      Mutated:  {mutated[:80]}...", "dim"))
     
     def judge_evaluation(self, score: float, reasoning: str = ""):
         """Log judge evaluation."""
@@ -287,24 +287,24 @@ class LiveLogger:
         )
         
         if self._verbosity >= VerbosityLevel.DEBUG and reasoning:
-            print(self._color(f"     📋 Reasoning: {reasoning[:150]}...", "dim"))
+            print(self._color(f"      Reasoning: {reasoning[:150]}...", "dim"))
     
     def attack_success(self, strategy: str, score: float, prompt: str):
         """Log successful attack."""
         self._log(
             VerbosityLevel.NORMAL,
             "success",
-            f"🎯 JAILBREAK FOUND! Strategy: {strategy}",
+            f" JAILBREAK FOUND! Strategy: {strategy}",
             {"score": f"{score:.1f}"},
             "green"
         )
         
         print(self._color("=" * 50, "green"))
-        print(self._color("  ✅ SUCCESSFUL JAILBREAK DETECTED!", "bold"))
-        print(self._color(f"  📊 Score: {score:.1f}/10", "green"))
-        print(self._color(f"  🎯 Strategy: {strategy}", "green"))
+        print(self._color("   SUCCESSFUL JAILBREAK DETECTED!", "bold"))
+        print(self._color(f"   Score: {score:.1f}/10", "green"))
+        print(self._color(f"   Strategy: {strategy}", "green"))
         if self._verbosity >= VerbosityLevel.VERBOSE:
-            print(self._color(f"  📝 Prompt: {prompt[:150]}...", "dim"))
+            print(self._color(f"   Prompt: {prompt[:150]}...", "dim"))
         print(self._color("=" * 50, "green"))
     
     def code_flow(self, location: str, action: str, details: str = ""):
@@ -354,7 +354,7 @@ class LiveLogger:
         )
         
         if exception and self._verbosity >= VerbosityLevel.VERBOSE:
-            print(self._color(f"     💥 {str(exception)}", "red"))
+            print(self._color(f"      {str(exception)}", "red"))
     
     def warning(self, message: str, details: Optional[Dict[str, Any]] = None):
         """Log warning."""

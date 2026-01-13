@@ -69,5 +69,5 @@ def test_rate_limiting():
     
     # Should have some 429 (Too Many Requests) responses if rate limiting is enabled
     # Or all should succeed if rate limiting is disabled
-    print(f"✅ Rate limiting test: {responses.count(429)} requests blocked out of {len(responses)}")
+    print(f" Rate limiting test: {responses.count(429)} requests blocked out of {len(responses)}")
 

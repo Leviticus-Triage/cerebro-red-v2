@@ -7,21 +7,21 @@ set -e
 API_URL="http://localhost:9000"
 API_KEY="test-api-key"
 
-echo "🧪 CEREBRO-RED v2 - Quick Test Examples"
+echo " CEREBRO-RED v2 - Quick Test Examples"
 echo "========================================"
 echo ""
 
 # Prüfe ob Backend läuft
-echo "🔍 Prüfe Backend-Status..."
+echo " Prüfe Backend-Status..."
 HEALTH_RESPONSE=$(curl -s -w "\n%{http_code}" "$API_URL/health" 2>&1)
 HTTP_CODE=$(echo "$HEALTH_RESPONSE" | tail -n1)
 BODY=$(echo "$HEALTH_RESPONSE" | head -n-1)
 
 if [ "$HTTP_CODE" != "200" ]; then
-    echo "❌ Backend läuft NICHT! (HTTP $HTTP_CODE)"
+    echo " Backend läuft NICHT! (HTTP $HTTP_CODE)"
     echo "   Response: $BODY"
     echo ""
-    echo "📋 Backend starten:"
+    echo " Backend starten:"
     echo "   Option 1 (Script):  ./START_BACKEND.sh"
     echo "   Option 2 (Docker):   docker compose up -d cerebro-backend"
     echo "   Option 3 (Lokal):    cd backend && uvicorn main:app --reload --port 8000"
@@ -35,7 +35,7 @@ if [ "$HTTP_CODE" != "200" ]; then
     exit 1
 fi
 
-echo "✅ Backend läuft!"
+echo " Backend läuft!"
 echo "$BODY" | jq . 2>/dev/null || echo "$BODY"
 echo ""
 echo ""
@@ -74,13 +74,13 @@ HTTP_CODE=$(echo "$RESPONSE" | tail -n1)
 BODY=$(echo "$RESPONSE" | head -n-1)
 
 if [ "$HTTP_CODE" = "201" ] || [ "$HTTP_CODE" = "200" ]; then
-    echo "✅ Experiment erstellt (HTTP $HTTP_CODE)"
+    echo " Experiment erstellt (HTTP $HTTP_CODE)"
     echo "$BODY" | jq . 2>/dev/null || echo "$BODY"
 else
-    echo "❌ Fehler beim Erstellen (HTTP $HTTP_CODE)"
+    echo " Fehler beim Erstellen (HTTP $HTTP_CODE)"
     echo "$BODY" | jq . 2>/dev/null || echo "$BODY"
     echo ""
-    echo "💡 Tipp: Prüfe ob alle required fields vorhanden sind"
+    echo " Tipp: Prüfe ob alle required fields vorhanden sind"
 fi
 echo ""
 echo ""
@@ -114,13 +114,13 @@ SCAN_HTTP_CODE=$(echo "$SCAN_RESPONSE" | tail -n1)
 SCAN_BODY=$(echo "$SCAN_RESPONSE" | head -n-1)
 
 if [ "$SCAN_HTTP_CODE" = "200" ] || [ "$SCAN_HTTP_CODE" = "202" ]; then
-    echo "✅ Scan gestartet (HTTP $SCAN_HTTP_CODE)"
+    echo " Scan gestartet (HTTP $SCAN_HTTP_CODE)"
     echo "$SCAN_BODY" | jq . 2>/dev/null || echo "$SCAN_BODY"
 else
-    echo "❌ Fehler beim Starten (HTTP $SCAN_HTTP_CODE)"
+    echo " Fehler beim Starten (HTTP $SCAN_HTTP_CODE)"
     echo "$SCAN_BODY" | jq . 2>/dev/null || echo "$SCAN_BODY"
     echo ""
-    echo "💡 Tipp: Prüfe ob Experiment existiert oder Ollama läuft"
+    echo " Tipp: Prüfe ob Experiment existiert oder Ollama läuft"
 fi
 echo ""
 echo ""
@@ -135,19 +135,19 @@ STATUS_HTTP_CODE=$(echo "$STATUS_RESPONSE" | tail -n1)
 STATUS_BODY=$(echo "$STATUS_RESPONSE" | head -n-1)
 
 if [ "$STATUS_HTTP_CODE" = "200" ]; then
-    echo "✅ Status abgerufen (HTTP $STATUS_HTTP_CODE)"
+    echo " Status abgerufen (HTTP $STATUS_HTTP_CODE)"
     echo "$STATUS_BODY" | jq . 2>/dev/null || echo "$STATUS_BODY"
 else
-    echo "⚠️  Status nicht verfügbar (HTTP $STATUS_HTTP_CODE)"
+    echo "️  Status nicht verfügbar (HTTP $STATUS_HTTP_CODE)"
     echo "$STATUS_BODY" | jq . 2>/dev/null || echo "$STATUS_BODY"
     echo ""
-    echo "💡 Tipp: Scan wurde möglicherweise noch nicht gestartet"
+    echo " Tipp: Scan wurde möglicherweise noch nicht gestartet"
 fi
 echo ""
 echo ""
 
-echo "✅ Quick Tests abgeschlossen!"
+echo " Quick Tests abgeschlossen!"
 echo ""
-echo "📊 Weitere Tests:"
+echo " Weitere Tests:"
 echo "   - Siehe PROFESSIONAL_TESTING_GUIDE.md für umfassende Beispiele"
 echo "   - Siehe README.md für Cloud OpenAI Tests"

@@ -1,29 +1,29 @@
-# 📊 Aktueller Status - CEREBRO-RED v2
+#  Aktueller Status - CEREBRO-RED v2
 
-## ✅ Erfolgreich behoben
+##  Erfolgreich behoben
 
 ### 1. Import-Probleme
-- ✅ Zirkuläre Imports behoben (`from __future__ import annotations`, lazy imports)
-- ✅ `ExperimentDB` Import korrigiert (`from core.database import ExperimentDB`)
-- ✅ Alle kritischen Module importierbar
+-  Zirkuläre Imports behoben (`from __future__ import annotations`, lazy imports)
+-  `ExperimentDB` Import korrigiert (`from core.database import ExperimentDB`)
+-  Alle kritischen Module importierbar
 
 ### 2. Model-Erweiterungen
-- ✅ `JudgeScore`: `logical_consistency_score` und `sycophancy_score` hinzugefügt
-- ✅ `SecurityJudge`: `experiment_id` optional gemacht
+-  `JudgeScore`: `logical_consistency_score` und `sycophancy_score` hinzugefügt
+-  `SecurityJudge`: `experiment_id` optional gemacht
 
 ### 3. Test-Fixes
-- ✅ `test_mutator_pair.py`: **10/10 Tests laufen durch** ✅
-- ✅ `test_scoring_definitions.py`: Scoring-Logik korrigiert
-- ✅ `test_config.py`: 6/6 ✅
-- ✅ `test_models.py`: 8/8 ✅
-- ✅ `test_provider_comparison.py`: 1/1 ✅
+-  `test_mutator_pair.py`: **10/10 Tests laufen durch** 
+-  `test_scoring_definitions.py`: Scoring-Logik korrigiert
+-  `test_config.py`: 6/6 
+-  `test_models.py`: 8/8 
+-  `test_provider_comparison.py`: 1/1 
 
 ### 4. Database-Setup
-- ✅ Verzeichnisse erstellt (`data/experiments/`, `data/audit_logs/`, `data/results/`)
-- ✅ Alembic Migrationen korrigiert (UUID → String(36))
-- ✅ Automatische Verzeichnis-Erstellung in `alembic/env.py`
+-  Verzeichnisse erstellt (`data/experiments/`, `data/audit_logs/`, `data/results/`)
+-  Alembic Migrationen korrigiert (UUID → String(36))
+-  Automatische Verzeichnis-Erstellung in `alembic/env.py`
 
-## ⚠️ Bekannte Probleme
+## ️ Bekannte Probleme
 
 ### 1. Database-Initialisierung
 - **Problem:** `init_db()` hängt sich auf (möglicherweise async-Problem)
@@ -40,21 +40,21 @@
 - Integration-Tests (benötigen laufende Services)
 - E2E-Tests (benötigen Ollama)
 
-## 🎯 Was funktioniert
+##  Was funktioniert
 
-### ✅ Code-Qualität
+###  Code-Qualität
 - Alle Imports funktionieren
 - Alle Models sind vollständig
 - PAIR-Algorithmus implementiert
 - Judge-Scoring implementiert
 
-### ✅ Tests
-- **62 Tests laufen durch** ✅
-- Alle Unit-Tests für Core-Logic ✅
-- Alle Config-Tests ✅
-- Alle Model-Tests ✅
+###  Tests
+- **62 Tests laufen durch** 
+- Alle Unit-Tests für Core-Logic 
+- Alle Config-Tests 
+- Alle Model-Tests 
 
-## 📝 Nächste Schritte
+##  Nächste Schritte
 
 ### 1. Database manuell initialisieren (falls nötig)
 ```bash
@@ -76,14 +76,14 @@ cd backend
 pytest tests/test_config.py tests/test_models.py tests/test_mutator_pair.py tests/test_scoring_definitions.py -v
 ```
 
-## 🎉 Zusammenfassung
+##  Zusammenfassung
 
 **Alle kritischen Code-Probleme wurden behoben!**
 
-- ✅ Imports funktionieren
-- ✅ Models sind vollständig  
-- ✅ Tests laufen durch (62/90)
-- ✅ Migrationen korrigiert
+-  Imports funktionieren
+-  Models sind vollständig  
+-  Tests laufen durch (62/90)
+-  Migrationen korrigiert
 
 **Das System ist bereit für weitere Entwicklung!**
 
@@ -91,5 +91,5 @@ Die verbleibenden Probleme sind:
 - Umgebungs-spezifisch (Ollama-URL)
 - Service-abhängig (Database-Init, E2E-Tests)
 
-**Sie können jetzt mit der Entwicklung fortfahren!** 🚀
+**Sie können jetzt mit der Entwicklung fortfahren!** 
 

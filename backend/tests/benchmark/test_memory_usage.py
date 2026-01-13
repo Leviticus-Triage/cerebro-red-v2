@@ -95,7 +95,7 @@ async def test_memory_usage_benchmark():
     peak_memory = process.memory_info().rss / 1024 / 1024  # MB
     memory_increase = peak_memory - baseline_memory
     
-    print(f"\n📊 Memory Usage Benchmark:")
+    print(f"\n Memory Usage Benchmark:")
     print(f"   - Baseline Memory: {baseline_memory:.2f} MB")
     print(f"   - Peak Memory: {peak_memory:.2f} MB")
     print(f"   - Memory Increase: {memory_increase:.2f} MB")

@@ -23,7 +23,7 @@ async def test_openai_connection():
     
     assert response is not None
     assert response.provider.value == "openai"
-    print(f"✅ OpenAI connection successful: {response.model}")
+    print(f" OpenAI connection successful: {response.model}")
 
 @pytest.mark.skipif(
     os.getenv("DEFAULT_LLM_PROVIDER") != "openai" or not os.getenv("OPENAI_API_KEY"),
@@ -44,7 +44,7 @@ async def test_openai_all_models():
         response = await llm_client.complete(messages, role=role)
         
         assert response is not None
-        print(f"✅ {role.capitalize()}: {response.model} (latency: {response.latency_ms}ms)")
+        print(f" {role.capitalize()}: {response.model} (latency: {response.latency_ms}ms)")
 
 @pytest.mark.skipif(
     os.getenv("DEFAULT_LLM_PROVIDER") != "openai" or not os.getenv("OPENAI_API_KEY"),
@@ -58,6 +58,6 @@ async def test_openai_latency():
     response = await llm_client.complete(messages, role="target")
     
     assert response.latency_ms > 0
-    print(f"✅ OpenAI latency: {response.latency_ms}ms")
-    print(f"✅ Tokens used: {response.tokens_used}")
+    print(f" OpenAI latency: {response.latency_ms}ms")
+    print(f" Tokens used: {response.tokens_used}")
 

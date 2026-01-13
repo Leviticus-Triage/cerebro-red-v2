@@ -40,16 +40,16 @@ async def test_provider_latency_comparison():
                 "model": response.model,
                 "tokens": response.tokens_used
             }
-            print(f"✅ {provider}: {response.latency_ms}ms ({response.model})")
+            print(f" {provider}: {response.latency_ms}ms ({response.model})")
             
             # Restore original provider
             settings.llm_provider.provider = original_provider
         except Exception as e:
             results[provider] = {"error": str(e)}
-            print(f"❌ {provider}: {str(e)}")
+            print(f" {provider}: {str(e)}")
     
     # Print comparison table
-    print("\n📊 Provider Comparison:")
+    print("\n Provider Comparison:")
     print(f"{'Provider':<15} {'Latency':<15} {'Model':<30}")
     print("-" * 60)
     for provider, data in results.items():

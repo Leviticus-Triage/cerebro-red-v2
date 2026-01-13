@@ -116,7 +116,7 @@ def test_experiment_lifecycle_complete(client, api_headers, experiment_config):
     assert experiment_data["name"] == experiment_config["name"]
     assert experiment_data["status"] == ExperimentStatus.PENDING.value
     
-    print(f"✅ Step 1: Experiment created with ID {experiment_id}")
+    print(f" Step 1: Experiment created with ID {experiment_id}")
     
     # Step 2: Retrieve experiment
     response = client.get(
@@ -128,7 +128,7 @@ def test_experiment_lifecycle_complete(client, api_headers, experiment_config):
     data = response.json()
     assert data["data"]["experiment_id"] == experiment_id
     
-    print(f"✅ Step 2: Experiment retrieved successfully")
+    print(f" Step 2: Experiment retrieved successfully")
     
     # Step 3: Start scan (with mocked LLM calls)
     with patch('core.orchestrator.RedTeamOrchestrator.run_experiment', new_callable=AsyncMock) as mock_run:
@@ -158,7 +158,7 @@ def test_experiment_lifecycle_complete(client, api_headers, experiment_config):
         data = response.json()
         assert "data" in data
         
-        print(f"✅ Step 3: Scan started successfully")
+        print(f" Step 3: Scan started successfully")
     
     # Step 4: Check scan status
     response = client.get(
@@ -172,9 +172,9 @@ def test_experiment_lifecycle_complete(client, api_headers, experiment_config):
     if response.status_code == 200:
         data = response.json()
         assert "data" in data
-        print(f"✅ Step 4: Scan status retrieved")
+        print(f" Step 4: Scan status retrieved")
     else:
-        print(f"⚠️  Step 4: Scan status not found (expected for mock)")
+        print(f"️  Step 4: Scan status not found (expected for mock)")
     
     # Step 5: Get experiment results
     response = client.get(
@@ -194,7 +194,7 @@ def test_experiment_lifecycle_complete(client, api_headers, experiment_config):
     assert "vulnerabilities" in results_data
     assert "statistics" in results_data
     
-    print(f"✅ Step 5: Experiment results retrieved")
+    print(f" Step 5: Experiment results retrieved")
     
     # Step 6: Get experiment iterations
     response = client.get(
@@ -207,7 +207,7 @@ def test_experiment_lifecycle_complete(client, api_headers, experiment_config):
     assert "data" in data
     assert "iterations" in data["data"]
     
-    print(f"✅ Step 6: Experiment iterations retrieved ({len(data['data']['iterations'])} iterations)")
+    print(f" Step 6: Experiment iterations retrieved ({len(data['data']['iterations'])} iterations)")
     
     # Step 7: Get experiment statistics
     response = client.get(
@@ -220,7 +220,7 @@ def test_experiment_lifecycle_complete(client, api_headers, experiment_config):
     assert "data" in data
     assert "total_iterations" in data["data"]
     
-    print(f"✅ Step 7: Experiment statistics retrieved")
+    print(f" Step 7: Experiment statistics retrieved")
     
     # Step 8: Get vulnerabilities (filtered by experiment)
     response = client.get(
@@ -234,7 +234,7 @@ def test_experiment_lifecycle_complete(client, api_headers, experiment_config):
     assert "data" in data
     assert "vulnerabilities" in data["data"]
     
-    print(f"✅ Step 8: Vulnerabilities retrieved ({data['data']['total']} found)")
+    print(f" Step 8: Vulnerabilities retrieved ({data['data']['total']} found)")
     
     # Step 9: Get vulnerability statistics
     response = client.get(
@@ -249,9 +249,9 @@ def test_experiment_lifecycle_complete(client, api_headers, experiment_config):
     assert "by_severity" in data["data"]
     assert "by_strategy" in data["data"]
     
-    print(f"✅ Step 9: Vulnerability statistics retrieved")
+    print(f" Step 9: Vulnerability statistics retrieved")
     
-    print("\n🎉 Complete experiment lifecycle test passed!")
+    print("\n Complete experiment lifecycle test passed!")
 
 
 @pytest.mark.e2e
@@ -271,7 +271,7 @@ def test_experiment_not_found(client, api_headers):
     error_msg = data.get("error") or data.get("detail", "")
     assert fake_id in error_msg or "not found" in error_msg.lower()
     
-    print("✅ 404 handling works correctly")
+    print(" 404 handling works correctly")
 
 
 @pytest.mark.e2e
@@ -311,5 +311,5 @@ def test_experiment_list_pagination(client, api_headers, experiment_config):
     assert data["page_size"] == 2
     assert len(data["items"]) <= 2
     
-    print(f"✅ Pagination works: {len(data['items'])} items on page 1")
+    print(f" Pagination works: {len(data['items'])} items on page 1")
 

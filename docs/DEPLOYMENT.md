@@ -203,7 +203,7 @@ open https://<project-name>.railway.app
 
 You should see the CEREBRO-RED v2 demo mode banner at the top:
 ```
-🎯 Demo Mode — Explore pre-configured experiments (read-only)
+ Demo Mode — Explore pre-configured experiments (read-only)
 ```
 
 ### Railway-Specific Features
@@ -364,7 +364,7 @@ You should see the CEREBRO-RED v2 demo mode banner at the top:
 - **Review Startup Logs**:
   ```bash
   # Look for demo mode initialization message
-  # Expected: "🎭 Demo mode enabled - mock data endpoints available at /api/demo/experiments"
+  # Expected: " Demo mode enabled - mock data endpoints available at /api/demo/experiments"
   ```
 
 #### 5. CORS Errors

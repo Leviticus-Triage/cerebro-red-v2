@@ -1,12 +1,12 @@
-# ✅ Nächste Schritte - CEREBRO-RED v2
+#  Nächste Schritte - CEREBRO-RED v2
 
-## 🎉 Status: Zirkuläre Imports behoben!
+##  Status: Zirkuläre Imports behoben!
 
 Alle kritischen Import-Probleme wurden behoben. Sie können jetzt mit den Tests fortfahren.
 
 ---
 
-## 📋 Schritt-für-Schritt Anleitung
+##  Schritt-für-Schritt Anleitung
 
 ### 1️⃣ **Venv aktivieren** (wichtig!)
 
@@ -33,10 +33,10 @@ cd /mnt/nvme0n1p5/danii/hexstrike-ai-kit/cerebro-red-v2/backend
 ### 3️⃣ **Quick Import Test**
 
 ```bash
-python3 -c "from core.models import ExperimentConfig; from core.mutator import PromptMutator; from core.judge import SecurityJudge; print('✅ Alle Imports OK')"
+python3 -c "from core.models import ExperimentConfig; from core.mutator import PromptMutator; from core.judge import SecurityJudge; print(' Alle Imports OK')"
 ```
 
-**Erwartete Ausgabe:** `✅ Alle Imports OK`
+**Erwartete Ausgabe:** ` Alle Imports OK`
 
 ---
 
@@ -92,7 +92,7 @@ pytest tests/e2e/test_e2e_ollama_single.py -v -s
 
 ---
 
-## 🔧 Bekannte Probleme & Lösungen
+##  Bekannte Probleme & Lösungen
 
 ### Problem: "ModuleNotFoundError: No module named 'core'"
 
@@ -106,8 +106,8 @@ pytest tests/...
 
 **Lösung:** `ExperimentDB` ist in `core.database`, nicht `core.models`:
 ```python
-from core.database import ExperimentDB  # ✅ Richtig
-from core.models import ExperimentDB    # ❌ Falsch
+from core.database import ExperimentDB  #  Richtig
+from core.models import ExperimentDB    #  Falsch
 ```
 
 ### Problem: "ModuleNotFoundError: No module named 'pydantic'"
@@ -120,19 +120,19 @@ pip install -r requirements.txt
 
 ---
 
-## 📝 Wichtige Hinweise
+##  Wichtige Hinweise
 
 ### Import-Änderungen
 
 Nach den Fixes für zirkuläre Imports müssen Sie folgende Imports verwenden:
 
 ```python
-# ✅ Richtig:
+#  Richtig:
 from core.mutator import PromptMutator
 from core.judge import SecurityJudge
 from core.database import ExperimentDB, AttackIterationDB, etc.
 
-# ❌ Falsch (funktioniert nicht mehr):
+#  Falsch (funktioniert nicht mehr):
 from core import PromptMutator  # Nicht mehr in __init__.py
 from core import SecurityJudge  # Nicht mehr in __init__.py
 ```
@@ -143,7 +143,7 @@ Alle Type-Hints verwenden jetzt `from __future__ import annotations`, daher funk
 
 ---
 
-## ✅ Erfolgs-Checkliste
+##  Erfolgs-Checkliste
 
 - [ ] Venv aktiviert
 - [ ] Im `backend/` Verzeichnis
@@ -154,7 +154,7 @@ Alle Type-Hints verwenden jetzt `from __future__ import annotations`, daher funk
 
 ---
 
-## 🚀 Nächste Schritte nach erfolgreichen Tests
+##  Nächste Schritte nach erfolgreichen Tests
 
 1. **Database initialisieren:**
    ```bash
@@ -173,5 +173,5 @@ Alle Type-Hints verwenden jetzt `from __future__ import annotations`, daher funk
 
 ---
 
-**Viel Erfolg! 🎯**
+**Viel Erfolg! **
 

@@ -22,9 +22,9 @@ NC='\033[0m' # No Color
 # Validation function
 validate_step() {
     if [ $? -eq 0 ]; then
-        echo -e "${GREEN}✓ $1${NC}"
+        echo -e "${GREEN} $1${NC}"
     else
-        echo -e "${RED}✗ $1 FAILED${NC}"
+        echo -e "${RED} $1 FAILED${NC}"
         exit 1
     fi
 }
@@ -88,14 +88,14 @@ echo "Commit count: ${COMMIT_COUNT}"
 
 # Check that third-party directories are gone
 if [ -d "llamator" ] || [ -d "PyRIT" ] || [ -d "Model-Inversion-Attack-ToolBox" ] || [ -d "L1B3RT4S" ]; then
-    echo -e "${RED}✗ Third-party directories still exist!${NC}"
+    echo -e "${RED} Third-party directories still exist!${NC}"
     exit 1
 fi
 validate_step "Third-party directories removed from working tree"
 
 # Check expected directories exist
 if [ ! -d "backend" ] || [ ! -d "frontend" ] || [ ! -d "docker" ]; then
-    echo -e "${RED}✗ Expected directories missing!${NC}"
+    echo -e "${RED} Expected directories missing!${NC}"
     echo "Current directories:"
     ls -la
     exit 1
@@ -104,7 +104,7 @@ validate_step "Expected directories present"
 
 # Verify git status is clean
 if [ -n "$(git status --porcelain)" ]; then
-    echo -e "${YELLOW}⚠ Working tree has uncommitted changes:${NC}"
+    echo -e "${YELLOW} Working tree has uncommitted changes:${NC}"
     git status --short
     # This is OK for initial commit, just warn
 else

@@ -35,10 +35,10 @@ for file in "${test_files[@]}"; do
     
     # Check if ignored
     if git check-ignore -q "$file" 2>/dev/null; then
-        echo "✓ $file is ignored"
+        echo " $file is ignored"
         passed=$((passed + 1))
     else
-        echo "✗ $file is NOT ignored"
+        echo " $file is NOT ignored"
         failed=$((failed + 1))
     fi
     
@@ -53,9 +53,9 @@ echo ""
 echo "Results: $passed passed, $failed failed"
 
 if [ $failed -eq 0 ]; then
-    echo "✓ All patterns working correctly"
+    echo " All patterns working correctly"
     exit 0
 else
-    echo "✗ Some patterns need attention"
+    echo " Some patterns need attention"
     exit 1
 fi

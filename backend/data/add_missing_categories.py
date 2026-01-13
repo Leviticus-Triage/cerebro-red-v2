@@ -26,12 +26,12 @@ def add_missing_categories():
     print()
     
     # Load existing payloads
-    print(f"📖 Loading {payloads_file.name}...")
+    print(f" Loading {payloads_file.name}...")
     with open(payloads_file, 'r', encoding='utf-8') as f:
         payloads = json.load(f)
     
     # Backup
-    print(f"💾 Creating backup: {backup_file.name}...")
+    print(f" Creating backup: {backup_file.name}...")
     with open(backup_file, 'w', encoding='utf-8') as f:
         json.dump(payloads, f, indent=2, ensure_ascii=False)
     
@@ -168,21 +168,21 @@ def add_missing_categories():
     }
     
     # Add/update categories
-    print(f"🔀 Adding/updating categories...")
+    print(f" Adding/updating categories...")
     added_count = 0
     updated_count = 0
     
     for category, templates in missing_categories.items():
         if category not in payloads["categories"]:
             payloads["categories"][category] = templates
-            print(f"   ✓ Added {category} ({len(templates)} templates)")
+            print(f"    Added {category} ({len(templates)} templates)")
             added_count += 1
         elif len(payloads["categories"][category]) == 0:
             payloads["categories"][category] = templates
-            print(f"   ✓ Updated {category} ({len(templates)} templates)")
+            print(f"    Updated {category} ({len(templates)} templates)")
             updated_count += 1
         else:
-            print(f"   ⚠️  Skipping {category} (already has {len(payloads['categories'][category])} templates)")
+            print(f"   ️  Skipping {category} (already has {len(payloads['categories'][category])} templates)")
     
     # Update metadata
     if "metadata" not in payloads:
@@ -194,7 +194,7 @@ def add_missing_categories():
     payloads["metadata"]["missing_fix_date"] = datetime.now().isoformat()
     
     # Save
-    print(f"💾 Saving updated payloads to {payloads_file.name}...")
+    print(f" Saving updated payloads to {payloads_file.name}...")
     with open(payloads_file, 'w', encoding='utf-8') as f:
         json.dump(payloads, f, indent=2, ensure_ascii=False)
     
@@ -203,10 +203,10 @@ def add_missing_categories():
     print("  MISSING CATEGORIES FIX COMPLETE")
     print("═" * 79)
     print()
-    print(f"✅ Added {added_count} new categories")
-    print(f"✅ Updated {updated_count} empty categories")
-    print(f"📊 Total categories: {len(payloads['categories'])}")
-    print(f"💾 Backup saved: {backup_file.name}")
+    print(f" Added {added_count} new categories")
+    print(f" Updated {updated_count} empty categories")
+    print(f" Total categories: {len(payloads['categories'])}")
+    print(f" Backup saved: {backup_file.name}")
     print()
     print("Next steps:")
     print("  1. Copy to container: docker cp backend/data/payloads.json cerebro-backend:/app/data/")

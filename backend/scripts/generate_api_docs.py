@@ -359,7 +359,7 @@ class APIDocGenerator:
         output = []
 
         # Endpoint header
-        deprecated_tag = " 🚫 DEPRECATED" if endpoint.deprecated else ""
+        deprecated_tag = "  DEPRECATED" if endpoint.deprecated else ""
         output.append(f"### `{endpoint.method} {endpoint.path}`{deprecated_tag}\n\n")
 
         # Summary and description
@@ -369,7 +369,7 @@ class APIDocGenerator:
 
         # Authentication
         if endpoint.security:
-            output.append("🔒 **Authentication Required:** API Key\n\n")
+            output.append(" **Authentication Required:** API Key\n\n")
 
         # Parameters
         if endpoint.parameters:
@@ -488,7 +488,7 @@ def load_manual_sections(template_file: Path) -> Dict[str, str]:
     Returns a dictionary mapping section headers to content.
     """
     if not template_file.exists():
-        print(f"⚠️  Manual sections template not found: {template_file}")
+        print(f"️  Manual sections template not found: {template_file}")
         return {}
     
     with open(template_file, 'r', encoding='utf-8') as f:
@@ -572,21 +572,21 @@ def main():
 
     # Ensure OpenAPI schema exists
     if not openapi_file.exists():
-        print("❌ OpenAPI schema not found. Run 'python backend/export_openapi.py' first.")
+        print(" OpenAPI schema not found. Run 'python backend/export_openapi.py' first.")
         sys.exit(1)
 
     # Load manual sections
-    print("📖 Loading manual sections...")
+    print(" Loading manual sections...")
     manual_sections = load_manual_sections(template_file)
 
     # Generate documentation
-    print("📚 Generating API reference documentation...")
+    print(" Generating API reference documentation...")
     generator = APIDocGenerator(openapi_file)
     documentation = generator.generate()
 
     # Merge manual sections
     if manual_sections:
-        print(f"🔗 Merging {len(manual_sections)} manual sections...")
+        print(f" Merging {len(manual_sections)} manual sections...")
         documentation = merge_manual_sections(documentation, manual_sections)
 
     # Ensure output directory exists
@@ -596,7 +596,7 @@ def main():
     with open(output_file, 'w', encoding='utf-8') as f:
         f.write(documentation)
 
-    print(f"✅ API reference generated: {output_file}")
+    print(f" API reference generated: {output_file}")
     print(f"   Total endpoints documented: {len(generator.endpoints)}")
     print(f"   Manual sections merged: {len(manual_sections)}")
     print(f"   File size: {len(documentation):,} characters")

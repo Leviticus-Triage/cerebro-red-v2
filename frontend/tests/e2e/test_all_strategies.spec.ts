@@ -66,7 +66,7 @@ test.describe('Phase 7: All 44 Strategies E2E', () => {
   });
 
   test('should render all 44 strategy checkboxes', async ({ page }) => {
-    console.log('🔍 Verifying all 44 strategies render in UI...');
+    console.log(' Verifying all 44 strategies render in UI...');
     
     let renderedCount = 0;
     const missingStrategies: string[] = [];
@@ -99,10 +99,10 @@ test.describe('Phase 7: All 44 Strategies E2E', () => {
       }
     }
     
-    console.log(`✅ Rendered: ${renderedCount}/44 strategies`);
+    console.log(` Rendered: ${renderedCount}/44 strategies`);
     
     if (missingStrategies.length > 0) {
-      console.log(`❌ Missing strategies (${missingStrategies.length}):`);
+      console.log(` Missing strategies (${missingStrategies.length}):`);
       missingStrategies.forEach(s => console.log(`   - ${s}`));
     }
     
@@ -110,7 +110,7 @@ test.describe('Phase 7: All 44 Strategies E2E', () => {
   });
 
   test('should select all 44 strategies and create experiment', async ({ page }) => {
-    console.log('🎯 Testing selection of all 44 strategies...');
+    console.log(' Testing selection of all 44 strategies...');
     
     // Fill basic form fields
     await page.fill('#name', 'Phase 7 - All 44 Strategies Test');
@@ -160,10 +160,10 @@ test.describe('Phase 7: All 44 Strategies E2E', () => {
       }
     }
     
-    console.log(`✅ Selected: ${selectedCount}/44 strategies`);
+    console.log(` Selected: ${selectedCount}/44 strategies`);
     
     if (failedSelections.length > 0) {
-      console.log(`⚠️  Failed to select (${failedSelections.length}):`);
+      console.log(`️  Failed to select (${failedSelections.length}):`);
       failedSelections.slice(0, 10).forEach(s => console.log(`   - ${s}`));
     }
     
@@ -175,14 +175,14 @@ test.describe('Phase 7: All 44 Strategies E2E', () => {
     // Wait for navigation to experiment details
     await page.waitForURL(/\/experiments\/[a-f0-9-]+/, { timeout: 20000 });
     
-    console.log('✅ Experiment created successfully');
+    console.log(' Experiment created successfully');
     
     // Verify experiment name
     await expect(page.locator('h1')).toContainText('Phase 7 - All 44 Strategies Test');
   });
 
   test('should save and load template with all 44 strategies', async ({ page }) => {
-    console.log('💾 Testing template persistence with all 44 strategies...');
+    console.log(' Testing template persistence with all 44 strategies...');
     
     // Fill basic form
     await page.fill('#name', 'Template Test - 44 Strategies');
@@ -213,7 +213,7 @@ test.describe('Phase 7: All 44 Strategies E2E', () => {
       }
     }
     
-    console.log(`✅ Selected ${selectedCount} strategies for template`);
+    console.log(` Selected ${selectedCount} strategies for template`);
     
     // Save as template
     const saveTemplateButton = page.locator('button:has-text("Save as Template")');
@@ -230,7 +230,7 @@ test.describe('Phase 7: All 44 Strategies E2E', () => {
         }
       });
       
-      console.log('✅ Template saved');
+      console.log(' Template saved');
       
       // Reload page
       await page.reload();
@@ -253,18 +253,18 @@ test.describe('Phase 7: All 44 Strategies E2E', () => {
           }
         }
         
-        console.log(`✅ Restored ${restoredCount}/10 sampled strategies from template`);
+        console.log(` Restored ${restoredCount}/10 sampled strategies from template`);
         expect(restoredCount).toBeGreaterThanOrEqual(8);
       } else {
-        console.log('⚠️  Template selector not found, skipping load test');
+        console.log('️  Template selector not found, skipping load test');
       }
     } else {
-      console.log('⚠️  Save as Template button not found, skipping template test');
+      console.log('️  Save as Template button not found, skipping template test');
     }
   });
 
   test('should verify strategy distribution in experiment monitor', async ({ page }) => {
-    console.log('📊 Testing strategy distribution visibility...');
+    console.log(' Testing strategy distribution visibility...');
     
     // Navigate to experiments list
     await page.goto('/experiments');
@@ -283,7 +283,7 @@ test.describe('Phase 7: All 44 Strategies E2E', () => {
       const strategyPanel = page.locator('text=/Strategy Usage|Strategies|Attack Strategies/i');
       
       if (await strategyPanel.isVisible({ timeout: 5000 })) {
-        console.log('✅ Strategy usage panel found');
+        console.log(' Strategy usage panel found');
         
         // Count visible strategy names
         let visibleStrategies = 0;
@@ -293,17 +293,17 @@ test.describe('Phase 7: All 44 Strategies E2E', () => {
           }
         }
         
-        console.log(`✅ ${visibleStrategies}/10 sampled strategies visible in monitor`);
+        console.log(` ${visibleStrategies}/10 sampled strategies visible in monitor`);
       } else {
-        console.log('⚠️  Strategy usage panel not found');
+        console.log('️  Strategy usage panel not found');
       }
     } else {
-      console.log('⚠️  No experiments available for monitoring test');
+      console.log('️  No experiments available for monitoring test');
     }
   });
 
   test('should handle strategy selection errors gracefully', async ({ page }) => {
-    console.log('🛡️ Testing error handling for strategy selection...');
+    console.log('️ Testing error handling for strategy selection...');
     
     // Try to submit without selecting any strategies
     await page.fill('#name', 'Error Test');
@@ -334,16 +334,16 @@ test.describe('Phase 7: All 44 Strategies E2E', () => {
     ]);
     
     if (errorVisible) {
-      console.log('✅ Validation error displayed correctly');
+      console.log(' Validation error displayed correctly');
     } else {
-      console.log('⚠️  No validation error shown (may allow empty strategy list)');
+      console.log('️  No validation error shown (may allow empty strategy list)');
     }
   });
 });
 
 test.describe('Phase 7: Strategy Enum Validation', () => {
   test('should send correct enum values to backend API', async ({ page }) => {
-    console.log('🔍 Validating enum values sent to backend...');
+    console.log(' Validating enum values sent to backend...');
     
     await page.goto('/experiments/new');
     await page.waitForLoadState('networkidle');
@@ -394,7 +394,7 @@ test.describe('Phase 7: Strategy Enum Validation', () => {
     await page.waitForTimeout(2000);
     
     if (capturedPayload && capturedPayload.strategies) {
-      console.log(`✅ Captured ${capturedPayload.strategies.length} strategies in API payload`);
+      console.log(` Captured ${capturedPayload.strategies.length} strategies in API payload`);
       console.log(`   Strategies: ${capturedPayload.strategies.join(', ')}`);
       
       // Verify all values are valid enum values
@@ -403,13 +403,13 @@ test.describe('Phase 7: Strategy Enum Validation', () => {
       );
       
       if (invalidStrategies.length > 0) {
-        console.log(`❌ Invalid enum values sent: ${invalidStrategies.join(', ')}`);
+        console.log(` Invalid enum values sent: ${invalidStrategies.join(', ')}`);
         expect(invalidStrategies.length).toBe(0);
       } else {
-        console.log('✅ All enum values are valid');
+        console.log(' All enum values are valid');
       }
     } else {
-      console.log('⚠️  Could not capture API payload');
+      console.log('️  Could not capture API payload');
     }
   });
 });

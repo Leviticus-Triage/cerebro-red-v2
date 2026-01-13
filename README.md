@@ -4,14 +4,14 @@
 
 A research-grade framework for automated vulnerability discovery in local LLMs using Agentic Fuzzing and Adaptive Adversarial Mutation (AAM).
 
-## 🎯 Research Goals
+##  Research Goals
 
 - Implement **PAIR Algorithm** (Prompt Automatic Iterative Refinement) from [arxiv.org/abs/2310.08419](https://arxiv.org/abs/2310.08419)
 - **LLM-as-a-Judge** semantic evaluation with Chain-of-Thought reasoning
 - **Telemetry-First** architecture for whitepaper-grade analysis
 - Multi-provider LLM support (Ollama, Azure OpenAI, OpenAI)
 
-## 🏗️ Architecture
+## ️ Architecture
 
 ### Tech Stack
 
@@ -28,7 +28,7 @@ A research-grade framework for automated vulnerability discovery in local LLMs u
 3. **Judge** (`backend/core/judge.py`): LLM-as-a-Judge with CoT evaluation
 4. **Telemetry** (`backend/core/telemetry.py`): Thread-safe JSONL audit logger
 
-## 🚀 Quick Start
+##  Quick Start
 
 ### Prerequisites
 
@@ -113,7 +113,7 @@ docker compose version
 
 ---
 
-## 🔧 Quickstart: Local vs Cloud Deployment
+##  Quickstart: Local vs Cloud Deployment
 
 ### Local Deployment (Ollama)
 
@@ -194,7 +194,7 @@ EOF
 
 ---
 
-## 📊 Verbosity Levels
+##  Verbosity Levels
 
 Control the amount of detail in Live Logs and Code Flow tracking.
 
@@ -230,7 +230,7 @@ When verbosity is set to 3, you'll see:
 
 ---
 
-## ⚡ Circuit Breaker Configuration
+##  Circuit Breaker Configuration
 
 The circuit breaker prevents cascading failures when LLM providers are overloaded.
 
@@ -357,7 +357,7 @@ docker compose logs cerebro-backend --tail=200 | grep -E "POST /api/scan/start|D
 docker compose logs -f cerebro-backend
 ```
 
-## 🛠️ Development Workflow
+## ️ Development Workflow
 
 ### Live Code Reload (Development Mode)
 
@@ -389,10 +389,10 @@ The `docker-compose.yml` mounts `./backend:/app` as a volume, allowing code chan
 
 You **must rebuild** the Docker image when:
 
-- ✅ **Dependencies change**: Modified `requirements.txt` or `pyproject.toml`
-- ✅ **Dockerfile changes**: Modified `docker/Dockerfile.backend`
-- ✅ **System packages**: Added OS-level dependencies (apt-get)
-- ✅ **Entrypoint changes**: Modified `docker/entrypoint.sh`
+-  **Dependencies change**: Modified `requirements.txt` or `pyproject.toml`
+-  **Dockerfile changes**: Modified `docker/Dockerfile.backend`
+-  **System packages**: Added OS-level dependencies (apt-get)
+-  **Entrypoint changes**: Modified `docker/entrypoint.sh`
 
 **Rebuild command:**
 ```bash
@@ -404,10 +404,10 @@ docker compose up -d cerebro-backend
 
 You **only need restart** when:
 
-- ✅ **Python code changes**: Any `.py` file in `backend/`
-- ✅ **Configuration changes**: `.env` file updates
-- ✅ **Data files**: `backend/data/payloads.json` updates
-- ✅ **Templates**: Jailbreak template modifications
+-  **Python code changes**: Any `.py` file in `backend/`
+-  **Configuration changes**: `.env` file updates
+-  **Data files**: `backend/data/payloads.json` updates
+-  **Templates**: Jailbreak template modifications
 
 **Restart command:**
 ```bash
@@ -480,7 +480,7 @@ docker compose up -d
 - Check for syntax errors: `docker compose exec cerebro-backend python -m py_compile /app/main.py`
 - Restart with clean cache (see above)
 
-## 📊 Research Methodology
+##  Research Methodology
 
 ### PAIR Algorithm Implementation
 
@@ -505,7 +505,7 @@ Judge LLM scores (0-10 scale):
 - Policy violation severity
 - Confidence metrics
 
-## 📁 Project Structure
+##  Project Structure
 
 ```
 cerebro-red-v2/
@@ -519,7 +519,7 @@ cerebro-red-v2/
 └── docs/             # Research documentation
 ```
 
-## 🔬 Project Status
+##  Project Status
 
 <!-- AUTO-GENERATED: Do not edit this section manually -->
 ![Version](https://img.shields.io/badge/Version-2.0.0-blue)
@@ -530,7 +530,7 @@ cerebro-red-v2/
 
 <!-- END AUTO-GENERATED -->
 
-## 🔬 Project Status
+##  Project Status
 
 <!-- AUTO-GENERATED: Do not edit this section manually -->
 ![Version](https://img.shields.io/badge/Version-2.0.0-blue)
@@ -541,54 +541,54 @@ cerebro-red-v2/
 
 <!-- END AUTO-GENERATED -->
 
-## 🔬 Development Status
+##  Development Status
 
-**Phase 1**: ✅ Project Foundation & Infrastructure
+**Phase 1**:  Project Foundation & Infrastructure
 - [x] Project structure
 - [x] Requirements & dependencies
 - [x] Docker setup
 - [x] Environment configuration
 
-**Phase 2**: ✅ Data Models & Database Schema
+**Phase 2**:  Data Models & Database Schema
 - [x] SQLAlchemy ORM models
 - [x] Alembic migrations
 - [x] Performance indexes
 
-**Phase 3**: ✅ Prompt Mutator with PAIR Algorithm
+**Phase 3**:  Prompt Mutator with PAIR Algorithm
 - [x] 8 attack strategies implemented
 - [x] PAIR semantic rephrase (core algorithm)
 - [x] Mutation history tracking
 
-**Phase 4**: ✅ Security Judge with LLM-as-a-Judge
+**Phase 4**:  Security Judge with LLM-as-a-Judge
 - [x] 7-criteria evaluation
 - [x] Chain-of-Thought reasoning
 - [x] Regex fallback patterns
 
-**Phase 5**: ✅ Async Orchestration Engine
+**Phase 5**:  Async Orchestration Engine
 - [x] RedTeamOrchestrator implementation
 - [x] Batch processing with exponential backoff
 - [x] Real-time WebSocket progress
 - [x] Circuit breaker pattern
 
-**Phase 6**: ✅ FastAPI REST API
+**Phase 6**:  FastAPI REST API
 - [x] Complete CRUD operations
 - [x] WebSocket streaming
 - [x] OpenAPI documentation
 - [x] API key authentication
 
-**Phase 7**: ✅ React Frontend
+**Phase 7**:  React Frontend
 - [x] Modern dashboard UI
 - [x] Real-time progress visualization
 - [x] Vulnerability analytics
 - [x] Export functionality
 
-**Phase 8**: ✅ Research-Grade Quality Review
+**Phase 8**:  Research-Grade Quality Review
 - [x] Comprehensive test suites
 - [x] E2E testing (backend + frontend)
 - [x] Benchmark tests
 - [x] Documentation complete
 
-## 🎯 Attack Strategies (44 Total)
+##  Attack Strategies (44 Total)
 
 CEREBRO-RED v2 implements **44 distinct attack strategies** covering the full spectrum of LLM vulnerabilities:
 
@@ -661,7 +661,7 @@ curl -X POST http://localhost:9000/api/experiments \
   }'
 ```
 
-## 📋 Experiment Templates
+##  Experiment Templates
 
 CEREBRO-RED v2 supports **saving and loading experiment configurations as templates**, allowing you to quickly reuse successful attack patterns.
 
@@ -773,13 +773,13 @@ curl -X DELETE http://localhost:9000/api/templates/{template_id} \
 
 **Full API Documentation**: See [docs/TEMPLATE_API.md](./docs/TEMPLATE_API.md) for detailed request/response schemas and examples.
 
-## 📚 References
+##  References
 
 - **PAIR Paper**: [Jailbreaking Black Box Large Language Models in Twenty Queries](https://arxiv.org/abs/2310.08419)
 - **LLM-as-a-Judge**: [Langfuse Evaluation Methods](https://langfuse.com/docs/evaluation/evaluation-methods/llm-as-a-judge)
 - **Adversarial Prompts**: [Learn Prompting - Obfuscation](https://learnprompting.org/docs/prompt_hacking/offensive_measures/obfuscation)
 
-## 📖 Documentation
+##  Documentation
 
 - **Code Documentation**: See [CODE_DOCUMENTATION.md](./CODE_DOCUMENTATION.md) for comprehensive code-level documentation
 - **GitHub Setup**: See [GITHUB_SETUP.md](./GITHUB_SETUP.md) for repository setup instructions
@@ -792,11 +792,11 @@ curl -X DELETE http://localhost:9000/api/templates/{template_id} \
 - **Professional Testing Guide**: See [PROFESSIONAL_TESTING_GUIDE.md](./PROFESSIONAL_TESTING_GUIDE.md) for professional testing and logging strategies
 - **Audit Report**: See [TRAYCER_AUDIT_REPORT.md](./TRAYCER_AUDIT_REPORT.md) for comprehensive test results
 
-## 🔐 Security
+##  Security
 
 CEREBRO-RED is a **research tool** for security testing. Use only on systems you own or have explicit permission to test.
 
-## 🐛 Troubleshooting
+##  Troubleshooting
 
 For common issues and solutions, see [TROUBLESHOOTING.md](./TROUBLESHOOTING.md).
 
@@ -848,7 +848,7 @@ curl http://localhost:9000/health
 4. **Prüfe Logging-Konfiguration:**
    ```bash
    docker compose logs cerebro-backend | grep "Logging configured"
-   # Sollte: "🔧 Logging configured: Level=DEBUG, Flush=Forced, Format=Structured"
+   # Sollte: " Logging configured: Level=DEBUG, Flush=Forced, Format=Structured"
    ```
 
 ### Traceback bei Fehlern fehlt
@@ -903,7 +903,7 @@ Using `asyncio.create_task()` without maintaining a strong reference causes Pyth
 
 **Expected Pattern:**
 ```python
-# ✅ CORRECT: Use BackgroundTasks
+#  CORRECT: Use BackgroundTasks
 from fastapi import BackgroundTasks
 
 @router.post("/start")
@@ -992,7 +992,7 @@ async def start_scan(
 - Verify Docker volume mount is working: `docker compose exec cerebro-backend cat /app/main.py | head -5`
 - Rebuild image: `docker compose build cerebro-backend --no-cache && docker compose up -d cerebro-backend`
 
-## ☁️ Cloud OpenAI Test Run
+## ️ Cloud OpenAI Test Run
 
 This section provides step-by-step instructions for testing CEREBRO-RED v2 with OpenAI's cloud API, including full OpenAI and hybrid (Ollama + OpenAI) configurations.
 
@@ -1186,8 +1186,8 @@ VITE_WS_BASE_URL=ws://localhost:9000
 
 **Solution:**
 1. Verify backend is running on port 9000: `curl http://localhost:9000/health`
-2. Check WebSocket URL in browser console: Look for `📡 WebSocket URL: ws://localhost:9000/ws/scan/{id}`
-3. Verify API key (if enabled): Check for `🔑 API Key: ✓ Present` in console
+2. Check WebSocket URL in browser console: Look for ` WebSocket URL: ws://localhost:9000/ws/scan/{id}`
+3. Verify API key (if enabled): Check for ` API Key:  Present` in console
 4. Check CORS configuration: Ensure backend allows WebSocket connections from frontend origin
 
 **Issue:** WebSocket closes immediately (code 1008)
@@ -1210,18 +1210,18 @@ CEREBRO-RED v2 provides comprehensive real-time monitoring of all LLM interactio
 ### What You Can See
 
 **LLM Input/Output Visibility:**
-- 📤 **Attacker LLM Requests**: Full prompts sent to the attacker model (PAIR algorithm)
-- 📥 **Attacker LLM Responses**: Rephrased prompts generated by the attacker
-- 📤 **Target LLM Requests**: Mutated prompts sent to the target model
-- 📥 **Target LLM Responses**: Target model's responses to attack prompts
-- 📤 **Judge LLM Requests**: Evaluation prompts sent to the judge
-- 📥 **Judge LLM Responses**: Judge's scoring and reasoning
+-  **Attacker LLM Requests**: Full prompts sent to the attacker model (PAIR algorithm)
+-  **Attacker LLM Responses**: Rephrased prompts generated by the attacker
+-  **Target LLM Requests**: Mutated prompts sent to the target model
+-  **Target LLM Responses**: Target model's responses to attack prompts
+-  **Judge LLM Requests**: Evaluation prompts sent to the judge
+-  **Judge LLM Responses**: Judge's scoring and reasoning
 
 **Metadata for Each Interaction:**
 - ⏱️ Latency (milliseconds)
-- 🔢 Token count
-- 🏷️ Model name and provider (Ollama, OpenAI, Azure)
-- 🎯 Role (Attacker, Target, Judge)
+-  Token count
+- ️ Model name and provider (Ollama, OpenAI, Azure)
+-  Role (Attacker, Target, Judge)
 
 **Interactive Features:**
 - Click any log entry to expand and see full prompt/response
@@ -1251,21 +1251,21 @@ The system supports 4 verbosity levels to control the amount of detail displayed
 
 | Level | Icon | Name | Description | Events Shown |
 |-------|------|------|-------------|--------------|
-| 0 | 🔇 | Silent | Errors Only | Errors, Critical Failures |
-| 1 | 🔊 | Basic | + Events & Progress | + Iteration Start/Complete, Progress Updates, Vulnerabilities |
-| 2 | 📊 | Detailed | + LLM I/O | + LLM Requests/Responses, Judge Evaluations, Attack Mutations |
-| 3 | 🐛 | Debug | + Code Flow | + Strategy Selection, Mutation Start/End, Judge Start/End, Decision Points |
+| 0 |  | Silent | Errors Only | Errors, Critical Failures |
+| 1 |  | Basic | + Events & Progress | + Iteration Start/Complete, Progress Updates, Vulnerabilities |
+| 2 |  | Detailed | + LLM I/O | + LLM Requests/Responses, Judge Evaluations, Attack Mutations |
+| 3 |  | Debug | + Code Flow | + Strategy Selection, Mutation Start/End, Judge Start/End, Decision Points |
 
 ### Live Log Tabs
 
 The Live Logs panel organizes events into 6 tabs:
 
-1. **📤 LLM Requests**: All prompts sent to Attacker, Target, and Judge LLMs
-2. **📥 LLM Responses**: All responses with latency and token counts
-3. **⚖️ Judge Evaluations**: Scores (0-10), reasoning, and 7 sub-scores
-4. **📋 Task Queue**: Task status, dependencies, and queue position
-5. **🔬 Code Flow**: Execution flow with function calls and parameters (Level 3 only)
-6. **❌ Errors**: All errors with context and metadata
+1. ** LLM Requests**: All prompts sent to Attacker, Target, and Judge LLMs
+2. ** LLM Responses**: All responses with latency and token counts
+3. **️ Judge Evaluations**: Scores (0-10), reasoning, and 7 sub-scores
+4. ** Task Queue**: Task status, dependencies, and queue position
+5. ** Code Flow**: Execution flow with function calls and parameters (Level 3 only)
+6. ** Errors**: All errors with context and metadata
 
 ### Features
 
@@ -1407,13 +1407,13 @@ docker compose logs cerebro-backend | grep -E "WRAPPER CALLED|run_experiment CAL
 
 **Rollback**: If issues persist, see `BUG_REPORT_AND_TRAYCER_PROMPT.md` for reverting to previous implementation.
 
-## 📄 License
+##  License
 
 Apache License 2.0 - See LICENSE file for details.
 
 Copyright 2024-2026 Leviticus-Triage
 
-## 🔄 Migration from hexstrike-ai-kit
+##  Migration from hexstrike-ai-kit
 
 This repository (`cerebro-red-v2`) was extracted from the `hexstrike-ai-kit` project. If you were using the previous repository:
 
@@ -1424,7 +1424,7 @@ This repository (`cerebro-red-v2`) was extracted from the `hexstrike-ai-kit` pro
 
 All functionality remains the same. Update your clone URL and environment configuration.
 
-## 🤝 Contributing
+##  Contributing
 
 This is a research project. Contributions welcome for:
 - New mutation strategies
@@ -1434,5 +1434,5 @@ This is a research project. Contributions welcome for:
 
 ---
 
-**Built with ❤️ for LLM Security Research**
+**Built with ️ for LLM Security Research**
 

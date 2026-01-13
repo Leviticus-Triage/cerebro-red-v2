@@ -103,7 +103,7 @@ async def test_batch_prompt_attack_ollama():
     assert len(results) == 5  # One result per prompt
     successful_count = sum(1 for r in results if r.get("status") == "COMPLETED" or r.get("total_iterations", 0) > 0)
     
-    print(f"\n✅ Batch E2E Test Results:")
+    print(f"\n Batch E2E Test Results:")
     print(f"   - Total Prompts: {len(results)}")
     print(f"   - Successful: {successful_count}")
     print(f"   - Failed: {len(results) - successful_count}")

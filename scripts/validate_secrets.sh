@@ -78,7 +78,7 @@ for pattern_name in "${!SECRET_PATTERNS[@]}"; do
     fi
 
     if [ -n "$results" ]; then
-        echo -e "${RED}✗ Found potential ${pattern_name}:${NC}"
+        echo -e "${RED} Found potential ${pattern_name}:${NC}"
         echo "$results" | while IFS=: read -r file line content; do
             echo -e "  ${YELLOW}${file}:${line}${NC}"
             # Mask the actual secret in output
@@ -109,16 +109,16 @@ REQUIRED_GITIGNORE_PATTERNS=(
 if [ -f ".gitignore" ]; then
     for pattern in "${REQUIRED_GITIGNORE_PATTERNS[@]}"; do
         if ! grep -q "^${pattern}$" .gitignore 2>/dev/null; then
-            echo -e "${YELLOW}⚠ Missing .gitignore pattern: ${pattern}${NC}"
+            echo -e "${YELLOW} Missing .gitignore pattern: ${pattern}${NC}"
             GITIGNORE_ISSUES=$((GITIGNORE_ISSUES + 1))
         fi
     done
 
     if [ $GITIGNORE_ISSUES -eq 0 ]; then
-        echo -e "${GREEN}✓ .gitignore includes common secret patterns${NC}"
+        echo -e "${GREEN} .gitignore includes common secret patterns${NC}"
     fi
 else
-    echo -e "${RED}✗ .gitignore not found${NC}"
+    echo -e "${RED} .gitignore not found${NC}"
     GITIGNORE_ISSUES=$((GITIGNORE_ISSUES + 1))
 fi
 
@@ -132,7 +132,7 @@ ENV_FILES_FOUND=0
 if git rev-parse --is-inside-work-tree &>/dev/null; then
     env_files=$(git ls-files | grep -E "^\.env$|^\.env\.local$|^\.env\.production$" || true)
     if [ -n "$env_files" ]; then
-        echo -e "${RED}✗ Found committed environment files:${NC}"
+        echo -e "${RED} Found committed environment files:${NC}"
         echo "$env_files" | while read -r file; do
             echo -e "  ${YELLOW}${file}${NC}"
             ENV_FILES_FOUND=$((ENV_FILES_FOUND + 1))
@@ -142,7 +142,7 @@ if git rev-parse --is-inside-work-tree &>/dev/null; then
         echo ""
         SECRETS_FOUND=$((SECRETS_FOUND + ENV_FILES_FOUND))
     else
-        echo -e "${GREEN}✓ No environment files committed${NC}"
+        echo -e "${GREEN} No environment files committed${NC}"
         echo ""
     fi
 fi
@@ -154,14 +154,14 @@ echo -e "${BLUE}═════════════════════�
 echo ""
 
 if [ $SECRETS_FOUND -eq 0 ] && [ $GITIGNORE_ISSUES -eq 0 ]; then
-    echo -e "${GREEN}✓ No secrets detected!${NC}"
+    echo -e "${GREEN} No secrets detected!${NC}"
     echo ""
     echo "Your repository appears to be free of accidentally committed secrets."
     echo ""
     exit 0
 else
     if [ $SECRETS_FOUND -gt 0 ]; then
-        echo -e "${RED}✗ Found ${SECRETS_FOUND} potential secret(s)${NC}"
+        echo -e "${RED} Found ${SECRETS_FOUND} potential secret(s)${NC}"
         echo ""
         echo -e "${YELLOW}Remediation Steps:${NC}"
         echo ""
@@ -179,7 +179,7 @@ else
     fi
 
     if [ $GITIGNORE_ISSUES -gt 0 ]; then
-        echo -e "${YELLOW}⚠ ${GITIGNORE_ISSUES} .gitignore issue(s) found${NC}"
+        echo -e "${YELLOW} ${GITIGNORE_ISSUES} .gitignore issue(s) found${NC}"
         echo ""
         echo "Add missing patterns to .gitignore:"
         for pattern in "${REQUIRED_GITIGNORE_PATTERNS[@]}"; do

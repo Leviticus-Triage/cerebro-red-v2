@@ -27,22 +27,22 @@ fi
 # Use venv Python if available, otherwise use system python3
 if [ -n "$VENV_PYTHON" ]; then
     PYTHON_CMD="$VENV_PYTHON"
-    echo "🐍 Using venv Python: $PYTHON_CMD"
+    echo " Using venv Python: $PYTHON_CMD"
 else
     PYTHON_CMD="python3"
-    echo "⚠️  Using system Python (consider activating venv first)"
+    echo "️  Using system Python (consider activating venv first)"
     echo "   To activate venv: source ../venv/bin/activate"
 fi
 echo ""
 
-echo "📚 Building API documentation..."
+echo " Building API documentation..."
 echo ""
 
 # Step 1: Export OpenAPI schema
 echo "1️⃣  Exporting OpenAPI schema..."
 cd "$BACKEND_DIR"
 $PYTHON_CMD export_openapi.py || {
-    echo "❌ Failed to export OpenAPI schema"
+    echo " Failed to export OpenAPI schema"
     echo "   Hint: Make sure FastAPI is installed: pip install fastapi uvicorn"
     exit 1
 }
@@ -51,7 +51,7 @@ echo ""
 # Step 2: Generate API documentation
 echo "2️⃣  Generating API documentation..."
 $PYTHON_CMD scripts/generate_api_docs.py || {
-    echo "❌ Failed to generate API documentation"
+    echo " Failed to generate API documentation"
     exit 1
 }
 echo ""
@@ -60,13 +60,13 @@ echo ""
 echo "3️⃣  Validating documentation..."
 cd "$PROJECT_ROOT"
 $PYTHON_CMD scripts/validate_docs.py || {
-    echo "❌ Documentation validation failed"
+    echo " Documentation validation failed"
     echo "   Note: This is expected if docs have uncommitted changes"
     exit 1
 }
 echo ""
 
-echo "✅ Documentation build complete!"
+echo " Documentation build complete!"
 echo ""
 echo "Generated files:"
 echo "  - docs/openapi.json"

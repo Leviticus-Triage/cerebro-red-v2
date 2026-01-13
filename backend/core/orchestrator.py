@@ -250,7 +250,7 @@ class RedTeamOrchestrator:
         
         # Log experiment start with full details
         verbose_logger.orchestrator_event(
-            f"🚀 EXPERIMENT STARTED: {experiment_config.name}",
+            f" EXPERIMENT STARTED: {experiment_config.name}",
             experiment_id=str(experiment_id),
             target=f"{experiment_config.target_model_provider}/{experiment_config.target_model_name}",
             attacker=f"{experiment_config.attacker_model_provider}/{experiment_config.attacker_model_name}",
@@ -625,9 +625,9 @@ class RedTeamOrchestrator:
         code_flow_enabled = verbosity >= 3
         
         if code_flow_enabled:
-            logger.info(f"🐛 Code Flow tracking ENABLED (verbosity={verbosity})")
+            logger.info(f" Code Flow tracking ENABLED (verbosity={verbosity})")
         else:
-            logger.info(f"📊 Code Flow tracking DISABLED (verbosity={verbosity}, need >=3)")
+            logger.info(f" Code Flow tracking DISABLED (verbosity={verbosity}, need >=3)")
         
         for i in range(1, max_iterations + 1):
             # Check for pause/cancellation BEFORE starting iteration
@@ -1457,7 +1457,7 @@ class RedTeamOrchestrator:
                         decision_type="threshold_check",
                         condition=f"score ({s_i:.2f}) >= threshold ({threshold:.2f})",
                         decision_result=(s_i >= threshold),
-                        description=f"{'✅ SUCCESS - Vulnerability found!' if s_i >= threshold else '❌ CONTINUE - Below threshold'}"
+                        description=f"{' SUCCESS - Vulnerability found!' if s_i >= threshold else ' CONTINUE - Below threshold'}"
                     )
                 except Exception:
                     pass
@@ -1756,7 +1756,7 @@ class RedTeamOrchestrator:
                         iteration_repo = AttackIterationRepository(session)
                         await iteration_repo.create(iteration)
                     # Commit happens automatically with session.begin() context manager
-                    logger.info(f"✓ Successfully saved iteration {iteration.iteration_number}")
+                    logger.info(f" Successfully saved iteration {iteration.iteration_number}")
                     return
             except Exception as e:
                 logger.warning(f"Attempt {attempt + 1}/{max_retries} failed: {str(e)}")

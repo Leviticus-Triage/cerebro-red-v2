@@ -130,7 +130,7 @@ async def test_provider_comparison():
         settings.llm_provider.provider = original_provider
     
     # Print comparison table
-    print("\n📊 Provider Comparison Results:")
+    print("\n Provider Comparison Results:")
     print(f"{'Metric':<25} {'Ollama':<15} {'Azure':<15} {'OpenAI':<15}")
     print("-" * 70)
     
@@ -149,5 +149,5 @@ async def test_provider_comparison():
     
     # Assertions
     assert all(r["success_rate"] >= 0 for r in results.values())
-    print("\n✅ Provider comparison completed")
+    print("\n Provider comparison completed")
 

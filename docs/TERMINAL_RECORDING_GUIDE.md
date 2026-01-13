@@ -29,10 +29,10 @@ exit
 ```
 
 **Vorteile:**
-- ✅ Meist bereits installiert
-- ✅ Einfach zu verwenden
-- ✅ Erfasst alle Eingaben und Ausgaben
-- ✅ Timestamps möglich
+-  Meist bereits installiert
+-  Einfach zu verwenden
+-  Erfasst alle Eingaben und Ausgaben
+-  Timestamps möglich
 
 **Erweiterte Optionen:**
 ```bash
@@ -78,10 +78,10 @@ asciinema upload experiment.cast
 ```
 
 **Vorteile:**
-- ✅ Sehr schöne Wiedergabe
-- ✅ Kann online geteilt werden
-- ✅ Unterstützt Pausen/Seeking
-- ✅ Farben werden erhalten
+-  Sehr schöne Wiedergabe
+-  Kann online geteilt werden
+-  Unterstützt Pausen/Seeking
+-  Farben werden erhalten
 
 ### 3. `tmux` mit Logging
 
@@ -101,9 +101,9 @@ tmux kill-session -t experiment
 ```
 
 **Vorteile:**
-- ✅ Kann Session später wieder aufnehmen
-- ✅ Split-Panes möglich
-- ✅ Automatisches Logging
+-  Kann Session später wieder aufnehmen
+-  Split-Panes möglich
+-  Automatisches Logging
 
 ### 4. Einfache Output-Umleitung mit `tee`
 
@@ -117,8 +117,8 @@ docker compose logs -f cerebro-backend | tee experiment.log
 ```
 
 **Vorteile:**
-- ✅ Keine zusätzliche Installation
-- ✅ Einfach für einzelne Befehle
+-  Keine zusätzliche Installation
+-  Einfach für einzelne Befehle
 
 ### 5. Kombiniert: `script` + `tee` (Beste Lösung)
 

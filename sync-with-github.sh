@@ -9,7 +9,7 @@ echo ""
 
 # Check if we're in a git repository
 if ! git rev-parse --git-dir > /dev/null 2>&1; then
-    echo "❌ Error: Not in a git repository"
+    echo " Error: Not in a git repository"
     exit 1
 fi
 
@@ -51,7 +51,7 @@ if [ "$REMOTE_COMMITS" -gt 0 ]; then
     echo "Options:"
     echo "1. Pull and merge (recommended if you want to keep both histories)"
     echo "2. Pull with rebase (if you want linear history)"
-    echo "3. Force push (⚠️ DANGEROUS - will overwrite remote)"
+    echo "3. Force push (️ DANGEROUS - will overwrite remote)"
     echo ""
     read -p "Choose option (1/2/3): " choice
     
@@ -65,11 +65,11 @@ if [ "$REMOTE_COMMITS" -gt 0 ]; then
             git pull origin main --rebase
             ;;
         3)
-            echo "⚠️ WARNING: Force pushing will overwrite remote commits!"
+            echo "️ WARNING: Force pushing will overwrite remote commits!"
             read -p "Are you sure? (yes/no): " confirm
             if [ "$confirm" = "yes" ]; then
                 git push -f origin main
-                echo "✓ Force pushed"
+                echo " Force pushed"
                 exit 0
             else
                 echo "Cancelled"
@@ -93,11 +93,11 @@ if [ "$LOCAL_COMMITS" -gt 0 ]; then
     git push -u origin main
 else
     echo ""
-    echo "✓ Local and remote are in sync"
+    echo " Local and remote are in sync"
 fi
 
 echo ""
 echo "=== Final Status ==="
 git status --short
 echo ""
-echo "✓ Sync complete!"
+echo " Sync complete!"

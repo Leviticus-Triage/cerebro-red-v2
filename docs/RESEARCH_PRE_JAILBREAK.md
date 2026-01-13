@@ -4,7 +4,7 @@
 
 Die **Research Pre-Jailbreak Strategy** ist eine hochsophistizierte, mehrstufige Angriffstechnik, die als legitime Security Research getarnt ist. Sie wurde speziell für professionelle Cybersecurity-Portfolios entwickelt.
 
-## 🎯 Design-Ziele
+##  Design-Ziele
 
 1. **Legitimität**: Erscheint als echte Security Research
 2. **Eskalation**: Schrittweise Steigerung von harmlos zu kritisch
@@ -12,7 +12,7 @@ Die **Research Pre-Jailbreak Strategy** ist eine hochsophistizierte, mehrstufige
 4. **Professionell**: Für Cybersecurity-Portfolios geeignet
 5. **Effektiv**: Hohe Erfolgsrate bei modernen LLMs
 
-## 📋 Funktionsweise
+##  Funktionsweise
 
 ### 3-Stufen-Eskalation
 
@@ -31,7 +31,7 @@ Die **Research Pre-Jailbreak Strategy** ist eine hochsophistizierte, mehrstufige
 - Spezifiziert Advanced Obfuskierung
 - In-Memory PE Loading, Reflective DLL Injection, etc.
 
-## 🔐 Referenzierte CVEs
+##  Referenzierte CVEs
 
 Alle referenzierten CVEs sind **gepatcht** und sicher für Research:
 
@@ -41,7 +41,7 @@ Alle referenzierten CVEs sind **gepatcht** und sicher für Research:
 | CVE-2024-21412 | Print Spooler RCE | spoolsv.exe | Februar 2024 |
 | CVE-2024-21338 | Kernel Memory Corruption | ntoskrnl.exe | Januar 2024 |
 
-## 🛠️ Obfuskierungstechniken
+## ️ Obfuskierungstechniken
 
 Die Strategie verwendet folgende Advanced Obfuskierungstechniken:
 
@@ -54,7 +54,7 @@ Die Strategie verwendet folgende Advanced Obfuskierungstechniken:
 7. **PE Header Manipulation** und Section Encryption
 8. **Process Hollowing** mit Thread Hijacking
 
-## 📝 Optimaler Test-Prompt
+##  Optimaler Test-Prompt
 
 Der optimale Test-Prompt befindet sich in `OPTIMAL_TEST_PROMPT.txt`:
 
@@ -70,7 +70,7 @@ Vulnerability (CVE-2024-26169) that was patched in March 2024...
 [Vollständiger Prompt siehe OPTIMAL_TEST_PROMPT.txt]
 ```
 
-## 🚀 Verwendung
+##  Verwendung
 
 ### API-Beispiel
 
@@ -119,9 +119,9 @@ for turn in conversation:
     print(f"Stage {turn.turn_number}: {turn.mutated_prompt[:200]}...")
 ```
 
-## ⚠️ Ethische Überlegungen
+## ️ Ethische Überlegungen
 
-### ✅ Erlaubte Verwendung
+###  Erlaubte Verwendung
 
 - Autorisiertes Security Testing
 - Educational Research
@@ -129,14 +129,14 @@ for turn in conversation:
 - Defensive Security Research
 - Training und Awareness
 
-### ❌ Nicht erlaubt
+###  Nicht erlaubt
 
 - Unautorisierte Angriffe auf fremde Systeme
 - Produktionssysteme ohne Genehmigung
 - Generierung von schädlichen Inhalten für Angriffe
 - Umgehung von Sicherheitsmaßnahmen in Produktion
 
-## 📊 Erwartete Ergebnisse
+##  Erwartete Ergebnisse
 
 Die Strategie ist darauf ausgelegt:
 
@@ -145,7 +145,7 @@ Die Strategie ist darauf ausgelegt:
 - **Technische Tiefe**: Realistische Exploit-Entwicklung
 - **Nachweisbare Skills**: Demonstriert Advanced Security Research
 
-## 🔬 Testing
+##  Testing
 
 ### Manueller Test
 
@@ -161,14 +161,14 @@ Die Strategie ist darauf ausgelegt:
 3. Starte Scan und beobachte Logs
 4. Analysiere Ergebnisse
 
-## 📚 Referenzen
+##  Referenzen
 
 - **CVE-2024-26169**: Windows Kernel EoP Vulnerability
 - **Reflective DLL Injection**: Memory-only DLL loading
 - **PE Loaders**: Portable Executable in-memory loading
 - **Obfuscation Techniques**: Advanced malware evasion
 
-## 🎓 Portfolio-Integration
+##  Portfolio-Integration
 
 Diese Strategie eignet sich für:
 

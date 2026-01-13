@@ -1039,7 +1039,7 @@ export const LiveLogPanel: React.FC<LiveLogPanelProps> = ({
       {/* Header with Export */}
       <div className="flex items-center justify-between px-4 py-2 bg-slate-900/80 border-b border-slate-800">
         <div className="flex items-center gap-2">
-          <span className="text-lg">📜</span>
+          <span className="text-lg"></span>
           <h3 className="font-semibold text-slate-200">Live Logs</h3>
         </div>
         <div className="flex items-center gap-2">
@@ -1048,7 +1048,7 @@ export const LiveLogPanel: React.FC<LiveLogPanelProps> = ({
             className="px-2 py-1 text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 rounded transition-colors"
             title={expandedRows.size > 0 ? 'Collapse All' : 'Expand All'}
           >
-            {expandedRows.size > 0 ? '📥 Collapse All' : '📤 Expand All'}
+            {expandedRows.size > 0 ? ' Collapse All' : ' Expand All'}
           </button>
           <button
             onClick={() => exportLogs('json')}

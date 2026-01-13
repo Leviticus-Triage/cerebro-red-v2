@@ -23,7 +23,7 @@ async def test_azure_connection():
     
     assert response is not None
     assert response.provider.value == "azure"
-    print(f"✅ Azure OpenAI connection successful: {response.model}")
+    print(f" Azure OpenAI connection successful: {response.model}")
 
 @pytest.mark.skipif(
     os.getenv("DEFAULT_LLM_PROVIDER") != "azure",
@@ -44,7 +44,7 @@ async def test_azure_all_models():
         response = await llm_client.complete(messages, role=role)
         
         assert response is not None
-        print(f"✅ {role.capitalize()}: {response.model} (latency: {response.latency_ms}ms)")
+        print(f" {role.capitalize()}: {response.model} (latency: {response.latency_ms}ms)")
 
 @pytest.mark.skipif(
     os.getenv("DEFAULT_LLM_PROVIDER") != "azure",
@@ -66,6 +66,6 @@ async def test_azure_cost_estimation():
         (response.tokens_used / 1000) * output_cost_per_1k
     )
     
-    print(f"✅ Tokens used: {response.tokens_used}")
-    print(f"✅ Estimated cost: ${estimated_cost:.6f}")
+    print(f" Tokens used: {response.tokens_used}")
+    print(f" Estimated cost: ${estimated_cost:.6f}")
 

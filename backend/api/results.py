@@ -344,7 +344,7 @@ async def export_experiment_results(
                         str(it.iteration_number),
                         it.strategy_used[:30] + "..." if len(it.strategy_used) > 30 else it.strategy_used,
                         f"{it.judge_score:.2f}",
-                        "✓" if it.success else "✗"
+                        "" if it.success else ""
                     ])
                 
                 if len(iterations) > 50:

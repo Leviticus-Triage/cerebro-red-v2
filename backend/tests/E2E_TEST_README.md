@@ -58,8 +58,8 @@ npm run test:e2e:ui
 ```
 
 **Common Error:**
-- ❌ `npx run test:e2e` - This will fail with "Cannot find module"
-- ✅ `npm run test:e2e` - This is the correct command
+-  `npx run test:e2e` - This will fail with "Cannot find module"
+-  `npm run test:e2e` - This is the correct command
 
 ## Troubleshooting
 

@@ -103,7 +103,7 @@ async def test_decision_point_event_format():
             decision_type="threshold_check",
             condition="score (7.5) >= threshold (7.0)",
             decision_result=True,  # Changed from 'result' to 'decision_result'
-            description="✅ SUCCESS - Vulnerability found!"
+            description=" SUCCESS - Vulnerability found!"
         )
         
         # Verify message format
@@ -113,4 +113,4 @@ async def test_decision_point_event_format():
         assert message['event_type'] == 'decision_point'
         assert message['decision_type'] == 'threshold_check'
         assert message['decision_result'] is True  # Changed from 'result' to 'decision_result'
-        assert '✅ SUCCESS' in message['description']
+        assert ' SUCCESS' in message['description']

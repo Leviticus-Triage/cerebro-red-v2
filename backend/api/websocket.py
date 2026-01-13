@@ -127,13 +127,13 @@ class ConnectionManager:
                     if connection.client_state == WebSocketState.CONNECTED:
                         await connection.send_json(message)
                         sent_count += 1
-                        logger.debug(f"[WS-BROADCAST] ✅ Sent message type={message.get('type')} to connection")
+                        logger.debug(f"[WS-BROADCAST]  Sent message type={message.get('type')} to connection")
                     else:
                         dead_connections.add(connection)
                         logger.warning(f"[WS-BROADCAST] Connection not in CONNECTED state")
                 else:
                     filtered_count += 1
-                    logger.debug(f"[WS-BROADCAST] ❌ Filtered message (verbosity {conn_verbosity} < {min_verbosity})")
+                    logger.debug(f"[WS-BROADCAST]  Filtered message (verbosity {conn_verbosity} < {min_verbosity})")
             except Exception as e:
                 logger.error(f"[WS-BROADCAST] Error sending message: {e}")
                 dead_connections.add(connection)
@@ -215,7 +215,7 @@ async def websocket_scan_progress(
     logger.info(f"[WS-ENDPOINT] Initial verbosity: {initial_verbosity}")
     
     await manager.connect(experiment_id, websocket, verbosity=initial_verbosity)
-    logger.info(f"[WS-ENDPOINT] ✅ Connection registered with verbosity={initial_verbosity}")
+    logger.info(f"[WS-ENDPOINT]  Connection registered with verbosity={initial_verbosity}")
     
     # Send error message if verbosity was invalid (after connection is established)
     if verbosity_error_message:
@@ -250,7 +250,7 @@ async def websocket_scan_progress(
                         logger.info(f"[WS-ENDPOINT] Verbosity change request: {new_verbosity}")
                         
                         manager.set_verbosity(websocket, new_verbosity)
-                        logger.info(f"[WS-ENDPOINT] ✅ Verbosity updated to {new_verbosity}")
+                        logger.info(f"[WS-ENDPOINT]  Verbosity updated to {new_verbosity}")
                         
                         await websocket.send_json({
                             "type": "verbosity_updated",

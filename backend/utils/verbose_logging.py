@@ -139,7 +139,7 @@ class VerboseLogger:
         """Log an LLM request."""
         self.log(
             "INFO",
-            f"🔄 {role.upper()} Request → {provider}/{model}",
+            f" {role.upper()} Request → {provider}/{model}",
             component="LLM",
             extra_data={
                 "prompt_preview": prompt[:200] + "..." if len(prompt) > 200 else prompt,
@@ -153,7 +153,7 @@ class VerboseLogger:
         """Log an LLM response."""
         self.log(
             "INFO",
-            f"✅ {role.upper()} Response ← {provider}/{model} ({latency_ms:.0f}ms, {tokens or '?'} tokens)",
+            f" {role.upper()} Response ← {provider}/{model} ({latency_ms:.0f}ms, {tokens or '?'} tokens)",
             component="LLM",
             extra_data={
                 "response_preview": response[:300] + "..." if len(response) > 300 else response,
@@ -166,7 +166,7 @@ class VerboseLogger:
         """Log an LLM error."""
         self.log(
             "ERROR",
-            f"❌ {role.upper()} Error from {provider}/{model}: {error}",
+            f" {role.upper()} Error from {provider}/{model}: {error}",
             component="LLM",
             extra_data=kwargs
         )
@@ -175,7 +175,7 @@ class VerboseLogger:
         """Log an orchestrator event."""
         self.log(
             "INFO",
-            f"🎭 {event}",
+            f" {event}",
             component="ORCHESTRATOR",
             extra_data={"experiment_id": experiment_id, **kwargs}
         )
@@ -184,7 +184,7 @@ class VerboseLogger:
         """Log iteration start."""
         self.log(
             "INFO",
-            f"🚀 Iteration {iteration} started with strategy '{strategy}'",
+            f" Iteration {iteration} started with strategy '{strategy}'",
             component="ORCHESTRATOR",
             extra_data={
                 "experiment_id": experiment_id,
@@ -194,10 +194,10 @@ class VerboseLogger:
     
     def iteration_complete(self, experiment_id: str, iteration: int, score: float, success: bool):
         """Log iteration completion."""
-        status = "✅ SUCCESS" if success else "❌ FAILED"
+        status = " SUCCESS" if success else " FAILED"
         self.log(
             "INFO" if success else "WARNING",
-            f"🏁 Iteration {iteration} complete: {status} (Score: {score:.2f})",
+            f" Iteration {iteration} complete: {status} (Score: {score:.2f})",
             component="ORCHESTRATOR",
             extra_data={"experiment_id": experiment_id}
         )
@@ -206,7 +206,7 @@ class VerboseLogger:
         """Log judge evaluation."""
         self.log(
             "INFO",
-            f"⚖️ Judge Score: {score:.2f}/10",
+            f"️ Judge Score: {score:.2f}/10",
             component="JUDGE",
             extra_data={
                 "prompt_preview": prompt[:100] + "..." if len(prompt) > 100 else prompt,
@@ -219,7 +219,7 @@ class VerboseLogger:
         """Log attack mutation."""
         self.log(
             "DEBUG",
-            f"🔀 Attack mutated with '{strategy}'",
+            f" Attack mutated with '{strategy}'",
             component="ATTACKER",
             extra_data={
                 "original_preview": original[:100] + "..." if len(original) > 100 else original,
@@ -231,7 +231,7 @@ class VerboseLogger:
         """Log target model response."""
         self.log(
             "DEBUG",
-            f"🎯 Target responded ({latency_ms:.0f}ms)",
+            f" Target responded ({latency_ms:.0f}ms)",
             component="TARGET",
             extra_data={
                 "prompt_preview": prompt[:100] + "..." if len(prompt) > 100 else prompt,
@@ -243,14 +243,14 @@ class VerboseLogger:
         """Log database operation."""
         self.log(
             "DEBUG",
-            f"💾 DB: {operation} on {table}",
+            f" DB: {operation} on {table}",
             component="DATABASE",
             extra_data=kwargs
         )
     
     def api_request(self, method: str, path: str, status: int = None, latency_ms: float = None):
         """Log API request."""
-        status_emoji = "✅" if status and 200 <= status < 400 else "❌" if status else "🔄"
+        status_emoji = "" if status and 200 <= status < 400 else "" if status else ""
         self.log(
             "DEBUG",
             f"{status_emoji} API: {method} {path} → {status or 'pending'} ({latency_ms or 0:.0f}ms)",
@@ -325,7 +325,7 @@ def enable_litellm_debug():
         import litellm
         litellm.set_verbose = True
         litellm._turn_on_debug()
-        verbose_logger.log("INFO", "🔧 LiteLLM debug mode enabled", component="LLM")
+        verbose_logger.log("INFO", " LiteLLM debug mode enabled", component="LLM")
     except Exception as e:
         verbose_logger.log("WARNING", f"Could not enable LiteLLM debug: {e}", component="LLM")
 

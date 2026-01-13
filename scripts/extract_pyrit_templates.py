@@ -122,7 +122,7 @@ def extract_all_templates(pyrit_path: Path) -> Dict[str, List[Dict[str, Any]]]:
         if parsed:
             category = categorize_template(yaml_file.stem, parsed['name'])
             categorized[category].append(parsed['template'])
-            print(f"  ✓ {yaml_file.stem} → {category}")
+            print(f"   {yaml_file.stem} → {category}")
     
     return dict(categorized)
 
@@ -186,9 +186,9 @@ def main():
     with open(output_file, 'w', encoding='utf-8') as f:
         json.dump(payloads_json, f, indent=2, ensure_ascii=False)
     
-    print(f"\n✓ Extracted {payloads_json['metadata']['extracted_templates']} templates")
-    print(f"✓ Created {payloads_json['metadata']['categories_count']} categories")
-    print(f"✓ Output saved to: {output_file}")
+    print(f"\n Extracted {payloads_json['metadata']['extracted_templates']} templates")
+    print(f" Created {payloads_json['metadata']['categories_count']} categories")
+    print(f" Output saved to: {output_file}")
     print("\nNext step: Merge into backend/data/payloads.json")
 
 

@@ -119,13 +119,13 @@ def validate_and_enrich(schema: Dict[str, Any]) -> Dict[str, Any]:
     
     # Report validation results
     if errors:
-        print("❌ Validation errors found:")
+        print(" Validation errors found:")
         for error in errors:
             print(f"   - {error}")
         raise ValueError(f"Schema validation failed with {len(errors)} errors")
     
     if warnings:
-        print(f"⚠️  Validation warnings ({len(warnings)}):")
+        print(f"️  Validation warnings ({len(warnings)}):")
         for warning in warnings[:10]:  # Show first 10
             print(f"   - {warning}")
         if len(warnings) > 10:
@@ -137,11 +137,11 @@ def validate_and_enrich(schema: Dict[str, Any]) -> Dict[str, Any]:
 def main():
     """Main entry point."""
     # Get OpenAPI schema
-    print("📋 Generating OpenAPI schema...")
+    print(" Generating OpenAPI schema...")
     openapi_schema = app.openapi()
     
     # Validate and enrich
-    print("🔍 Validating and enriching schema...")
+    print(" Validating and enriching schema...")
     openapi_schema = validate_and_enrich(openapi_schema)
     
     # Write to docs/openapi.json
@@ -159,7 +159,7 @@ def main():
         for methods in paths.values()
     )
     
-    print(f"✅ OpenAPI schema exported to {output_file}")
+    print(f" OpenAPI schema exported to {output_file}")
     print(f"   Total paths: {len(paths)}")
     print(f"   Total endpoints: {total_endpoints}")
     print(f"   API version: {openapi_schema.get('info', {}).get('version', 'unknown')}")

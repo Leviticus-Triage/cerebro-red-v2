@@ -111,7 +111,7 @@ def configure_logging():
     
     # Log configuration summary
     logger = logging.getLogger(__name__)
-    logger.info(f"🔧 Logging configured: Level=DEBUG, Flush=Forced, Format=Structured")
+    logger.info(f" Logging configured: Level=DEBUG, Flush=Forced, Format=Structured")
     logger.debug(f"[DEBUG-TEST] This is a DEBUG log - if you see this, DEBUG logging works!")
     
     return logger
@@ -134,11 +134,11 @@ async def lifespan(app: FastAPI):
     logger = logging.getLogger(__name__)
     
     # Startup
-    logger.info("🚀 CEREBRO-RED v2 starting up...")
+    logger.info(" CEREBRO-RED v2 starting up...")
     
     # Load and log settings
     settings = get_settings()
-    logger.info(f"🔧 CEREBRO-RED v2 Starting...")
+    logger.info(f" CEREBRO-RED v2 Starting...")
     logger.info(f"   Environment: {settings.app.env}")
     logger.info(f"   Demo Mode: {'ENABLED (read-only)' if settings.app.demo_mode else 'DISABLED'}")
     logger.info(f"   Port: {settings.app.port}")
@@ -147,7 +147,7 @@ async def lifespan(app: FastAPI):
     
     # Initialize database
     await init_db()
-    logger.info("✅ Database initialized")
+    logger.info(" Database initialized")
     
     # Event loop diagnostics
     loop = asyncio.get_event_loop()
@@ -157,28 +157,28 @@ async def lifespan(app: FastAPI):
     logger.info(f"[STARTUP] Event loop type: {type(loop).__name__}")
     
     # === PHASE 3: PAYLOAD COVERAGE AUDIT ===
-    logger.info("📊 Running payload coverage audit...")
+    logger.info(" Running payload coverage audit...")
     from core.payloads import get_payload_manager
     
     payload_manager = get_payload_manager()
     audit_result = payload_manager.audit_payload_coverage()
     
     # Log summary to console
-    logger.info(f"📦 Payload Coverage Audit Results:")
+    logger.info(f" Payload Coverage Audit Results:")
     logger.info(f"   Total Strategies: {audit_result['total_strategies']}")
     logger.info(f"   Covered: {audit_result['covered_strategies']} ({audit_result['coverage_percent']:.1f}%)")
     logger.info(f"   Well-Covered (>=3 templates): {audit_result['well_covered_strategies']} ({audit_result['well_covered_percent']:.1f}%)")
     logger.info(f"   {audit_result['recommendation']}")
     
     if audit_result['missing_strategies']:
-        logger.warning(f"⚠️ Missing templates for {len(audit_result['missing_strategies'])} strategies:")
+        logger.warning(f"️ Missing templates for {len(audit_result['missing_strategies'])} strategies:")
         for strategy in audit_result['missing_strategies'][:5]:  # Show first 5
             logger.warning(f"   - {strategy}")
         if len(audit_result['missing_strategies']) > 5:
             logger.warning(f"   ... and {len(audit_result['missing_strategies']) - 5} more")
     
     if audit_result['under_covered_strategies']:
-        logger.warning(f"⚠️ Under-covered (<3 templates) for {len(audit_result['under_covered_strategies'])} strategies:")
+        logger.warning(f"️ Under-covered (<3 templates) for {len(audit_result['under_covered_strategies'])} strategies:")
         for strategy in audit_result['under_covered_strategies'][:5]:
             logger.warning(f"   - {strategy}")
     
@@ -191,10 +191,10 @@ async def lifespan(app: FastAPI):
     
     # Fail startup if coverage is critically low (<50%)
     if audit_result['coverage_percent'] < 50:
-        logger.error("❌ CRITICAL: Payload coverage below 50% - Cannot start")
+        logger.error(" CRITICAL: Payload coverage below 50% - Cannot start")
         raise RuntimeError(f"Insufficient payload coverage: {audit_result['coverage_percent']:.1f}%")
     
-    logger.info("✅ Payload coverage audit complete")
+    logger.info(" Payload coverage audit complete")
     
     # === TEMPLATE UPDATER: Schedule automatic updates ===
     from core.template_updater import get_template_updater
@@ -224,34 +224,34 @@ async def lifespan(app: FastAPI):
         
         while True:
             try:
-                update_logger.info("🔄 Starting scheduled template update...")
+                update_logger.info(" Starting scheduled template update...")
                 updater = get_template_updater()
                 result = await updater.update_all_repositories(create_backup=True)
                 
                 if result.get("success"):
                     update_logger.info(
-                        f"✅ Scheduled update complete: "
+                        f" Scheduled update complete: "
                         f"{result['total_templates_added']} templates added, "
                         f"{result['total_templates_updated']} templates updated"
                     )
                 else:
                     failed_repos = [r["repo_name"] for r in result.get("repositories", []) if not r.get("success")]
-                    update_logger.warning(f"⚠️ Scheduled template update had failures: {', '.join(failed_repos)}")
+                    update_logger.warning(f"️ Scheduled template update had failures: {', '.join(failed_repos)}")
                 
                 # Wait until next 2 AM UTC (24 hours)
                 await asyncio.sleep(24 * 3600)
                     
             except asyncio.CancelledError:
-                update_logger.info("🛑 Scheduled template update task cancelled")
+                update_logger.info(" Scheduled template update task cancelled")
                 break
             except Exception as e:
-                update_logger.error(f"❌ Error in scheduled template update: {e}")
+                update_logger.error(f" Error in scheduled template update: {e}")
                 # Wait 1 hour before retrying on error
                 await asyncio.sleep(3600)
     
     # Start background task for scheduled updates (if enabled)
     if settings.template_update.auto_update:
-        logger.info("🔄 Automatic template updates enabled (daily at 2 AM UTC)")
+        logger.info(" Automatic template updates enabled (daily at 2 AM UTC)")
         update_task = asyncio.create_task(scheduled_template_update())
     else:
         logger.info("ℹ️ Automatic template updates disabled (set TEMPLATE_UPDATE_AUTO_UPDATE=true to enable)")
@@ -259,7 +259,7 @@ async def lifespan(app: FastAPI):
     yield
     
     # Shutdown
-    logger.info("👋 CEREBRO-RED v2 shutting down...")
+    logger.info(" CEREBRO-RED v2 shutting down...")
     
     # Cancel update task if running
     if update_task:
@@ -511,13 +511,13 @@ app.include_router(templates.router, prefix="/api/v1/templates", tags=["Template
 settings = get_settings()
 if settings.app.demo_mode:
     app.include_router(demo_router, prefix="/api/v1/demo", tags=["demo"])
-    logger.info("🎭 Demo mode enabled - mock data endpoints available at /api/v1/demo/experiments")
+    logger.info(" Demo mode enabled - mock data endpoints available at /api/v1/demo/experiments")
 
 # Debug endpoints (always available for testing)
 from api import debug
 app.include_router(debug.router, prefix="/api/v1/debug", tags=["debug"])
 logger = logging.getLogger(__name__)
-logger.info("🐛 Debug endpoints enabled (/api/v1/debug/force-error, /api/v1/debug/test-logging)")
+logger.info(" Debug endpoints enabled (/api/v1/debug/force-error, /api/v1/debug/test-logging)")
 
 
 # ============================================================================

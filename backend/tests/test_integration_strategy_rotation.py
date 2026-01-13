@@ -266,7 +266,7 @@ async def test_all_44_strategies_logged_in_db(mock_async_session):
         assert unique_strategies == set(ALL_STRATEGIES), \
             f"Missing strategies: {set(ALL_STRATEGIES) - unique_strategies}"
         
-        print(f"✅ All 44 strategies used in {result['total_iterations']} iterations")
+        print(f" All 44 strategies used in {result['total_iterations']} iterations")
 
 
 @pytest.mark.asyncio
@@ -374,4 +374,4 @@ async def test_strategy_rotation_respects_user_selection(mock_async_session):
         assert unique_used.issubset(set(selected_strategies)), \
             f"Unexpected strategies used: {unique_used - set(selected_strategies)}"
         
-        print(f"✅ Only user-selected strategies used: {len(unique_used)}/{len(selected_strategies)}")
+        print(f" Only user-selected strategies used: {len(unique_used)}/{len(selected_strategies)}")

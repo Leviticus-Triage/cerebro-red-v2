@@ -50,7 +50,7 @@ def test_cors_preflight_request(client):
     allowed_methods = response.headers["access-control-allow-methods"]
     assert "POST" in allowed_methods
     
-    print(f"✅ CORS Preflight: {allowed_methods}")
+    print(f" CORS Preflight: {allowed_methods}")
 
 
 @pytest.mark.cors
@@ -71,7 +71,7 @@ def test_cors_headers_on_actual_request(client):
         origin = response.headers["access-control-allow-origin"]
         assert origin in ["http://localhost:5173", "*"]
         
-        print(f"✅ CORS Headers present: Origin={origin}")
+        print(f" CORS Headers present: Origin={origin}")
 
 
 @pytest.mark.cors
@@ -98,10 +98,10 @@ def test_cors_multiple_origins(client):
             # Should allow configured origins
             if origin in ["http://localhost:5173", "http://localhost:3000"]:
                 assert response.status_code == 200
-                print(f"✅ Origin allowed: {origin}")
+                print(f" Origin allowed: {origin}")
             else:
                 # May or may not be allowed depending on config
-                print(f"⚠️  Origin {origin}: {response.status_code}")
+                print(f"️  Origin {origin}: {response.status_code}")
 
 
 @pytest.mark.auth
@@ -115,7 +115,7 @@ def test_api_key_disabled(client):
         
         # Should not return 401
         assert response.status_code != 401
-        print(f"✅ API Key disabled: {response.status_code}")
+        print(f" API Key disabled: {response.status_code}")
 
 
 @pytest.mark.auth
@@ -135,7 +135,7 @@ def test_api_key_enabled_missing(client):
         error_msg = data.get("error") or data.get("detail", "")
         assert "API key" in error_msg or "API key" in str(data)
         
-        print("✅ API Key required when enabled")
+        print(" API Key required when enabled")
 
 
 @pytest.mark.auth
@@ -158,7 +158,7 @@ def test_api_key_enabled_invalid(client):
         error_msg = data.get("error") or data.get("detail", "")
         assert "Invalid API key" in error_msg or "Invalid" in error_msg
         
-        print("✅ Invalid API Key rejected")
+        print(" Invalid API Key rejected")
 
 
 @pytest.mark.auth
@@ -180,7 +180,7 @@ def test_api_key_enabled_valid(client):
         
         # Should not return 401
         assert response.status_code != 401, f"Expected non-401 status, got {response.status_code}: {response.text}"
-        print(f"✅ Valid API Key accepted: {response.status_code}")
+        print(f" Valid API Key accepted: {response.status_code}")
         
         # Restore cache
         get_settings.cache_clear()
@@ -229,7 +229,7 @@ def test_cors_with_api_key(client):
         
         # Should have CORS headers
         assert "access-control-allow-origin" in response.headers
-        print("✅ CORS works with API Key authentication")
+        print(" CORS works with API Key authentication")
 
 
 @pytest.mark.cors
@@ -249,7 +249,7 @@ def test_cors_credentials(client):
         # Check if credentials are allowed
         if "access-control-allow-credentials" in response.headers:
             credentials = response.headers["access-control-allow-credentials"]
-            print(f"✅ CORS Credentials: {credentials}")
+            print(f" CORS Credentials: {credentials}")
         else:
-            print("⚠️  CORS Credentials header not present")
+            print("️  CORS Credentials header not present")
 

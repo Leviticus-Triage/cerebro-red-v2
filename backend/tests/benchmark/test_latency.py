@@ -74,7 +74,7 @@ async def test_latency_benchmark():
         judge_latencies.append((time.time() - start) * 1000)
     
     # Calculate statistics
-    print(f"\n📊 Latency Benchmark Results:")
+    print(f"\n Latency Benchmark Results:")
     print(f"{'Component':<15} {'Mean (ms)':<12} {'Std Dev':<12} {'Min':<12} {'Max':<12}")
     print("-" * 63)
     

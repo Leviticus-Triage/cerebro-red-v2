@@ -55,7 +55,7 @@ test.describe('Experiment Creation Flow', () => {
     
     await expect(page).toHaveURL(/\/experiments\/new/);
     
-    console.log('✅ Step 1: Navigated to New Experiment page');
+    console.log(' Step 1: Navigated to New Experiment page');
 
     // Step 2: Fill experiment form
     await page.fill('#name', 'E2E Test Experiment');
@@ -95,7 +95,7 @@ test.describe('Experiment Creation Flow', () => {
     const maxIterationsInput = page.locator('input[type="number"]').first();
     await maxIterationsInput.fill('5');
     
-    console.log('✅ Step 2: Form filled');
+    console.log(' Step 2: Form filled');
 
     // Step 3: Submit form
     await page.click('button[type="submit"]:has-text("Create Experiment")');
@@ -104,18 +104,18 @@ test.describe('Experiment Creation Flow', () => {
     try {
       // Wait for navigation to experiment details
       await page.waitForURL(/\/experiments\/[a-f0-9-]+/, { timeout: 15000 });
-      console.log('✅ Step 3: Experiment created, navigated to details');
+      console.log(' Step 3: Experiment created, navigated to details');
     } catch (error) {
       // Check if there's an error message
       const errorMessage = await page.locator('text=/error|failed|unauthorized/i').first().textContent().catch(() => null);
       if (errorMessage) {
-        console.error(`❌ Step 3: Experiment creation failed: ${errorMessage}`);
+        console.error(` Step 3: Experiment creation failed: ${errorMessage}`);
         throw new Error(`Experiment creation failed: ${errorMessage}`);
       }
       
       // Check current URL to see where we are
       const currentUrl = page.url();
-      console.error(`❌ Step 3: Navigation timeout. Current URL: ${currentUrl}`);
+      console.error(` Step 3: Navigation timeout. Current URL: ${currentUrl}`);
       
       // Take a screenshot for debugging
       await page.screenshot({ path: 'test-results/experiment-creation-failed.png' });
@@ -127,7 +127,7 @@ test.describe('Experiment Creation Flow', () => {
     await expect(page.locator('h1')).toContainText('E2E Test Experiment');
     await expect(page.locator('text=Testing experiment creation flow')).toBeVisible();
     
-    console.log('✅ Step 4: Experiment details displayed');
+    console.log(' Step 4: Experiment details displayed');
 
     // Step 5: Start scan
     const startButton = page.locator('button:has-text("Start Scan")');
@@ -137,17 +137,17 @@ test.describe('Experiment Creation Flow', () => {
       // Wait for scan to start
       await expect(page.locator('text=Running')).toBeVisible({ timeout: 5000 });
       
-      console.log('✅ Step 5: Scan started');
+      console.log(' Step 5: Scan started');
     } else {
-      console.log('⚠️  Step 5: Start Scan button not visible (may already be running)');
+      console.log('️  Step 5: Start Scan button not visible (may already be running)');
     }
 
     // Step 6: Check that progress is displayed
     const progressIndicator = page.locator('[role="progressbar"], text=Iteration');
     if (await progressIndicator.isVisible()) {
-      console.log('✅ Step 6: Progress indicator visible');
+      console.log(' Step 6: Progress indicator visible');
     } else {
-      console.log('⚠️  Step 6: Progress indicator not visible');
+      console.log('️  Step 6: Progress indicator not visible');
     }
   });
 
@@ -173,9 +173,9 @@ test.describe('Experiment Creation Flow', () => {
     ]);
     
     if (hasError) {
-      console.log('✅ Validation errors displayed for empty form');
+      console.log(' Validation errors displayed for empty form');
     } else {
-      console.log('⚠️  Validation errors not found (form may have different validation)');
+      console.log('️  Validation errors not found (form may have different validation)');
     }
   });
 
@@ -208,7 +208,7 @@ test.describe('Experiment Creation Flow', () => {
     // Either experiments exist or empty message is shown
     expect(hasExperiments || hasEmptyMessage).toBeTruthy();
     
-    console.log(`✅ Experiments list displayed (${hasExperiments ? 'with experiments' : 'empty'})`);
+    console.log(` Experiments list displayed (${hasExperiments ? 'with experiments' : 'empty'})`);
   });
 
   test('should select multiple strategies and create experiment (Phase 6 - Comment 4)', async ({ page }) => {
@@ -216,7 +216,7 @@ test.describe('Experiment Creation Flow', () => {
     await page.goto('/experiments/new');
     await page.waitForLoadState('networkidle');
     
-    console.log('✅ Step 1: Navigated to New Experiment page');
+    console.log(' Step 1: Navigated to New Experiment page');
 
     // Fill basic fields
     await page.fill('#name', 'Multi-Strategy Test');
@@ -237,7 +237,7 @@ test.describe('Experiment Creation Flow', () => {
     const promptTextareas = page.locator('textarea[placeholder*="Enter the initial prompt"]');
     await promptTextareas.first().fill('Test prompt for multi-strategy');
     
-    console.log('✅ Step 2: Basic form filled');
+    console.log(' Step 2: Basic form filled');
 
     // Select 10 diverse strategies (Phase 6 requirement)
     const strategiesToSelect = [
@@ -268,7 +268,7 @@ test.describe('Experiment Creation Flow', () => {
           if (await checkbox.isVisible({ timeout: 1000 })) {
             await checkbox.check();
             selectedCount++;
-            console.log(`  ✓ Selected: ${strategy}`);
+            console.log(`   Selected: ${strategy}`);
             break;
           }
         } catch {
@@ -277,7 +277,7 @@ test.describe('Experiment Creation Flow', () => {
       }
     }
     
-    console.log(`✅ Step 3: Selected ${selectedCount} strategies`);
+    console.log(` Step 3: Selected ${selectedCount} strategies`);
     
     // Assert at least 10 strategies were selected
     expect(selectedCount).toBeGreaterThanOrEqual(10);
@@ -288,7 +288,7 @@ test.describe('Experiment Creation Flow', () => {
     // Wait for navigation
     await page.waitForURL(/\/experiments\/[a-f0-9-]+/, { timeout: 15000 });
     
-    console.log('✅ Step 4: Experiment created, navigated to details');
+    console.log(' Step 4: Experiment created, navigated to details');
 
     // Verify experiment details
     await expect(page.locator('h1')).toContainText('Multi-Strategy Test');
@@ -303,16 +303,16 @@ test.describe('Experiment Creation Flow', () => {
       const strategyVisible = await page.locator(`text=${strategy}`).isVisible().catch(() => false);
       if (strategyVisible) {
         visibleStrategiesCount++;
-        console.log(`  ✓ Strategy visible: ${strategy}`);
+        console.log(`   Strategy visible: ${strategy}`);
       }
     }
     
-    console.log(`✅ Step 5: ${visibleStrategiesCount} strategies visible in experiment details`);
+    console.log(` Step 5: ${visibleStrategiesCount} strategies visible in experiment details`);
     
     // Assert at least 8 of the 10 strategies are visible (some may be in collapsed sections)
     expect(visibleStrategiesCount).toBeGreaterThanOrEqual(8);
     
-    console.log('✅ Multi-strategy experiment test completed successfully');
+    console.log(' Multi-strategy experiment test completed successfully');
   });
 });
 
@@ -336,16 +336,16 @@ test.describe('Scan Status Display', () => {
       const statusBadge = page.locator('[data-testid="status-badge"]');
       if (await statusBadge.isVisible()) {
         const status = await statusBadge.textContent();
-        console.log(`✅ Status displayed: ${status}`);
+        console.log(` Status displayed: ${status}`);
       }
       
       // Check for iterations section
       const iterationsSection = page.locator('text=Iterations');
       if (await iterationsSection.isVisible()) {
-        console.log('✅ Iterations section visible');
+        console.log(' Iterations section visible');
       }
     } else {
-      console.log('⚠️  No experiments available for testing');
+      console.log('️  No experiments available for testing');
     }
   });
 });
@@ -378,7 +378,7 @@ test.describe('Vulnerabilities Display', () => {
     // Either vulnerabilities exist or empty message is shown
     expect(hasVulnerabilities || hasEmptyMessage).toBeTruthy();
     
-    console.log(`✅ Vulnerabilities list displayed (${hasVulnerabilities ? 'with vulnerabilities' : 'empty'})`);
+    console.log(` Vulnerabilities list displayed (${hasVulnerabilities ? 'with vulnerabilities' : 'empty'})`);
   });
 
   test('should filter vulnerabilities by severity', async ({ page }) => {
@@ -399,9 +399,9 @@ test.describe('Vulnerabilities Display', () => {
       // Wait for filtered results
       await page.waitForTimeout(1000);
       
-      console.log('✅ Severity filter applied');
+      console.log(' Severity filter applied');
     } else {
-      console.log('⚠️  Severity filter not available');
+      console.log('️  Severity filter not available');
     }
   });
 });

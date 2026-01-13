@@ -179,7 +179,7 @@ async def test_all_strategies_efficiency_summary(mutator):
     assert len(successful) == len(ALL_STRATEGIES), \
         f"{len(results) - len(successful)} strategies failed"
     
-    print(f"\n✅ All 44 strategies benchmarked successfully")
+    print(f"\n All 44 strategies benchmarked successfully")
 
 
 @pytest.mark.benchmark
@@ -219,4 +219,4 @@ async def test_strategy_consistency(mutator):
         # Assert consistency (CV < 20%)
         assert cv < 20, f"{strategy.value} inconsistent: CV={cv:.2f}%"
         
-        print(f"✅ {strategy.value}: CV={cv:.2f}% (consistent)")
+        print(f" {strategy.value}: CV={cv:.2f}% (consistent)")

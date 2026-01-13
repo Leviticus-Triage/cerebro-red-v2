@@ -402,9 +402,9 @@ export function ExperimentDetails() {
                         <TableCell>{iteration.judge_score.toFixed(2)}</TableCell>
                         <TableCell>
                           {iteration.success ? (
-                            <span className="text-green-500">✓</span>
+                            <span className="text-green-500"></span>
                           ) : (
-                            <span className="text-red-500">✗</span>
+                            <span className="text-red-500"></span>
                           )}
                         </TableCell>
                         <TableCell>{formatDate(iteration.timestamp)}</TableCell>

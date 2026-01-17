@@ -21,12 +21,28 @@ A research-grade framework for automated vulnerability discovery in local LLMs u
 - **Frontend**: React + Vite + TailwindCSS + ShadcnUI + Recharts
 - **Container**: Docker + Docker Compose
 
+![Architecture Overview](docs/images/architecture-overview-2026-01-06.jpeg)
+
+*System architecture showing main components and data flow*
+
 ### Core Modules
 
 1. **Orchestrator** (`backend/core/engine.py`): Async batch processing with exponential backoff
 2. **Mutator** (`backend/core/mutator.py`): PAIR algorithm with mutation strategies
 3. **Judge** (`backend/core/judge.py`): LLM-as-a-Judge with CoT evaluation
 4. **Telemetry** (`backend/core/telemetry.py`): Thread-safe JSONL audit logger
+
+### Frontend Dashboard
+
+![Frontend Dashboard](docs/images/frontend-dashboard-2025-12-23.jpeg)
+
+*Main dashboard interface for experiment management*
+
+![Frontend Experiments](docs/images/frontend-experiments-2025-12-23.jpeg)
+
+*Experiment management view with real-time status updates*
+
+For detailed architecture documentation, see [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 
 ##  Quick Start
 
@@ -110,6 +126,10 @@ docker compose version
    - Backend API: http://localhost:9000
    - Frontend UI: http://localhost:3000 (optional: `docker compose up -d cerebro-frontend`)
    - API Docs: http://localhost:9000/docs
+
+   ![Frontend UI](docs/images/frontend-ui-2026-01-03.jpeg)
+   
+   *Frontend user interface showing experiment management and monitoring*
 
 ---
 
@@ -1206,6 +1226,14 @@ VITE_WS_BASE_URL=ws://localhost:9000
 ## Live Monitoring Features
 
 CEREBRO-RED v2 provides comprehensive real-time monitoring of all LLM interactions during experiments.
+
+![Monitoring Dashboard](docs/images/frontend-monitoring-2025-12-23.jpeg)
+
+*Real-time monitoring dashboard with experiment status and metrics*
+
+![Telemetry View](docs/images/frontend-telemetry-2026-01-03.jpeg)
+
+*Telemetry view showing detailed audit logs and system events*
 
 ### What You Can See
 

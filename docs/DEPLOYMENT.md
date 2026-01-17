@@ -22,6 +22,10 @@ The fastest way to deploy CEREBRO-RED v2 is using Railway with demo mode enabled
 3. Deploy from GitHub with one click
 4. Railway automatically detects `railway.json` and deploys
 
+![Deployment Diagram](images/detail-deployment-2025-12-24.jpeg)
+
+*Deployment architecture showing container structure and networking*
+
 For detailed instructions, see [Railway Deployment](#railway-deployment) below.
 
 ---

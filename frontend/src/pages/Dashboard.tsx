@@ -26,6 +26,7 @@ import { useExperiments } from '@/hooks/useExperiments';
 import { useVulnerabilityStatistics } from '@/hooks/useVulnerabilities';
 import { ExperimentCard } from '@/components/experiments/ExperimentCard';
 import { GuidedTour } from '@/components/common/GuidedTour';
+import { Contributors } from '@/components/common/Contributors';
 import { useTourStore } from '@/store/tourStore';
 import { isDemoMode } from '@/lib/config';
 
@@ -116,6 +117,9 @@ export function Dashboard() {
           )}
         </CardContent>
       </Card>
+
+      {/* Contributors */}
+      <Contributors />
 
       {/* Guided Tour */}
       <GuidedTour />

@@ -16,7 +16,7 @@ interface ProgressResult {
 
 /**
  * Centralized hook for experiment progress calculation
- * 
+ *
  * Rules:
  * - Progress = (current / total) * 100, capped at 100%
  * - Status = 'completed' ONLY if current >= total OR backend says 'completed'
@@ -29,19 +29,18 @@ export const useExperimentProgress = ({
 }: ProgressData): ProgressResult => {
   return useMemo(() => {
     // Calculate progress (0-100%)
-    const progressPercent = totalIterations > 0
-      ? Math.min((currentIteration / totalIterations) * 100, 100)
-      : 0;
+    const progressPercent =
+      totalIterations > 0 ? Math.min((currentIteration / totalIterations) * 100, 100) : 0;
 
     // Determine display status - check terminal states FIRST before iteration-based completion
     let displayStatus: ExperimentStatus;
-    
+
     // Terminal states (FAILED, PAUSED) override iteration-based completion
     const isFailed = backendStatus === ExperimentStatus.FAILED;
     const isPaused = backendStatus === ExperimentStatus.PAUSED;
     const isCompleted = backendStatus === ExperimentStatus.COMPLETED;
     const iterationsDone = currentIteration >= totalIterations && totalIterations > 0;
-    
+
     if (isFailed) {
       displayStatus = ExperimentStatus.FAILED;
     } else if (isPaused) {
@@ -59,9 +58,7 @@ export const useExperimentProgress = ({
     }
 
     // Determine if experiment is complete (only when status is COMPLETED, not FAILED)
-    const isComplete = 
-      (iterationsDone && !isFailed) ||
-      isCompleted;
+    const isComplete = (iterationsDone && !isFailed) || isCompleted;
 
     const isRunning = displayStatus === ExperimentStatus.RUNNING;
 

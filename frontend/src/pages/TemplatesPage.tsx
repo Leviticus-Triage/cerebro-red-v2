@@ -1,6 +1,6 @@
 /**
  * Templates management page.
- * 
+ *
  * Allows users to:
  * - View all saved templates
  * - Create new templates
@@ -23,9 +23,9 @@ export function TemplatesPage() {
   const navigate = useNavigate();
   const [page, setPage] = useState(1);
   const [searchTags, setSearchTags] = useState('');
-  
+
   const { data, isLoading, error } = useTemplates(page, 20, {
-    tags: searchTags || undefined
+    tags: searchTags || undefined,
   });
   const deleteTemplate = useDeleteTemplate();
 
@@ -81,7 +81,7 @@ export function TemplatesPage() {
               <p className="text-sm text-gray-600 dark:text-gray-400">
                 {template.description || 'No description'}
               </p>
-              
+
               <div className="space-y-2">
                 <div className="text-xs text-gray-500">
                   <strong>Strategies:</strong> {template.config.strategies.length}
@@ -105,11 +105,7 @@ export function TemplatesPage() {
               )}
 
               <div className="flex gap-2">
-                <Button
-                  size="sm"
-                  onClick={() => handleUse(template)}
-                  className="flex-1"
-                >
+                <Button size="sm" onClick={() => handleUse(template)} className="flex-1">
                   Use Template
                 </Button>
                 <Button
@@ -145,11 +141,7 @@ export function TemplatesPage() {
 
       {data && data.total > 20 && (
         <div className="flex justify-center gap-2">
-          <Button
-            variant="outline"
-            disabled={page === 1}
-            onClick={() => setPage(p => p - 1)}
-          >
+          <Button variant="outline" disabled={page === 1} onClick={() => setPage((p) => p - 1)}>
             Previous
           </Button>
           <span className="py-2 px-4">
@@ -158,7 +150,7 @@ export function TemplatesPage() {
           <Button
             variant="outline"
             disabled={page >= Math.ceil(data.total / 20)}
-            onClick={() => setPage(p => p + 1)}
+            onClick={() => setPage((p) => p + 1)}
           >
             Next
           </Button>

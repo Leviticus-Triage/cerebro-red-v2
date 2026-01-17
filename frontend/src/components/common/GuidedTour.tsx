@@ -9,15 +9,8 @@ import { Button } from '@/components/ui/button';
 import { X, ChevronLeft, ChevronRight } from 'lucide-react';
 
 export function GuidedTour() {
-  const {
-    isTourActive,
-    currentStep,
-    steps,
-    nextStep,
-    previousStep,
-    skipTour,
-    endTour,
-  } = useTourStore();
+  const { isTourActive, currentStep, steps, nextStep, previousStep, skipTour, endTour } =
+    useTourStore();
 
   const [targetElement, setTargetElement] = useState<HTMLElement | null>(null);
   const [tooltipPosition, setTooltipPosition] = useState({ top: 0, left: 0 });
@@ -196,8 +189,8 @@ export function GuidedTour() {
                   index === currentStep
                     ? 'bg-blue-600'
                     : index < currentStep
-                    ? 'bg-blue-300 dark:bg-blue-700'
-                    : 'bg-gray-300 dark:bg-gray-600'
+                      ? 'bg-blue-300 dark:bg-blue-700'
+                      : 'bg-gray-300 dark:bg-gray-600'
                 }`}
               />
             ))}

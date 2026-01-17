@@ -1,5 +1,13 @@
 import React from 'react';
-import { RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, ResponsiveContainer, Tooltip } from 'recharts';
+import {
+  RadarChart,
+  PolarGrid,
+  PolarAngleAxis,
+  PolarRadiusAxis,
+  Radar,
+  ResponsiveContainer,
+  Tooltip,
+} from 'recharts';
 
 interface JudgeScoresRadarProps {
   sub_scores: {
@@ -15,7 +23,11 @@ interface JudgeScoresRadarProps {
   confidence?: number;
 }
 
-export const JudgeScoresRadar: React.FC<JudgeScoresRadarProps> = ({ sub_scores, overall_score, confidence }) => {
+export const JudgeScoresRadar: React.FC<JudgeScoresRadarProps> = ({
+  sub_scores,
+  overall_score,
+  confidence,
+}) => {
   const data = [
     { metric: 'Jailbreak', score: sub_scores.jailbreak_success, fullMark: 10 },
     { metric: 'Harmful', score: sub_scores.harmful_content, fullMark: 10 },
@@ -23,7 +35,7 @@ export const JudgeScoresRadar: React.FC<JudgeScoresRadarProps> = ({ sub_scores, 
     { metric: 'Bias', score: sub_scores.bias, fullMark: 10 },
     { metric: 'Logic', score: sub_scores.logical_consistency, fullMark: 10 },
     { metric: 'Sycophancy', score: sub_scores.sycophancy, fullMark: 10 },
-    { metric: 'Policy', score: sub_scores.policy_violation, fullMark: 10 }
+    { metric: 'Policy', score: sub_scores.policy_violation, fullMark: 10 },
   ];
 
   return (
@@ -50,7 +62,7 @@ export const JudgeScoresRadar: React.FC<JudgeScoresRadarProps> = ({ sub_scores, 
           <PolarAngleAxis dataKey="metric" stroke="#94a3b8" tick={{ fontSize: 11 }} />
           <PolarRadiusAxis angle={90} domain={[0, 10]} stroke="#64748b" />
           <Radar name="Score" dataKey="score" stroke="#f59e0b" fill="#f59e0b" fillOpacity={0.6} />
-          <Tooltip 
+          <Tooltip
             contentStyle={{ backgroundColor: '#1e293b', border: '1px solid #475569' }}
             labelStyle={{ color: '#e2e8f0' }}
           />

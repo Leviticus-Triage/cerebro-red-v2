@@ -23,4 +23,3 @@ export interface TimeSeriesDataPoint {
   label?: string;
   [key: string]: any;
 }
-

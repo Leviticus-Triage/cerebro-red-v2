@@ -8,11 +8,7 @@
 
 import { ReactNode } from 'react';
 import { isDemoMode } from '@/lib/config';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from '@/components/ui/tooltip';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 
 interface DemoTooltipProps {
   children: ReactNode;

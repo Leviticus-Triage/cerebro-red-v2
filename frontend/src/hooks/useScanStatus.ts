@@ -19,4 +19,3 @@ export function useScanStatus(experimentId: string | undefined, enabled = true) 
     },
   });
 }
-

@@ -1,6 +1,6 @@
 /**
  * TaskQueuePanel - Shows task queue and completed tasks
- * 
+ *
  * Displays pending, running, and completed tasks with progress indicators.
  */
 
@@ -35,23 +35,19 @@ export const TaskQueuePanel: React.FC<TaskQueuePanelProps> = ({ tasks }) => {
 
   const renderTask = (task: TaskQueueItem) => {
     const config = statusConfig[task.status];
-    
+
     // Check if task has dependencies (Phase 6)
     const hasDependencies = task.dependencies && task.dependencies.length > 0;
-    
+
     return (
       <div
         key={task.id}
         className={`flex items-center gap-3 px-3 py-2 rounded-lg ${config.bgColor} transition-all`}
       >
         <div className="flex-1 min-w-0">
-          <div className={`font-medium ${config.color} truncate`}>
-            {task.name}
-          </div>
+          <div className={`font-medium ${config.color} truncate`}>{task.name}</div>
           <div className="flex items-center gap-2 text-xs text-slate-500">
-            {task.iteration !== undefined && (
-              <span>Iteration {task.iteration}</span>
-            )}
+            {task.iteration !== undefined && <span>Iteration {task.iteration}</span>}
             {task.queuePosition !== undefined && task.status === 'queued' && (
               <span className="px-1.5 py-0.5 bg-blue-900/30 text-blue-400 rounded text-[10px]">
                 #{task.queuePosition}
@@ -64,15 +60,11 @@ export const TaskQueuePanel: React.FC<TaskQueuePanelProps> = ({ tasks }) => {
             )}
             {hasDependencies && (
               <span className="px-1.5 py-0.5 bg-amber-900/30 text-amber-400 rounded text-[10px]">
-                 {task.dependencies!.length} dep{task.dependencies!.length > 1 ? 's' : ''}
+                {task.dependencies!.length} dep{task.dependencies!.length > 1 ? 's' : ''}
               </span>
             )}
-            {task.startedAt && (
-              <span>Started: {formatTime(task.startedAt)}</span>
-            )}
-            {task.completedAt && (
-              <span>Done: {formatTime(task.completedAt)}</span>
-            )}
+            {task.startedAt && <span>Started: {formatTime(task.startedAt)}</span>}
+            {task.completedAt && <span>Done: {formatTime(task.completedAt)}</span>}
           </div>
         </div>
         {task.status === 'running' && (
@@ -109,7 +101,7 @@ export const TaskQueuePanel: React.FC<TaskQueuePanelProps> = ({ tasks }) => {
         {runningTasks.length > 0 && (
           <div className="space-y-2">
             <h4 className="text-xs font-semibold text-cyan-400 uppercase tracking-wider">
-               Running
+              Running
             </h4>
             {runningTasks.map(renderTask)}
           </div>

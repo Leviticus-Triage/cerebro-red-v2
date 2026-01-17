@@ -3,7 +3,15 @@
  */
 
 import { NavLink } from 'react-router-dom';
-import { Home, FlaskConical, AlertTriangle, BarChart3, FileText, Shield, Settings } from 'lucide-react';
+import {
+  Home,
+  FlaskConical,
+  AlertTriangle,
+  BarChart3,
+  FileText,
+  Shield,
+  Settings,
+} from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const navItems = [
@@ -41,4 +49,3 @@ export function Sidebar() {
     </aside>
   );
 }
-

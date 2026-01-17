@@ -12,11 +12,7 @@ interface DropdownMenuProps {
 
 const DropdownMenu = React.forwardRef<HTMLDivElement, DropdownMenuProps>(
   ({ className, children, ...props }, ref) => (
-    <div
-      ref={ref}
-      className={cn('relative inline-block text-left', className)}
-      {...props}
-    >
+    <div ref={ref} className={cn('relative inline-block text-left', className)} {...props}>
       {children}
     </div>
   )
@@ -31,7 +27,10 @@ const DropdownMenuTrigger = React.forwardRef<HTMLButtonElement, DropdownMenuTrig
   ({ className, children, ...props }, ref) => (
     <button
       ref={ref}
-      className={cn('inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50', className)}
+      className={cn(
+        'inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50',
+        className
+      )}
       {...props}
     >
       {children}
@@ -82,4 +81,3 @@ const DropdownMenuItem = React.forwardRef<HTMLButtonElement, DropdownMenuItemPro
 DropdownMenuItem.displayName = 'DropdownMenuItem';
 
 export { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem };
-

@@ -1,6 +1,6 @@
 /**
  * Settings page for configuring template repositories and other application settings.
- * 
+ *
  * Allows users to:
  * - Add/edit/delete GitHub repositories for template updates
  * - View update history per repository
@@ -13,7 +13,13 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
 import { apiClient } from '@/lib/api/client';
 import { toast } from '@/lib/toast';
@@ -52,7 +58,7 @@ export function SettingsPage() {
     extraction_script: '',
     categories: [],
     license: 'MIT',
-    source: ''
+    source: '',
   });
 
   // Fetch repositories and their status
@@ -62,11 +68,11 @@ export function SettingsPage() {
       // Get both repository list and status
       const [repos, status] = await Promise.all([
         apiClient.listTemplateRepositories(),
-        apiClient.getJailbreakTemplateStatus()
+        apiClient.getJailbreakTemplateStatus(),
       ]);
       return {
         repositories: repos.repositories || {},
-        status: status.repositories || {}
+        status: status.repositories || {},
       };
     },
   });
@@ -95,7 +101,7 @@ export function SettingsPage() {
         extraction_script: '',
         categories: [],
         license: 'MIT',
-        source: ''
+        source: '',
       });
       toast.success('Repository added successfully');
     },
@@ -202,7 +208,9 @@ export function SettingsPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold">Settings</h1>
-          <p className="text-gray-500 mt-1">Configure template repositories and application settings</p>
+          <p className="text-gray-500 mt-1">
+            Configure template repositories and application settings
+          </p>
         </div>
         <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
           <DialogTrigger asChild>
@@ -252,7 +260,15 @@ export function SettingsPage() {
                 <Label>Categories (comma-separated)</Label>
                 <Input
                   value={newRepo.categories.join(', ')}
-                  onChange={(e) => setNewRepo({ ...newRepo, categories: e.target.value.split(',').map(s => s.trim()).filter(Boolean) })}
+                  onChange={(e) =>
+                    setNewRepo({
+                      ...newRepo,
+                      categories: e.target.value
+                        .split(',')
+                        .map((s) => s.trim())
+                        .filter(Boolean),
+                    })
+                  }
                   placeholder="category1, category2, category3"
                 />
               </div>
@@ -296,26 +312,22 @@ export function SettingsPage() {
             extraction_script: repoConfig.extraction_script,
             categories: repoConfig.categories || [],
             license: repoConfig.license || 'MIT',
-            source: repoConfig.source || repoName
+            source: repoConfig.source || repoName,
           };
 
           return (
             <Card key={repoName}>
               <CardHeader>
                 <div className="flex items-start justify-between">
-                    <div className="flex-1">
+                  <div className="flex-1">
                     <CardTitle className="text-lg">{repoName}</CardTitle>
                     <p className="text-sm text-gray-500 mt-1">{fullRepoConfig.url}</p>
                     <div className="flex gap-2 mt-2">
                       <Badge variant={status.exists ? 'default' : 'secondary'}>
                         {status.exists ? 'Cloned' : 'Not Cloned'}
                       </Badge>
-                      {status.is_git && (
-                        <Badge variant="outline">Git Repository</Badge>
-                      )}
-                      {status.branch && (
-                        <Badge variant="outline">Branch: {status.branch}</Badge>
-                      )}
+                      {status.is_git && <Badge variant="outline">Git Repository</Badge>}
+                      {status.branch && <Badge variant="outline">Branch: {status.branch}</Badge>}
                     </div>
                     {status.last_commit_date && (
                       <p className="text-sm text-gray-500 mt-2">
@@ -329,11 +341,7 @@ export function SettingsPage() {
                     )}
                   </div>
                   <div className="flex gap-2">
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => handleViewHistory(repoName)}
-                    >
+                    <Button size="sm" variant="outline" onClick={() => handleViewHistory(repoName)}>
                       <History className="w-4 h-4 mr-1" />
                       History
                     </Button>
@@ -356,11 +364,7 @@ export function SettingsPage() {
                     >
                       <Edit className="w-4 h-4" />
                     </Button>
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => handleDeleteRepo(repoName)}
-                    >
+                    <Button size="sm" variant="outline" onClick={() => handleDeleteRepo(repoName)}>
                       <Trash2 className="w-4 h-4" />
                     </Button>
                   </div>
@@ -411,14 +415,24 @@ export function SettingsPage() {
                 <Label>Extraction Script (optional)</Label>
                 <Input
                   value={editingRepo.extraction_script || ''}
-                  onChange={(e) => setEditingRepo({ ...editingRepo, extraction_script: e.target.value })}
+                  onChange={(e) =>
+                    setEditingRepo({ ...editingRepo, extraction_script: e.target.value })
+                  }
                 />
               </div>
               <div>
                 <Label>Categories (comma-separated)</Label>
                 <Input
                   value={editingRepo.categories.join(', ')}
-                  onChange={(e) => setEditingRepo({ ...editingRepo, categories: e.target.value.split(',').map(s => s.trim()).filter(Boolean) })}
+                  onChange={(e) =>
+                    setEditingRepo({
+                      ...editingRepo,
+                      categories: e.target.value
+                        .split(',')
+                        .map((s) => s.trim())
+                        .filter(Boolean),
+                    })
+                  }
                 />
               </div>
               <div>

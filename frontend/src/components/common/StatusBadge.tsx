@@ -27,4 +27,3 @@ export function StatusBadge({ status, type = 'experiment' }: StatusBadgeProps) {
 
   return <Badge variant={variantMap[status] || 'outline'}>{status.toUpperCase()}</Badge>;
 }
-

@@ -1,6 +1,6 @@
 /**
  * Template Import/Export component.
- * 
+ *
  * Allows users to export templates as JSON files and import them back.
  */
 
@@ -12,7 +12,9 @@ import type { ExperimentTemplate } from '@/types/api';
 
 interface TemplateImportExportProps {
   templates: ExperimentTemplate[];
-  onImport: (template: Omit<ExperimentTemplate, 'template_id' | 'created_at' | 'updated_at' | 'usage_count'>) => void;
+  onImport: (
+    template: Omit<ExperimentTemplate, 'template_id' | 'created_at' | 'updated_at' | 'usage_count'>
+  ) => void;
 }
 
 export function TemplateImportExport({ templates, onImport }: TemplateImportExportProps) {
@@ -28,7 +30,7 @@ export function TemplateImportExport({ templates, onImport }: TemplateImportExpo
       is_public: template.is_public,
       created_by: template.created_by,
       version: '2.0.0',
-      exported_at: new Date().toISOString()
+      exported_at: new Date().toISOString(),
     };
 
     // Create blob and download
@@ -45,16 +47,16 @@ export function TemplateImportExport({ templates, onImport }: TemplateImportExpo
 
   const handleExportAll = () => {
     const exportData = {
-      templates: templates.map(t => ({
+      templates: templates.map((t) => ({
         name: t.name,
         description: t.description,
         config: t.config,
         tags: t.tags,
         is_public: t.is_public,
-        created_by: t.created_by
+        created_by: t.created_by,
       })),
       version: '2.0.0',
-      exported_at: new Date().toISOString()
+      exported_at: new Date().toISOString(),
     };
 
     const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
@@ -74,7 +76,7 @@ export function TemplateImportExport({ templates, onImport }: TemplateImportExpo
 
     setImporting(true);
     const reader = new FileReader();
-    
+
     reader.onload = (e) => {
       try {
         const content = e.target?.result as string;
@@ -90,7 +92,7 @@ export function TemplateImportExport({ templates, onImport }: TemplateImportExpo
               config: template.config,
               tags: template.tags || [],
               is_public: template.is_public || false,
-              created_by: template.created_by || 'imported'
+              created_by: template.created_by || 'imported',
             });
           });
           alert(`Successfully imported ${data.templates.length} templates!`);
@@ -102,7 +104,7 @@ export function TemplateImportExport({ templates, onImport }: TemplateImportExpo
             config: data.config,
             tags: data.tags || [],
             is_public: data.is_public || false,
-            created_by: data.created_by || 'imported'
+            created_by: data.created_by || 'imported',
           });
           alert(`Successfully imported template: ${data.name}`);
         } else {
@@ -129,9 +131,7 @@ export function TemplateImportExport({ templates, onImport }: TemplateImportExpo
   return (
     <Card className="bg-slate-800 border-slate-700">
       <CardHeader>
-        <CardTitle className="text-lg flex items-center gap-2">
-          Import / Export Templates
-        </CardTitle>
+        <CardTitle className="text-lg flex items-center gap-2">Import / Export Templates</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
         {/* Import */}
@@ -165,17 +165,13 @@ export function TemplateImportExport({ templates, onImport }: TemplateImportExpo
           <div className="space-y-2">
             <label className="text-sm font-medium text-slate-300">Export Templates</label>
             <div className="space-y-2">
-              <Button
-                variant="outline"
-                className="w-full"
-                onClick={handleExportAll}
-              >
+              <Button variant="outline" className="w-full" onClick={handleExportAll}>
                 <Download className="w-4 h-4 mr-2" />
                 Export All Templates ({templates.length})
               </Button>
-              
+
               <div className="max-h-40 overflow-y-auto space-y-1">
-                {templates.map(template => (
+                {templates.map((template) => (
                   <button
                     key={template.template_id}
                     onClick={() => handleExport(template)}

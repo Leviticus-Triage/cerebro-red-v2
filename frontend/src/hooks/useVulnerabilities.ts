@@ -32,4 +32,3 @@ export function useVulnerabilityStatistics() {
     queryFn: () => apiClient.getVulnerabilityStatistics(),
   });
 }
-

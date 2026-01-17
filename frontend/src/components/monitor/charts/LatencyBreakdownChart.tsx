@@ -10,11 +10,13 @@ interface LatencyBreakdownChartProps {
   };
 }
 
-export const LatencyBreakdownChart: React.FC<LatencyBreakdownChartProps> = ({ latency_breakdown }) => {
+export const LatencyBreakdownChart: React.FC<LatencyBreakdownChartProps> = ({
+  latency_breakdown,
+}) => {
   const data = [
     { name: 'Mutation', value: latency_breakdown.mutation_ms, fill: '#06b6d4' },
     { name: 'Target LLM', value: latency_breakdown.target_ms, fill: '#3b82f6' },
-    { name: 'Judge LLM', value: latency_breakdown.judge_ms, fill: '#f59e0b' }
+    { name: 'Judge LLM', value: latency_breakdown.judge_ms, fill: '#f59e0b' },
   ];
 
   return (
@@ -27,7 +29,7 @@ export const LatencyBreakdownChart: React.FC<LatencyBreakdownChartProps> = ({ la
           <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
           <XAxis type="number" stroke="#94a3b8" />
           <YAxis type="category" dataKey="name" stroke="#94a3b8" width={100} />
-          <Tooltip 
+          <Tooltip
             contentStyle={{ backgroundColor: '#1e293b', border: '1px solid #475569' }}
             labelStyle={{ color: '#e2e8f0' }}
           />

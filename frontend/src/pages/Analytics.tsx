@@ -39,8 +39,8 @@ export function Analytics() {
   }
 
   const hasData = vulnStats && vulnStats.total_vulnerabilities > 0;
-  const hasStrategyData = vulnStats?.by_strategy && 
-    Object.values(vulnStats.by_strategy).some(count => count > 0);
+  const hasStrategyData =
+    vulnStats?.by_strategy && Object.values(vulnStats.by_strategy).some((count) => count > 0);
 
   return (
     <div className="space-y-6">
@@ -116,4 +116,3 @@ export function Analytics() {
     </div>
   );
 }
-

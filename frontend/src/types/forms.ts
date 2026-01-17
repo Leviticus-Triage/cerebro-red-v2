@@ -20,4 +20,3 @@ export interface ExperimentFormData {
   success_threshold: number;
   timeout_seconds: number;
 }
-

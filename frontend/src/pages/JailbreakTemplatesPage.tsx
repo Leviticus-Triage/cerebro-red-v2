@@ -1,6 +1,6 @@
 /**
  * Jailbreak Templates management page.
- * 
+ *
  * Allows users to:
  * - View all jailbreak templates by category
  * - Add new templates
@@ -18,7 +18,13 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
 // Using native HTML select instead of Select component
 import { apiClient } from '@/lib/api/client';
 import { toast } from '@/lib/toast';
@@ -33,7 +39,11 @@ export function JailbreakTemplatesPage() {
   const [isUpdateDialogOpen, setIsUpdateDialogOpen] = useState(false);
   const [isImportDialogOpen, setIsImportDialogOpen] = useState(false);
   const [isBackupDialogOpen, setIsBackupDialogOpen] = useState(false);
-  const [editingTemplate, setEditingTemplate] = useState<{ category: string; index: number; template: string } | null>(null);
+  const [editingTemplate, setEditingTemplate] = useState<{
+    category: string;
+    index: number;
+    template: string;
+  } | null>(null);
   const [newTemplate, setNewTemplate] = useState({ category: '', template: '' });
   const [selectedRepository, setSelectedRepository] = useState<string>('');
 
@@ -46,7 +56,8 @@ export function JailbreakTemplatesPage() {
   // Fetch templates
   const { data: templatesData, isLoading: templatesLoading } = useQuery({
     queryKey: ['jailbreak-templates', selectedCategory, searchQuery],
-    queryFn: () => apiClient.getJailbreakTemplates(selectedCategory || undefined, searchQuery || undefined),
+    queryFn: () =>
+      apiClient.getJailbreakTemplates(selectedCategory || undefined, searchQuery || undefined),
     enabled: true,
   });
 
@@ -79,8 +90,15 @@ export function JailbreakTemplatesPage() {
   });
 
   const updateTemplateMutation = useMutation({
-    mutationFn: ({ category, index, template }: { category: string; index: number; template: string }) =>
-      apiClient.updateJailbreakTemplate(category, index, template),
+    mutationFn: ({
+      category,
+      index,
+      template,
+    }: {
+      category: string;
+      index: number;
+      template: string;
+    }) => apiClient.updateJailbreakTemplate(category, index, template),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['jailbreak-templates'] });
       setIsEditDialogOpen(false);
@@ -194,7 +212,11 @@ export function JailbreakTemplatesPage() {
   };
 
   const handleUpdate = () => {
-    if (!confirm('This will update templates from GitHub repositories. A backup will be created automatically. Continue?')) {
+    if (
+      !confirm(
+        'This will update templates from GitHub repositories. A backup will be created automatically. Continue?'
+      )
+    ) {
       return;
     }
     updateTemplatesMutation.mutate({
@@ -204,7 +226,11 @@ export function JailbreakTemplatesPage() {
   };
 
   const handleRestore = (backupPath: string) => {
-    if (!confirm('This will restore templates from backup. Current templates will be backed up first. Continue?')) {
+    if (
+      !confirm(
+        'This will restore templates from backup. Current templates will be backed up first. Continue?'
+      )
+    ) {
       return;
     }
     restoreMutation.mutate(backupPath);
@@ -248,7 +274,9 @@ export function JailbreakTemplatesPage() {
                     <option value="PyRIT">PyRIT</option>
                     <option value="L1B3RT4S">L1B3RT4S</option>
                     <option value="LLAMATOR">LLAMATOR</option>
-                    <option value="Model-Inversion-Attack-ToolBox">Model-Inversion-Attack-ToolBox</option>
+                    <option value="Model-Inversion-Attack-ToolBox">
+                      Model-Inversion-Attack-ToolBox
+                    </option>
                   </select>
                 </div>
                 <div className="bg-yellow-50 dark:bg-yellow-900/20 p-3 rounded text-sm">
@@ -316,7 +344,8 @@ export function JailbreakTemplatesPage() {
                         <div>
                           <div className="font-medium">{backup.filename}</div>
                           <div className="text-sm text-gray-500">
-                            {new Date(backup.created_at).toLocaleString()} • {(backup.size / 1024).toFixed(2)} KB
+                            {new Date(backup.created_at).toLocaleString()} •{' '}
+                            {(backup.size / 1024).toFixed(2)} KB
                           </div>
                         </div>
                         <Button
@@ -380,7 +409,9 @@ export function JailbreakTemplatesPage() {
           <CardContent className="p-4">
             <div className="text-sm text-gray-500">Last Updated</div>
             <div className="text-sm font-medium">
-              {templatesData?.last_updated ? new Date(templatesData.last_updated).toLocaleDateString() : 'N/A'}
+              {templatesData?.last_updated
+                ? new Date(templatesData.last_updated).toLocaleDateString()
+                : 'N/A'}
             </div>
           </CardContent>
         </Card>
@@ -417,18 +448,18 @@ export function JailbreakTemplatesPage() {
                     >
                       <Plus className="w-4 h-4" />
                     </Button>
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      onClick={() => handleExport(category.name)}
-                    >
+                    <Button size="sm" variant="ghost" onClick={() => handleExport(category.name)}>
                       <Download className="w-4 h-4" />
                     </Button>
                     <Button
                       size="sm"
                       variant="ghost"
                       onClick={() => {
-                        if (confirm(`Delete category "${category.name}" and all ${templatesList.length} templates?`)) {
+                        if (
+                          confirm(
+                            `Delete category "${category.name}" and all ${templatesList.length} templates?`
+                          )
+                        ) {
                           deleteCategoryMutation.mutate(category.name);
                         }
                       }}
@@ -438,7 +469,15 @@ export function JailbreakTemplatesPage() {
                   </div>
                 </div>
                 <div className="flex gap-2 mt-2">
-                  <Badge variant={category.severity === 'critical' ? 'destructive' : category.severity === 'high' ? 'default' : 'secondary'}>
+                  <Badge
+                    variant={
+                      category.severity === 'critical'
+                        ? 'destructive'
+                        : category.severity === 'high'
+                          ? 'default'
+                          : 'secondary'
+                    }
+                  >
                     {category.severity}
                   </Badge>
                   <Badge variant="outline">{templatesList.length} templates</Badge>
@@ -478,7 +517,9 @@ export function JailbreakTemplatesPage() {
                     </div>
                   ))}
                   {templatesList.length === 0 && (
-                    <div className="text-center text-gray-500 py-4">No templates in this category</div>
+                    <div className="text-center text-gray-500 py-4">
+                      No templates in this category
+                    </div>
                   )}
                 </div>
               </CardContent>
@@ -521,7 +562,9 @@ export function JailbreakTemplatesPage() {
                     addTemplateMutation.mutate(newTemplate);
                   }
                 }}
-                disabled={!newTemplate.category || !newTemplate.template || addTemplateMutation.isPending}
+                disabled={
+                  !newTemplate.category || !newTemplate.template || addTemplateMutation.isPending
+                }
               >
                 Add Template
               </Button>
@@ -546,7 +589,9 @@ export function JailbreakTemplatesPage() {
                 <Label>Template</Label>
                 <Textarea
                   value={editingTemplate.template}
-                  onChange={(e) => setEditingTemplate({ ...editingTemplate, template: e.target.value })}
+                  onChange={(e) =>
+                    setEditingTemplate({ ...editingTemplate, template: e.target.value })
+                  }
                   rows={10}
                 />
               </div>

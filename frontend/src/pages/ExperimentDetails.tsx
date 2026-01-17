@@ -17,11 +17,26 @@ import { JudgeScoreCard } from '@/components/charts/JudgeScoreCard';
 import { StatusBadge } from '@/components/common/StatusBadge';
 import { LoadingSpinner } from '@/components/common/LoadingSpinner';
 import { apiClient } from '@/lib/api/client';
-import { useExperiment, useExperimentStatistics, usePauseScan, useResumeScan, useCancelScan, useRepeatExperiment, useDeleteExperiment } from '@/hooks/useExperiments';
+import {
+  useExperiment,
+  useExperimentStatistics,
+  usePauseScan,
+  useResumeScan,
+  useCancelScan,
+  useRepeatExperiment,
+  useDeleteExperiment,
+} from '@/hooks/useExperiments';
 import { exportExperimentResults } from '@/lib/export';
 import { Download, Pause, Play, ChevronDown, Eye, RotateCw, Trash2, Square } from 'lucide-react';
 import { toast } from '@/lib/toast';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
 import { formatDate } from '@/lib/utils';
 import { useExperimentProgress } from '@/hooks/useExperimentProgress';
 import { ExperimentStatus } from '@/types/api';
@@ -59,7 +74,7 @@ export function ExperimentDetails() {
   }, [exportMenuOpen]);
 
   const { data: experiment, isLoading: experimentLoading } = useExperiment(experimentId);
-  
+
   // Debug-Logging
   useEffect(() => {
     if (experiment) {
@@ -67,14 +82,14 @@ export function ExperimentDetails() {
         id: experiment.experiment_id,
         status: experiment.status,
         max_iterations: experiment.max_iterations,
-        initial_prompts: experiment.initial_prompts?.length
+        initial_prompts: experiment.initial_prompts?.length,
       });
     }
   }, [experiment]);
-  
+
   // Close dropdown when experiment status changes (e.g., when starting)
   const prevStatusRef = useRef<string | undefined>(experiment?.status);
-  
+
   useEffect(() => {
     if (experiment?.status && prevStatusRef.current !== experiment.status) {
       // Status changed - close dropdown if it was open
@@ -90,12 +105,12 @@ export function ExperimentDetails() {
     queryFn: () => apiClient.getExperimentResults(experimentId!),
     enabled: !!experimentId,
   });
-  
+
   // Use centralized progress hook for Overview display
   const { progressPercent, displayStatus } = useExperimentProgress({
     currentIteration: statistics?.total_iterations || 0, // Use total_iterations as current if available
     totalIterations: experiment?.max_iterations || 0,
-    backendStatus: experiment?.status as ExperimentStatus || 'pending',
+    backendStatus: (experiment?.status as ExperimentStatus) || 'pending',
   });
 
   const pauseScan = usePauseScan();
@@ -168,7 +183,9 @@ export function ExperimentDetails() {
 
   const handleDelete = () => {
     if (experimentId) {
-      if (confirm('Are you sure you want to delete this experiment? This action cannot be undone.')) {
+      if (
+        confirm('Are you sure you want to delete this experiment? This action cannot be undone.')
+      ) {
         deleteExperiment.mutate(experimentId, {
           onSuccess: () => {
             toast.success('Experiment deleted');
@@ -206,7 +223,7 @@ export function ExperimentDetails() {
             <Eye className="mr-2 h-4 w-4" />
             Live Monitor
           </Button>
-          
+
           {/* Repeat Button */}
           <Button
             variant="outline"
@@ -214,7 +231,9 @@ export function ExperimentDetails() {
             onClick={handleRepeat}
             disabled={repeatExperiment.isPending}
           >
-            <RotateCw className={`mr-2 h-4 w-4 ${repeatExperiment.isPending ? 'animate-spin' : ''}`} />
+            <RotateCw
+              className={`mr-2 h-4 w-4 ${repeatExperiment.isPending ? 'animate-spin' : ''}`}
+            />
             Repeat
           </Button>
 
@@ -263,14 +282,12 @@ export function ExperimentDetails() {
           </Button>
 
           <div className="relative" ref={exportMenuRef}>
-            <Button 
-              variant="outline" 
-              size="sm"
-              onClick={() => setExportMenuOpen(!exportMenuOpen)}
-            >
+            <Button variant="outline" size="sm" onClick={() => setExportMenuOpen(!exportMenuOpen)}>
               <Download className="mr-2 h-4 w-4" />
               Export
-              <ChevronDown className={`ml-2 h-4 w-4 transition-transform ${exportMenuOpen ? 'rotate-180' : ''}`} />
+              <ChevronDown
+                className={`ml-2 h-4 w-4 transition-transform ${exportMenuOpen ? 'rotate-180' : ''}`}
+              />
             </Button>
             {exportMenuOpen && (
               <div className="absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-popover border border-border z-50">
@@ -366,7 +383,10 @@ export function ExperimentDetails() {
               <CardContent className="space-y-2 text-sm">
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Progress:</span>
-                  <span>{statistics?.total_iterations || 0}/{experiment?.max_iterations || 0} ({progressPercent.toFixed(1)}%)</span>
+                  <span>
+                    {statistics?.total_iterations || 0}/{experiment?.max_iterations || 0} (
+                    {progressPercent.toFixed(1)}%)
+                  </span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Status:</span>
@@ -445,4 +465,3 @@ export function ExperimentDetails() {
     </div>
   );
 }
-

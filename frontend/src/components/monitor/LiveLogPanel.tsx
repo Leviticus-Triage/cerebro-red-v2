@@ -1,6 +1,6 @@
 /**
  * LiveLogPanel - Structured real-time log viewer with tab navigation
- * 
+ *
  * Displays streaming logs in 6 separate tabs:
  * - LLM Requests: All LLM request prompts with syntax highlighting
  * - LLM Responses: All LLM responses with latency and token counts
@@ -15,7 +15,14 @@ import { Link } from 'react-router-dom';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
-import { Table, TableHeader, TableBody, TableHead, TableRow, TableCell } from '@/components/ui/table';
+import {
+  Table,
+  TableHeader,
+  TableBody,
+  TableHead,
+  TableRow,
+  TableCell,
+} from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import type { LiveLogEntry, TaskQueueItem, CodeFlowEvent } from '@/types/api';
 
@@ -47,10 +54,14 @@ const extractIteration = (log: LiveLogEntry | CodeFlowEvent) => {
 
 const getRoleBadgeColor = (role?: string) => {
   switch (role) {
-    case 'attacker': return 'bg-red-900/50 text-red-400 border-red-700';
-    case 'target': return 'bg-blue-900/50 text-blue-400 border-blue-700';
-    case 'judge': return 'bg-amber-900/50 text-amber-400 border-amber-700';
-    default: return 'bg-slate-800 text-slate-400';
+    case 'attacker':
+      return 'bg-red-900/50 text-red-400 border-red-700';
+    case 'target':
+      return 'bg-blue-900/50 text-blue-400 border-blue-700';
+    case 'judge':
+      return 'bg-amber-900/50 text-amber-400 border-amber-700';
+    default:
+      return 'bg-slate-800 text-slate-400';
   }
 };
 
@@ -91,7 +102,7 @@ const createCopyButton = (content: string) => {
     <button
       onClick={(e) => {
         e.stopPropagation();
-        navigator.clipboard.writeText(content).catch(err => {
+        navigator.clipboard.writeText(content).catch((err) => {
           console.error('Failed to copy:', err);
         });
       }}
@@ -136,7 +147,10 @@ const RequestsTable: React.FC<{
             const roleColor = getRoleBadgeColor(log.role);
             const promptText = log.metadata?.prompt || log.content;
             // Extract strategy from multiple possible locations
-            const strategy = log.metadata?.strategy ?? (log.metadata as any)?.strategy_used ?? (log as any).strategy;
+            const strategy =
+              log.metadata?.strategy ??
+              (log.metadata as any)?.strategy_used ??
+              (log as any).strategy;
 
             return (
               <TableRow
@@ -153,11 +167,7 @@ const RequestsTable: React.FC<{
                   {extractIteration(log)}
                 </TableCell>
                 <TableCell>
-                  {log.role && (
-                    <Badge className={roleColor}>
-                      {log.role.toUpperCase()}
-                    </Badge>
-                  )}
+                  {log.role && <Badge className={roleColor}>{log.role.toUpperCase()}</Badge>}
                 </TableCell>
                 <TableCell className="text-xs">
                   {strategy ? (
@@ -171,9 +181,7 @@ const RequestsTable: React.FC<{
                 <TableCell className="font-mono text-sm">
                   {isExpanded ? (
                     <div>
-                      <div className="flex justify-end">
-                        {createCopyButton(promptText)}
-                      </div>
+                      <div className="flex justify-end">{createCopyButton(promptText)}</div>
                       <SyntaxHighlighter
                         language="text"
                         style={vscDarkPlus}
@@ -231,7 +239,10 @@ const ResponsesTable: React.FC<{
             const isExpanded = expandedRows.has(log.id);
             const responseText = log.metadata?.response || log.content;
             // Extract strategy from multiple possible locations
-            const strategy = log.metadata?.strategy ?? (log.metadata as any)?.strategy_used ?? (log as any).strategy;
+            const strategy =
+              log.metadata?.strategy ??
+              (log.metadata as any)?.strategy_used ??
+              (log as any).strategy;
 
             return (
               <TableRow
@@ -249,9 +260,7 @@ const ResponsesTable: React.FC<{
                 </TableCell>
                 <TableCell>
                   {log.role && (
-                    <Badge className={getRoleBadgeColor(log.role)}>
-                      {log.role.toUpperCase()}
-                    </Badge>
+                    <Badge className={getRoleBadgeColor(log.role)}>{log.role.toUpperCase()}</Badge>
                   )}
                 </TableCell>
                 <TableCell className="text-xs">
@@ -266,9 +275,7 @@ const ResponsesTable: React.FC<{
                 <TableCell className="font-mono text-sm">
                   {isExpanded ? (
                     <div>
-                      <div className="flex justify-end">
-                        {createCopyButton(responseText)}
-                      </div>
+                      <div className="flex justify-end">{createCopyButton(responseText)}</div>
                       <SyntaxHighlighter
                         language="text"
                         style={vscDarkPlus}
@@ -344,15 +351,19 @@ const JudgeTable: React.FC<{
                     {extractIteration(log)}
                   </TableCell>
                   <TableCell>
-                    <Badge className={getScoreColor(score)}>
-                      {score.toFixed(2)}/10
-                    </Badge>
+                    <Badge className={getScoreColor(score)}>{score.toFixed(2)}/10</Badge>
                   </TableCell>
                   <TableCell className="text-sm">
                     {isExpanded ? (
                       <div>
                         <div className="flex justify-end mb-2">
-                          {createCopyButton(reasoning + (log.metadata?.sub_scores ? '\n\nSub-scores:\n' + JSON.stringify(log.metadata.sub_scores, null, 2) : ''))}
+                          {createCopyButton(
+                            reasoning +
+                              (log.metadata?.sub_scores
+                                ? '\n\nSub-scores:\n' +
+                                  JSON.stringify(log.metadata.sub_scores, null, 2)
+                                : '')
+                          )}
                         </div>
                         <SyntaxHighlighter
                           language="text"
@@ -369,9 +380,14 @@ const JudgeTable: React.FC<{
                     {isExpanded && log.metadata?.sub_scores ? (
                       <div className="mt-2 grid grid-cols-2 gap-2 text-xs">
                         {Object.entries(log.metadata.sub_scores).map(([key, value]) => (
-                          <div key={key} className="flex justify-between bg-slate-900 px-2 py-1 rounded">
+                          <div
+                            key={key}
+                            className="flex justify-between bg-slate-900 px-2 py-1 rounded"
+                          >
                             <span className="text-slate-400">{key}:</span>
-                            <span className="text-cyan-400">{String((value as number).toFixed(1))}</span>
+                            <span className="text-cyan-400">
+                              {String((value as number).toFixed(1))}
+                            </span>
                           </div>
                         ))}
                       </div>
@@ -419,9 +435,7 @@ const TasksTable: React.FC<{
                 </TableCell>
                 <TableCell className="text-slate-300">{task.name}</TableCell>
                 <TableCell>
-                  <Badge className={statusConfig.color}>
-                    {task.status}
-                  </Badge>
+                  <Badge className={statusConfig.color}>{task.status}</Badge>
                 </TableCell>
                 <TableCell className="text-xs text-slate-400 font-mono">
                   {task.strategy || '-'}
@@ -485,10 +499,8 @@ const CodeFlowTable: React.FC<{
                     {event.description || event.function_name || '-'}
                   </TableCell>
                   <TableCell className="text-center">
-                    {(event.parameters || event.result) ? (
-                      <span className="text-cyan-400 text-xs">
-                        {isExpanded ? '▼' : '▶'} Expand
-                      </span>
+                    {event.parameters || event.result ? (
+                      <span className="text-cyan-400 text-xs">{isExpanded ? '▼' : '▶'} Expand</span>
                     ) : null}
                   </TableCell>
                 </TableRow>
@@ -581,7 +593,10 @@ const AllTable: React.FC<{
               contentText = String(rawContent || `${log.type} event`);
             }
             // Extract strategy from multiple possible locations
-            const strategy = log.metadata?.strategy ?? (log.metadata as any)?.strategy_used ?? (log as any).strategy;
+            const strategy =
+              log.metadata?.strategy ??
+              (log.metadata as any)?.strategy_used ??
+              (log as any).strategy;
 
             return (
               <TableRow
@@ -598,16 +613,10 @@ const AllTable: React.FC<{
                   {extractIteration(log)}
                 </TableCell>
                 <TableCell>
-                  <Badge className="bg-slate-700 text-slate-300">
-                    {log.type}
-                  </Badge>
+                  <Badge className="bg-slate-700 text-slate-300">{log.type}</Badge>
                 </TableCell>
                 <TableCell>
-                  {log.role && (
-                    <Badge className={roleColor}>
-                      {log.role.toUpperCase()}
-                    </Badge>
-                  )}
+                  {log.role && <Badge className={roleColor}>{log.role.toUpperCase()}</Badge>}
                 </TableCell>
                 <TableCell className="text-xs">
                   {strategy ? (
@@ -621,9 +630,7 @@ const AllTable: React.FC<{
                 <TableCell className="font-mono text-sm">
                   {isExpanded ? (
                     <div>
-                      <div className="flex justify-end">
-                        {createCopyButton(contentText)}
-                      </div>
+                      <div className="flex justify-end">{createCopyButton(contentText)}</div>
                       <SyntaxHighlighter
                         language="text"
                         style={vscDarkPlus}
@@ -751,7 +758,7 @@ const ErrorsTable: React.FC<{
             const isExpanded = expandedRows.has(log.id);
             const isVulnerability = log.metadata?.vulnerability_id;
             const vulnerabilityId = log.metadata?.vulnerability_id;
-            
+
             // Extract error content - prefer error field from metadata, then content
             let errorContent: string = '';
             const rawContent = log.metadata?.error || log.content;
@@ -773,14 +780,22 @@ const ErrorsTable: React.FC<{
                 <TableRow
                   className={`${isVulnerability ? 'hover:bg-amber-900/20' : 'hover:bg-slate-800/50'} focus:outline-none focus:ring-2 focus:ring-cyan-500`}
                   onClick={() => !isVulnerability && toggleExpand(log.id)}
-                  onKeyPress={(e) => !isVulnerability && createKeyboardHandler(toggleExpand, log.id)(e)}
+                  onKeyPress={(e) =>
+                    !isVulnerability && createKeyboardHandler(toggleExpand, log.id)(e)
+                  }
                   tabIndex={0}
                 >
                   <TableCell className="font-mono text-xs text-slate-500">
                     {formatTime(log.timestamp)}
                   </TableCell>
                   <TableCell>
-                    <Badge className={isVulnerability ? "bg-amber-900/50 text-amber-400 border-amber-700" : "bg-red-900/50 text-red-400 border-red-700"}>
+                    <Badge
+                      className={
+                        isVulnerability
+                          ? 'bg-amber-900/50 text-amber-400 border-amber-700'
+                          : 'bg-red-900/50 text-red-400 border-red-700'
+                      }
+                    >
                       {isVulnerability ? 'VULN' : 'ERROR'} {log.type}
                     </Badge>
                   </TableCell>
@@ -875,7 +890,7 @@ export const LiveLogPanel: React.FC<LiveLogPanelProps> = ({
   console.log('[LIVELOG] Total logs received:', logs.length);
   console.log('[LIVELOG] Tasks:', tasks.length);
   console.log('[LIVELOG] Code flow events:', codeFlowEvents.length);
-  
+
   if (logs.length > 0) {
     console.log('[LIVELOG] Sample log:', logs[logs.length - 1]);
     // Log each parsed log entry for validation
@@ -883,17 +898,21 @@ export const LiveLogPanel: React.FC<LiveLogPanelProps> = ({
       console.log('Parsed log:', log);
     });
   }
-  
-  const [activeTab, setActiveTab] = useState<'all' | 'requests' | 'responses' | 'judge' | 'tasks' | 'codeflow' | 'errors' | 'vulnerabilities'>('all');
+
+  const [activeTab, setActiveTab] = useState<
+    'all' | 'requests' | 'responses' | 'judge' | 'tasks' | 'codeflow' | 'errors' | 'vulnerabilities'
+  >('all');
   const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
 
   // Filter logs by type (show ALL logs, no limit - complete history)
   const requestLogs = logs.filter((log) => log.type === 'llm_request');
   const responseLogs = logs.filter((log) => log.type === 'llm_response');
   const judgeLogs = logs.filter((log) => log.type === 'judge');
-  const errorLogs = logs.filter((log) => (log.type === 'error' || log.type === 'llm_error') && !log.metadata?.vulnerability_id);
-  const allLogs = logs;  // Show ALL logs
-  
+  const errorLogs = logs.filter(
+    (log) => (log.type === 'error' || log.type === 'llm_error') && !log.metadata?.vulnerability_id
+  );
+  const allLogs = logs; // Show ALL logs
+
   // DEBUG: Log filter results
   console.log('[LIVELOG] Filter results:');
   console.log('[LIVELOG]   - Requests:', requestLogs.length);
@@ -905,25 +924,33 @@ export const LiveLogPanel: React.FC<LiveLogPanelProps> = ({
   const vulnerabilityLogs = logs.filter((log) => {
     // Condition 1: Has vulnerability_id in metadata
     if (log.metadata?.vulnerability_id) return true;
-    
+
     // Condition 2: Content contains 'VULNERABILITY FOUND' (case-insensitive)
-    if (typeof log.content === 'string' && 
-        log.content.toUpperCase().includes('VULNERABILITY FOUND')) return true;
-    
+    if (
+      typeof log.content === 'string' &&
+      log.content.toUpperCase().includes('VULNERABILITY FOUND')
+    )
+      return true;
+
     // Condition 3: Type is 'error' AND has severity in metadata (vulnerability marker)
     if (log.type === 'error' && log.metadata?.severity) return true;
-    
+
     // Condition 4: Metadata has vulnerability-specific fields (successful_prompt + high score)
-    if (log.metadata?.successful_prompt && 
-        log.metadata?.judge_score && 
-        (log.metadata.judge_score as number) >= 7.0) return true;
-    
+    if (
+      log.metadata?.successful_prompt &&
+      log.metadata?.judge_score &&
+      (log.metadata.judge_score as number) >= 7.0
+    )
+      return true;
+
     return false;
   });
-  
+
   // Debug: Log vulnerability filter results
   useEffect(() => {
-    console.log(`[LiveLogPanel] Vulnerability Filter: ${vulnerabilityLogs.length} found from ${logs.length} total logs`);
+    console.log(
+      `[LiveLogPanel] Vulnerability Filter: ${vulnerabilityLogs.length} found from ${logs.length} total logs`
+    );
     if (vulnerabilityLogs.length > 0) {
       console.log('[LiveLogPanel] Sample vulnerability log:', vulnerabilityLogs[0]);
     }
@@ -969,26 +996,27 @@ export const LiveLogPanel: React.FC<LiveLogPanelProps> = ({
         let allIds: string[] = [];
         switch (activeTab) {
           case 'requests':
-            allIds = requestLogs.map(log => log.id);
+            allIds = requestLogs.map((log) => log.id);
             break;
           case 'responses':
-            allIds = responseLogs.map(log => log.id);
+            allIds = responseLogs.map((log) => log.id);
             break;
           case 'judge':
-            allIds = judgeLogs.map(log => log.id);
+            allIds = judgeLogs.map((log) => log.id);
             break;
           case 'codeflow':
-            allIds = codeFlowEvents.map(event => event.id || `${event.timestamp}-${event.event_type}`);
+            allIds = codeFlowEvents.map(
+              (event) => event.id || `${event.timestamp}-${event.event_type}`
+            );
             break;
           case 'errors':
-            allIds = errorLogs.map(log => log.id);
+            allIds = errorLogs.map((log) => log.id);
             break;
         }
         return new Set(allIds.slice(0, 50)); // Limit to 50 for performance
       }
     });
   };
-
 
   const exportLogs = (format: 'json' | 'csv') => {
     let dataToExport: unknown[] = [];
@@ -1024,7 +1052,9 @@ export const LiveLogPanel: React.FC<LiveLogPanelProps> = ({
       onExport(dataToExport, format);
     } else {
       if (format === 'json') {
-        const blob = new Blob([JSON.stringify(dataToExport, null, 2)], { type: 'application/json' });
+        const blob = new Blob([JSON.stringify(dataToExport, null, 2)], {
+          type: 'application/json',
+        });
         downloadBlob(blob, `logs-${activeTab}-${Date.now()}.json`);
       } else if (format === 'csv') {
         const csv = convertToCSV(dataToExport);
@@ -1066,7 +1096,11 @@ export const LiveLogPanel: React.FC<LiveLogPanelProps> = ({
       </div>
 
       {/* Tabs */}
-      <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as typeof activeTab)} className="flex-1 flex flex-col">
+      <Tabs
+        value={activeTab}
+        onValueChange={(v) => setActiveTab(v as typeof activeTab)}
+        className="flex-1 flex flex-col"
+      >
         <TabsList className="bg-slate-900 border-b border-slate-800 rounded-none justify-start">
           <TabsTrigger value="all">
             All <Badge className="ml-1">{String(tabCounts.all)}</Badge>
@@ -1100,11 +1134,19 @@ export const LiveLogPanel: React.FC<LiveLogPanelProps> = ({
           </TabsContent>
 
           <TabsContent value="requests" className="flex-1 m-0 flex flex-col min-h-0">
-            <RequestsTable logs={requestLogs} expandedRows={expandedRows} toggleExpand={toggleExpand} />
+            <RequestsTable
+              logs={requestLogs}
+              expandedRows={expandedRows}
+              toggleExpand={toggleExpand}
+            />
           </TabsContent>
 
           <TabsContent value="responses" className="flex-1 m-0 flex flex-col min-h-0">
-            <ResponsesTable logs={responseLogs} expandedRows={expandedRows} toggleExpand={toggleExpand} />
+            <ResponsesTable
+              logs={responseLogs}
+              expandedRows={expandedRows}
+              toggleExpand={toggleExpand}
+            />
           </TabsContent>
 
           <TabsContent value="judge" className="flex-1 m-0 flex flex-col min-h-0">
@@ -1116,7 +1158,11 @@ export const LiveLogPanel: React.FC<LiveLogPanelProps> = ({
           </TabsContent>
 
           <TabsContent value="codeflow" className="flex-1 m-0 flex flex-col min-h-0">
-            <CodeFlowTable events={codeFlowEvents} expandedRows={expandedRows} toggleExpand={toggleExpand} />
+            <CodeFlowTable
+              events={codeFlowEvents}
+              expandedRows={expandedRows}
+              toggleExpand={toggleExpand}
+            />
           </TabsContent>
 
           <TabsContent value="errors" className="flex-1 m-0 flex flex-col min-h-0">
@@ -1124,7 +1170,11 @@ export const LiveLogPanel: React.FC<LiveLogPanelProps> = ({
           </TabsContent>
 
           <TabsContent value="vulnerabilities" className="flex-1 m-0 flex flex-col min-h-0">
-            <VulnerabilitiesTable logs={vulnerabilityLogs} expandedRows={expandedRows} toggleExpand={toggleExpand} />
+            <VulnerabilitiesTable
+              logs={vulnerabilityLogs}
+              expandedRows={expandedRows}
+              toggleExpand={toggleExpand}
+            />
           </TabsContent>
         </div>
       </Tabs>

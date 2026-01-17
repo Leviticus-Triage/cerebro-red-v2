@@ -7,7 +7,7 @@ import { apiClient, DEFAULT_PAGE_SIZE } from '@/lib/api/client';
 import type { ExperimentTemplateCreate, ExperimentTemplateUpdate } from '@/types/api';
 
 export function useTemplates(
-  page = 1, 
+  page = 1,
   pageSize = DEFAULT_PAGE_SIZE,
   filters?: { is_public?: boolean; created_by?: string; tags?: string }
 ) {
@@ -40,8 +40,13 @@ export function useCreateTemplate() {
 export function useUpdateTemplate() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: ({ templateId, update }: { templateId: string; update: ExperimentTemplateUpdate }) =>
-      apiClient.updateTemplate(templateId, update),
+    mutationFn: ({
+      templateId,
+      update,
+    }: {
+      templateId: string;
+      update: ExperimentTemplateUpdate;
+    }) => apiClient.updateTemplate(templateId, update),
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['templates'] });
       queryClient.invalidateQueries({ queryKey: ['template', variables.templateId] });

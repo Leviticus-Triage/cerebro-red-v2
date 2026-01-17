@@ -37,7 +37,13 @@ export function Dashboard() {
 
   // Auto-start tour on first visit in demo mode when data is loaded
   useEffect(() => {
-    if (isDemoMode && !hasSeenTour && !isLoading && experiments?.items && experiments.items.length > 0) {
+    if (
+      isDemoMode &&
+      !hasSeenTour &&
+      !isLoading &&
+      experiments?.items &&
+      experiments.items.length > 0
+    ) {
       // Delay tour start to ensure all elements are rendered
       const timer = setTimeout(() => {
         startTour();
@@ -80,7 +86,10 @@ export function Dashboard() {
         <p className="text-muted-foreground">Overview of CEREBRO-RED v2 experiments</p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4" data-tour="monitoring-section">
+      <div
+        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4"
+        data-tour="monitoring-section"
+      >
         {stats.map((stat) => (
           <Card key={stat.title}>
             <CardHeader className="flex flex-row items-center justify-between pb-2">
@@ -126,4 +135,3 @@ export function Dashboard() {
     </div>
   );
 }
-

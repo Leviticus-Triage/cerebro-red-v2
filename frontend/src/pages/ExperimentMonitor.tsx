@@ -16,7 +16,7 @@
 
 /**
  * ExperimentMonitor - Live monitoring page for experiment execution
- * 
+ *
  * Provides real-time visibility into:
  * - LLM requests/responses (Attacker, Target, Judge)
  * - Iteration progress and results
@@ -54,21 +54,25 @@ import { useExperimentProgress } from '@/hooks/useExperimentProgress';
 const ExperimentMonitor: React.FC = () => {
   const { experimentId } = useParams<{ experimentId: string }>();
   const navigate = useNavigate();
-  
+
   // State
   const [experiment, setExperiment] = useState<ExperimentResponse | null>(null);
   const [isConnected, setIsConnected] = useState(false);
   const [logs, setLogs] = useState<LiveLogEntry[]>([]);
   const [tasks, setTasks] = useState<TaskQueueItem[]>([]);
   const [iterations, setIterations] = useState<IterationResult[]>([]);
-  const [backendStatus, setBackendStatus] = useState<ExperimentStatus>('pending' as ExperimentStatus);
+  const [backendStatus, setBackendStatus] = useState<ExperimentStatus>(
+    'pending' as ExperimentStatus
+  );
   const [currentIteration, setCurrentIteration] = useState(0);
   const [totalIterations, setTotalIterations] = useState(0);
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
   const [successfulIterations, setSuccessfulIterations] = useState(0);
   const [vulnerabilitiesFound, setVulnerabilitiesFound] = useState(0);
-  const [activeTab, setActiveTab] = useState<'logs' | 'iterations' | 'tasks' | 'code-flow' | 'strategy-usage'>('logs');
-  
+  const [activeTab, setActiveTab] = useState<
+    'logs' | 'iterations' | 'tasks' | 'code-flow' | 'strategy-usage'
+  >('logs');
+
   // Load verbosity from localStorage (persist across page reloads)
   const getStoredVerbosity = (expId: string | undefined): number => {
     if (!expId) return 2; // Default if no experiment ID
@@ -86,7 +90,7 @@ const ExperimentMonitor: React.FC = () => {
     // Default to 2 (Detailed) if no stored value
     return 2;
   };
-  
+
   const [verbosity, setVerbosity] = useState<number>(getStoredVerbosity(experimentId));
   const [codeFlowEvents, setCodeFlowEvents] = useState<CodeFlowEvent[]>([]);
   const [failureAnalysis, setFailureAnalysis] = useState<FailureAnalysis | null>(null);
@@ -94,18 +98,18 @@ const ExperimentMonitor: React.FC = () => {
   // Strategy usage tracking (Phase 3)
   const [selectedStrategies, setSelectedStrategies] = useState<string[]>([]);
   const [usedStrategies, setUsedStrategies] = useState<Record<string, number>>({});
-  
+
   // Use centralized progress hook
   const { progressPercent: calculatedProgress, displayStatus } = useExperimentProgress({
     currentIteration,
     totalIterations,
     backendStatus,
   });
-  
+
   // Use calculated values
   const status = displayStatus;
   const progressPercent = calculatedProgress;
-  
+
   const logIdCounter = useRef(0);
 
   // Generate unique log ID
@@ -118,465 +122,485 @@ const ExperimentMonitor: React.FC = () => {
   const addLog = useCallback((entry: Omit<LiveLogEntry, 'id'>) => {
     console.log('[MONITOR] ========== addLog CALLED ==========');
     console.log('[MONITOR] Entry type:', entry.type, 'Content:', entry.content?.slice(0, 100));
-    
+
     const newLog = { ...entry, id: generateLogId() };
     console.log('[MONITOR] Generated log ID:', newLog.id);
-    
+
     setLogs((prev) => {
       const updated = [...prev, newLog];
-      console.log('[MONITOR] Logs array updated. Old length:', prev.length, 'New length:', updated.length);
+      console.log(
+        '[MONITOR] Logs array updated. Old length:',
+        prev.length,
+        'New length:',
+        updated.length
+      );
       console.log('[MONITOR] New log:', newLog);
       return updated;
     });
-    
+
     console.log('[MONITOR] ========== addLog COMPLETE ==========');
   }, []);
 
   // Handle verbosity change
-  const handleVerbosityChange = useCallback((newVerbosity: number) => {
-    setVerbosity(newVerbosity);
-    
-    // Persist verbosity level to localStorage (per experiment)
-    try {
-      if (experimentId) {
-        localStorage.setItem(`verbosity_${experimentId}`, newVerbosity.toString());
+  const handleVerbosityChange = useCallback(
+    (newVerbosity: number) => {
+      setVerbosity(newVerbosity);
+
+      // Persist verbosity level to localStorage (per experiment)
+      try {
+        if (experimentId) {
+          localStorage.setItem(`verbosity_${experimentId}`, newVerbosity.toString());
+        }
+      } catch (error) {
+        console.error('Failed to save verbosity to localStorage:', error);
       }
-    } catch (error) {
-      console.error('Failed to save verbosity to localStorage:', error);
-    }
-    
-    // Send control message to backend
-    if (wsClient.isConnected()) {
-      wsClient.setVerbosity(newVerbosity);
-    }
-  }, [experimentId]);
+
+      // Send control message to backend
+      if (wsClient.isConnected()) {
+        wsClient.setVerbosity(newVerbosity);
+      }
+    },
+    [experimentId]
+  );
 
   // Handle WebSocket messages
-  const handleMessage = useCallback((message: WSMessage) => {
-    console.log('[MONITOR] ========== handleMessage CALLED ==========');
-    console.log('[MONITOR] Message type:', message.type);
-    console.log('[MONITOR] Message:', message);
-    
-    const timestamp = message.timestamp || new Date().toISOString();
+  const handleMessage = useCallback(
+    (message: WSMessage) => {
+      console.log('[MONITOR] ========== handleMessage CALLED ==========');
+      console.log('[MONITOR] Message type:', message.type);
+      console.log('[MONITOR] Message:', message);
 
-    switch (message.type) {
-      case 'connected':
-        setIsConnected(true);
-        // Preserve localStorage verbosity preference - do NOT overwrite with server default
-        if ('verbosity' in message && typeof message.verbosity === 'number') {
-          const storedVerbosity = getStoredVerbosity(experimentId);
-          const serverVerbosity = message.verbosity || 2;
-          
-          // Use stored verbosity if it exists and is >= server, otherwise use max of both
-          const targetVerbosity = Math.max(storedVerbosity, serverVerbosity);
-          setVerbosity(targetVerbosity);
-          
-          // If stored verbosity is higher than server, push it to server
-          if (storedVerbosity > serverVerbosity && wsClient.isConnected()) {
-            wsClient.setVerbosity(storedVerbosity);
-          }
-          
-          // Do NOT save server verbosity to localStorage here - preserve user preference
-          // Only 'verbosity_updated' handler saves to localStorage (confirms server sync)
-        }
-        addLog({
-          timestamp,
-          type: 'info',
-          content: 'Connected to experiment stream',
-        });
-        break;
+      const timestamp = message.timestamp || new Date().toISOString();
 
-      case 'verbosity_updated':
-        if ('verbosity' in message && typeof message.verbosity === 'number') {
-          setVerbosity(message.verbosity);
-          // Save received verbosity back to localStorage
-          try {
-            if (experimentId) {
-              localStorage.setItem(`verbosity_${experimentId}`, message.verbosity.toString());
+      switch (message.type) {
+        case 'connected':
+          setIsConnected(true);
+          // Preserve localStorage verbosity preference - do NOT overwrite with server default
+          if ('verbosity' in message && typeof message.verbosity === 'number') {
+            const storedVerbosity = getStoredVerbosity(experimentId);
+            const serverVerbosity = message.verbosity || 2;
+
+            // Use stored verbosity if it exists and is >= server, otherwise use max of both
+            const targetVerbosity = Math.max(storedVerbosity, serverVerbosity);
+            setVerbosity(targetVerbosity);
+
+            // If stored verbosity is higher than server, push it to server
+            if (storedVerbosity > serverVerbosity && wsClient.isConnected()) {
+              wsClient.setVerbosity(storedVerbosity);
             }
-          } catch (error) {
-            console.error('Failed to save verbosity to localStorage:', error);
+
+            // Do NOT save server verbosity to localStorage here - preserve user preference
+            // Only 'verbosity_updated' handler saves to localStorage (confirms server sync)
           }
           addLog({
             timestamp,
             type: 'info',
-            content: `Verbosity level changed to ${message.verbosity}`,
+            content: 'Connected to experiment stream',
           });
-        }
-        break;
+          break;
 
-      case 'progress':
-        if (message.iteration !== undefined) {
-          const iter = message.iteration;
-          const total = message.total_iterations || totalIterations;
-          // Update iteration counts (hook will calculate progress)
-          setCurrentIteration(Math.min(iter, total));
-        }
-        if (message.total_iterations !== undefined) {
-          setTotalIterations(message.total_iterations);
-        }
-        if (message.elapsed_time_seconds !== undefined) {
-          setElapsedSeconds(message.elapsed_time_seconds);
-        }
-        // Update backend status
-        setBackendStatus('running' as ExperimentStatus);
-        break;
+        case 'verbosity_updated':
+          if ('verbosity' in message && typeof message.verbosity === 'number') {
+            setVerbosity(message.verbosity);
+            // Save received verbosity back to localStorage
+            try {
+              if (experimentId) {
+                localStorage.setItem(`verbosity_${experimentId}`, message.verbosity.toString());
+              }
+            } catch (error) {
+              console.error('Failed to save verbosity to localStorage:', error);
+            }
+            addLog({
+              timestamp,
+              type: 'info',
+              content: `Verbosity level changed to ${message.verbosity}`,
+            });
+          }
+          break;
 
-      case 'iteration_start':
-        addLog({
-          timestamp,
-          type: 'info',
-          content: `Starting iteration ${message.iteration}/${message.total_iterations} with ${message.strategy_used}`,
-        });
-        // Add to task queue
-        setTasks((prev) => [
-          ...prev,
-          {
-            id: `iter-${message.iteration}`,
-            name: `Iteration ${message.iteration}`,
-            status: 'running',
-            iteration: message.iteration,
-            strategy: message.strategy_used,
-            startedAt: timestamp,
-          },
-        ]);
-        break;
+        case 'progress':
+          if (message.iteration !== undefined) {
+            const iter = message.iteration;
+            const total = message.total_iterations || totalIterations;
+            // Update iteration counts (hook will calculate progress)
+            setCurrentIteration(Math.min(iter, total));
+          }
+          if (message.total_iterations !== undefined) {
+            setTotalIterations(message.total_iterations);
+          }
+          if (message.elapsed_time_seconds !== undefined) {
+            setElapsedSeconds(message.elapsed_time_seconds);
+          }
+          // Update backend status
+          setBackendStatus('running' as ExperimentStatus);
+          break;
 
-      case 'llm_request':
-        console.log('[MONITOR] Processing llm_request');
-        console.log('[MONITOR] Role:', message.role, 'Prompt length:', message.prompt?.length);
-        
-        const requestLog = {
-          timestamp,
-          type: 'llm_request' as const,
-          role: message.role,
-          provider: message.provider,
-          model: message.model,
-          content: `${message.role?.toUpperCase()} Request: ${message.prompt?.slice(0, 150)}...`,
-          metadata: { 
-            prompt: message.prompt,  // Store FULL prompt
-            provider: message.provider,
-            model: message.model,
-            strategy: (message as any).strategy  // Parse strategy if present
-          },
-        };
-        
-        console.log('[MONITOR] Parsed log:', requestLog);
-        addLog(requestLog);
-        console.log('[MONITOR]  llm_request log added');
-        break;
-
-      case 'llm_response':
-        console.log('[MONITOR] Processing llm_response');
-        console.log('[MONITOR] Role:', message.role, 'Response length:', message.response?.length);
-        
-        const responseLog = {
-          timestamp,
-          type: 'llm_response' as const,
-          role: message.role,
-          provider: message.provider,
-          model: message.model,
-          content: `${message.role?.toUpperCase()} Response (${message.latency_ms?.toFixed(0)}ms, ${message.tokens || 0} tokens): ${message.response?.slice(0, 150)}...`,
-          metadata: { 
-            response: message.response,  // Store FULL response
-            latency_ms: message.latency_ms, 
-            tokens: message.tokens,
-            provider: message.provider,
-            model: message.model,
-            strategy: (message as any).strategy  // Parse strategy if present
-          },
-        };
-        
-        console.log('[MONITOR] Parsed log:', responseLog);
-        addLog(responseLog);
-        console.log('[MONITOR]  llm_response log added');
-        break;
-
-      case 'llm_error':
-        addLog({
-          timestamp,
-          type: 'error',
-          role: message.role,
-          provider: message.provider,
-          model: message.model,
-          content: `Error from ${message.role}: ${message.error_message}`,
-        });
-        break;
-
-      case 'attack_mutation':
-        addLog({
-          timestamp,
-          type: 'attack',
-          content: `Attack mutation (${message.strategy_used}): ${message.mutated_prompt?.slice(0, 150)}...`,
-          metadata: { 
-            strategy: message.strategy_used,
-            original_prompt: message.original_prompt,
-            mutated_prompt: message.mutated_prompt
-          },
-        });
-        break;
-
-      case 'target_response':
-        addLog({
-          timestamp,
-          type: 'target',
-          content: `Target response (${message.latency_ms?.toFixed(0)}ms): ${message.response?.slice(0, 200)}...`,
-          metadata: { response: message.response, latency_ms: message.latency_ms },
-        });
-        break;
-
-      case 'judge_evaluation':
-        console.log('[MONITOR] Processing judge_evaluation');
-        console.log('[MONITOR] Score:', message.judge_score, 'Success:', message.success);
-        
-        const judgeLog = {
-          timestamp,
-          type: 'judge' as const,
-          content: `Judge Score: ${message.judge_score?.toFixed(2)}/10 | ${message.success ? 'JAILBREAK' : 'BLOCKED'}`,
-          metadata: { 
-            score: message.judge_score, 
-            success: message.success, 
-            reasoning: message.reasoning,  // Store FULL reasoning
-            sub_scores: message.sub_scores,
-            confidence: message.confidence,
-            latency_ms: message.latency_ms,
-            token_breakdown: message.token_breakdown,  // Comment 3: Store token_breakdown
-            strategy: (message as any).strategy  // Parse strategy if present
-          },
-        };
-        
-        console.log('[MONITOR] Parsed log:', judgeLog);
-        addLog(judgeLog);
-        console.log('[MONITOR]  judge_evaluation log added');
-        break;
-
-      case 'iteration_complete':
-        addLog({
-          timestamp,
-          type: 'info',
-          content: `Iteration ${message.iteration} complete: Score ${message.judge_score?.toFixed(2)} (${message.success ? 'SUCCESS' : 'BLOCKED'})`,
-        });
-        // Update task status
-        setTasks((prev) =>
-          prev.map((t) =>
-            t.id === `iter-${message.iteration}`
-              ? { ...t, status: 'completed', completedAt: timestamp }
-              : t
-          )
-        );
-        // Add to iterations
-        if (message.iteration !== undefined && message.judge_score !== undefined) {
-          setIterations((prev) => [
+        case 'iteration_start':
+          addLog({
+            timestamp,
+            type: 'info',
+            content: `Starting iteration ${message.iteration}/${message.total_iterations} with ${message.strategy_used}`,
+          });
+          // Add to task queue
+          setTasks((prev) => [
             ...prev,
             {
-              iteration_number: message.iteration!,
-              strategy: message.strategy_used || 'unknown',
-              prompt: '', // Will be filled from detailed data
-              response: '',
-              judge_score: message.judge_score!,
-              success: message.success || false,
-              latency_ms: message.latency_breakdown?.total_ms || 0,
-              timestamp,
-              latency_breakdown: message.latency_breakdown,
-              token_breakdown: message.token_breakdown,
+              id: `iter-${message.iteration}`,
+              name: `Iteration ${message.iteration}`,
+              status: 'running',
+              iteration: message.iteration,
+              strategy: message.strategy_used,
+              startedAt: timestamp,
             },
           ]);
-          if (message.success) {
-            setSuccessfulIterations((prev) => prev + 1);
-          }
-        }
-        break;
+          break;
 
-      case 'vulnerability_found':
-        addLog({
-          timestamp,
-          type: 'error',  // Keep as 'error' for consistency
-          content: `VULNERABILITY FOUND: ${(message as any).title || 'Jailbreak Successful'} (Severity: ${(message as any).severity || 'high'})`,
-          metadata: {
-            vulnerability_id: (message as any).vulnerability_id,
-            severity: (message as any).severity,
-            iteration: message.iteration,
-            strategy: (message as any).attack_strategy || (message as any).strategy,
-            judge_score: (message as any).judge_score,
-            successful_prompt: (message as any).successful_prompt,
-            target_response: (message as any).target_response,
-            description: (message as any).description,
-            title: (message as any).title,
-          }
-        });
-        setVulnerabilitiesFound((prev) => prev + 1);
-        break;
+        case 'llm_request':
+          console.log('[MONITOR] Processing llm_request');
+          console.log('[MONITOR] Role:', message.role, 'Prompt length:', message.prompt?.length);
 
-      case 'experiment_complete':
-        addLog({
-          timestamp,
-          type: 'info',
-          content: `Experiment complete: ${message.status} | ${message.vulnerabilities_found || 0} vulnerabilities | ${((message.success_rate || 0) * 100).toFixed(1)}% success rate`,
-        });
-        
-        // Update backend status (hook will determine display status)
-        setBackendStatus(message.status as ExperimentStatus || ExperimentStatus.COMPLETED);
-        
-        // Update vulnerabilities count from message
-        if (message.vulnerabilities_found !== undefined) {
-          setVulnerabilitiesFound(message.vulnerabilities_found);
-        }
-        break;
-
-      case 'error':
-        addLog({
-          timestamp,
-          type: 'error',
-          content: `Error: ${message.error_message}`,
-        });
-        break;
-
-      case 'task_queued':
-      case 'task_started':
-      case 'task_running':
-      case 'task_completed':
-      case 'task_failed':
-        setTasks((prev) => {
-          const existing = prev.find((t) => t.id === message.task_id);
-          if (existing) {
-            return prev.map((t) =>
-              t.id === message.task_id
-                ? { 
-                    ...t, 
-                    status: message.status as TaskQueueItem['status'],
-                    // Update timestamps based on status
-                    ...(message.status === 'running' && { startedAt: message.timestamp }),
-                    ...(message.status === 'completed' && { completedAt: message.timestamp }),
-                    ...(message.status === 'failed' && { completedAt: message.timestamp }),
-                    // Comment 4: Update queue position if provided
-                    ...(message.queue_position !== undefined && { queuePosition: message.queue_position })
-                  }
-                : t
-            );
-          }
-          return [
-            ...prev,
-            {
-              id: message.task_id || generateLogId(),
-              name: message.task_name || 'Unknown Task',
-              status: message.status as TaskQueueItem['status'] || 'queued',
-              dependencies: message.dependencies || [],  // Phase 6
-              queuePosition: message.queue_position,  // Comment 4: Persist queue position
-            },
-          ];
-        });
-        break;
-
-      case 'strategy_selection':
-        // Track strategy usage (Phase 3)
-        if (message.strategy) {
-          setUsedStrategies((prev) => ({
-            ...prev,
-            [message.strategy!]: (prev[message.strategy!] || 0) + 1,
-          }));
-        }
-        if (message.available_strategies) {
-          setSelectedStrategies(message.available_strategies);
-        }
-        addLog({
-          timestamp,
-          type: 'info',
-          content: `Strategy Selection (Iteration ${message.iteration}): ${message.strategy} | Reasoning: ${message.reasoning}`,
-          metadata: {
-            strategy: message.strategy,
-            reasoning: message.reasoning,
-            preferred_categories: message.preferred_categories,
-            filtered_count: message.filtered_count,
-            available_strategies: message.available_strategies,
-          },
-        });
-        break;
-
-      case 'failure_analysis':  // Comment 2: Handle failure_analysis messages
-        const analysis: FailureAnalysis = {
-          failure_reason: message.failure_reason || 'Unknown',
-          iterations_executed: message.iterations_executed || 0,
-          max_iterations: message.max_iterations || 0,
-          best_score: message.best_score || 0,
-          best_iteration: message.best_iteration || 0,
-          best_strategy: message.best_strategy || 'unknown',
-          threshold_gap: message.threshold_gap || 0,
-          success_threshold: experiment?.success_threshold || 7.0,
-          strategy_performance: message.strategy_performance || {},
-          iteration_breakdown: message.iteration_breakdown || [],
-          recommendations: message.recommendations || []
-        };
-        setFailureAnalysis(analysis);
-        setShowFailureModal(true);
-        addLog({
-          timestamp,
-          type: 'error',
-          content: `Experiment Failed: ${message.failure_reason || 'Unknown reason'}`
-        });
-        break;
-
-      case 'code_flow':
-        console.log('[ExperimentMonitor] Code Flow Event received:', {
-          event_type: message.event_type,
-          function_name: message.function_name,
-          description: message.description,
-          iteration: message.iteration
-        });
-        
-        // Add to code-flow events
-        setCodeFlowEvents((prev) => [
-          ...prev.slice(-99),  // Keep last 100 events
-          {
-            id: generateLogId(),
+          const requestLog = {
             timestamp,
-            event_type: message.event_type as CodeFlowEvent['event_type'],
-            iteration: message.iteration,
-            strategy: message.strategy,
-            reasoning: message.reasoning,
-            previous_score: message.previous_score,
-            threshold: message.threshold,
-            original_prompt: message.original_prompt,
-            mutated_prompt: message.mutated_prompt,
-            latency_ms: message.latency_ms,
-            overall_score: message.overall_score,
-            all_scores: message.all_scores,
-            target_response: message.target_response,
-            decision_type: message.decision_type,
-            condition: message.condition,
-            decision_result: message.decision_result as boolean | undefined,
-            description: message.description,
-            // Function call fields
+            type: 'llm_request' as const,
+            role: message.role,
+            provider: message.provider,
+            model: message.model,
+            content: `${message.role?.toUpperCase()} Request: ${message.prompt?.slice(0, 150)}...`,
+            metadata: {
+              prompt: message.prompt, // Store FULL prompt
+              provider: message.provider,
+              model: message.model,
+              strategy: (message as any).strategy, // Parse strategy if present
+            },
+          };
+
+          console.log('[MONITOR] Parsed log:', requestLog);
+          addLog(requestLog);
+          console.log('[MONITOR]  llm_request log added');
+          break;
+
+        case 'llm_response':
+          console.log('[MONITOR] Processing llm_response');
+          console.log(
+            '[MONITOR] Role:',
+            message.role,
+            'Response length:',
+            message.response?.length
+          );
+
+          const responseLog = {
+            timestamp,
+            type: 'llm_response' as const,
+            role: message.role,
+            provider: message.provider,
+            model: message.model,
+            content: `${message.role?.toUpperCase()} Response (${message.latency_ms?.toFixed(0)}ms, ${message.tokens || 0} tokens): ${message.response?.slice(0, 150)}...`,
+            metadata: {
+              response: message.response, // Store FULL response
+              latency_ms: message.latency_ms,
+              tokens: message.tokens,
+              provider: message.provider,
+              model: message.model,
+              strategy: (message as any).strategy, // Parse strategy if present
+            },
+          };
+
+          console.log('[MONITOR] Parsed log:', responseLog);
+          addLog(responseLog);
+          console.log('[MONITOR]  llm_response log added');
+          break;
+
+        case 'llm_error':
+          addLog({
+            timestamp,
+            type: 'error',
+            role: message.role,
+            provider: message.provider,
+            model: message.model,
+            content: `Error from ${message.role}: ${message.error_message}`,
+          });
+          break;
+
+        case 'attack_mutation':
+          addLog({
+            timestamp,
+            type: 'attack',
+            content: `Attack mutation (${message.strategy_used}): ${message.mutated_prompt?.slice(0, 150)}...`,
+            metadata: {
+              strategy: message.strategy_used,
+              original_prompt: message.original_prompt,
+              mutated_prompt: message.mutated_prompt,
+            },
+          });
+          break;
+
+        case 'target_response':
+          addLog({
+            timestamp,
+            type: 'target',
+            content: `Target response (${message.latency_ms?.toFixed(0)}ms): ${message.response?.slice(0, 200)}...`,
+            metadata: { response: message.response, latency_ms: message.latency_ms },
+          });
+          break;
+
+        case 'judge_evaluation':
+          console.log('[MONITOR] Processing judge_evaluation');
+          console.log('[MONITOR] Score:', message.judge_score, 'Success:', message.success);
+
+          const judgeLog = {
+            timestamp,
+            type: 'judge' as const,
+            content: `Judge Score: ${message.judge_score?.toFixed(2)}/10 | ${message.success ? 'JAILBREAK' : 'BLOCKED'}`,
+            metadata: {
+              score: message.judge_score,
+              success: message.success,
+              reasoning: message.reasoning, // Store FULL reasoning
+              sub_scores: message.sub_scores,
+              confidence: message.confidence,
+              latency_ms: message.latency_ms,
+              token_breakdown: message.token_breakdown, // Comment 3: Store token_breakdown
+              strategy: (message as any).strategy, // Parse strategy if present
+            },
+          };
+
+          console.log('[MONITOR] Parsed log:', judgeLog);
+          addLog(judgeLog);
+          console.log('[MONITOR]  judge_evaluation log added');
+          break;
+
+        case 'iteration_complete':
+          addLog({
+            timestamp,
+            type: 'info',
+            content: `Iteration ${message.iteration} complete: Score ${message.judge_score?.toFixed(2)} (${message.success ? 'SUCCESS' : 'BLOCKED'})`,
+          });
+          // Update task status
+          setTasks((prev) =>
+            prev.map((t) =>
+              t.id === `iter-${message.iteration}`
+                ? { ...t, status: 'completed', completedAt: timestamp }
+                : t
+            )
+          );
+          // Add to iterations
+          if (message.iteration !== undefined && message.judge_score !== undefined) {
+            setIterations((prev) => [
+              ...prev,
+              {
+                iteration_number: message.iteration!,
+                strategy: message.strategy_used || 'unknown',
+                prompt: '', // Will be filled from detailed data
+                response: '',
+                judge_score: message.judge_score!,
+                success: message.success || false,
+                latency_ms: message.latency_breakdown?.total_ms || 0,
+                timestamp,
+                latency_breakdown: message.latency_breakdown,
+                token_breakdown: message.token_breakdown,
+              },
+            ]);
+            if (message.success) {
+              setSuccessfulIterations((prev) => prev + 1);
+            }
+          }
+          break;
+
+        case 'vulnerability_found':
+          addLog({
+            timestamp,
+            type: 'error', // Keep as 'error' for consistency
+            content: `VULNERABILITY FOUND: ${(message as any).title || 'Jailbreak Successful'} (Severity: ${(message as any).severity || 'high'})`,
+            metadata: {
+              vulnerability_id: (message as any).vulnerability_id,
+              severity: (message as any).severity,
+              iteration: message.iteration,
+              strategy: (message as any).attack_strategy || (message as any).strategy,
+              judge_score: (message as any).judge_score,
+              successful_prompt: (message as any).successful_prompt,
+              target_response: (message as any).target_response,
+              description: (message as any).description,
+              title: (message as any).title,
+            },
+          });
+          setVulnerabilitiesFound((prev) => prev + 1);
+          break;
+
+        case 'experiment_complete':
+          addLog({
+            timestamp,
+            type: 'info',
+            content: `Experiment complete: ${message.status} | ${message.vulnerabilities_found || 0} vulnerabilities | ${((message.success_rate || 0) * 100).toFixed(1)}% success rate`,
+          });
+
+          // Update backend status (hook will determine display status)
+          setBackendStatus((message.status as ExperimentStatus) || ExperimentStatus.COMPLETED);
+
+          // Update vulnerabilities count from message
+          if (message.vulnerabilities_found !== undefined) {
+            setVulnerabilitiesFound(message.vulnerabilities_found);
+          }
+          break;
+
+        case 'error':
+          addLog({
+            timestamp,
+            type: 'error',
+            content: `Error: ${message.error_message}`,
+          });
+          break;
+
+        case 'task_queued':
+        case 'task_started':
+        case 'task_running':
+        case 'task_completed':
+        case 'task_failed':
+          setTasks((prev) => {
+            const existing = prev.find((t) => t.id === message.task_id);
+            if (existing) {
+              return prev.map((t) =>
+                t.id === message.task_id
+                  ? {
+                      ...t,
+                      status: message.status as TaskQueueItem['status'],
+                      // Update timestamps based on status
+                      ...(message.status === 'running' && { startedAt: message.timestamp }),
+                      ...(message.status === 'completed' && { completedAt: message.timestamp }),
+                      ...(message.status === 'failed' && { completedAt: message.timestamp }),
+                      // Comment 4: Update queue position if provided
+                      ...(message.queue_position !== undefined && {
+                        queuePosition: message.queue_position,
+                      }),
+                    }
+                  : t
+              );
+            }
+            return [
+              ...prev,
+              {
+                id: message.task_id || generateLogId(),
+                name: message.task_name || 'Unknown Task',
+                status: (message.status as TaskQueueItem['status']) || 'queued',
+                dependencies: message.dependencies || [], // Phase 6
+                queuePosition: message.queue_position, // Comment 4: Persist queue position
+              },
+            ];
+          });
+          break;
+
+        case 'strategy_selection':
+          // Track strategy usage (Phase 3)
+          if (message.strategy) {
+            setUsedStrategies((prev) => ({
+              ...prev,
+              [message.strategy!]: (prev[message.strategy!] || 0) + 1,
+            }));
+          }
+          if (message.available_strategies) {
+            setSelectedStrategies(message.available_strategies);
+          }
+          addLog({
+            timestamp,
+            type: 'info',
+            content: `Strategy Selection (Iteration ${message.iteration}): ${message.strategy} | Reasoning: ${message.reasoning}`,
+            metadata: {
+              strategy: message.strategy,
+              reasoning: message.reasoning,
+              preferred_categories: message.preferred_categories,
+              filtered_count: message.filtered_count,
+              available_strategies: message.available_strategies,
+            },
+          });
+          break;
+
+        case 'failure_analysis': // Comment 2: Handle failure_analysis messages
+          const analysis: FailureAnalysis = {
+            failure_reason: message.failure_reason || 'Unknown',
+            iterations_executed: message.iterations_executed || 0,
+            max_iterations: message.max_iterations || 0,
+            best_score: message.best_score || 0,
+            best_iteration: message.best_iteration || 0,
+            best_strategy: message.best_strategy || 'unknown',
+            threshold_gap: message.threshold_gap || 0,
+            success_threshold: experiment?.success_threshold || 7.0,
+            strategy_performance: message.strategy_performance || {},
+            iteration_breakdown: message.iteration_breakdown || [],
+            recommendations: message.recommendations || [],
+          };
+          setFailureAnalysis(analysis);
+          setShowFailureModal(true);
+          addLog({
+            timestamp,
+            type: 'error',
+            content: `Experiment Failed: ${message.failure_reason || 'Unknown reason'}`,
+          });
+          break;
+
+        case 'code_flow':
+          console.log('[ExperimentMonitor] Code Flow Event received:', {
+            event_type: message.event_type,
             function_name: message.function_name,
-            parameters: message.parameters,
-            result: message.result,
-          },
-        ]);
-        
-        // Also add to logs for visibility
-        addLog({
-          timestamp,
-          type: 'info',
-          content: `Code Flow: ${message.event_type?.replace(/_/g, ' ')} ${message.description || ''}`,
-        });
-        break;
+            description: message.description,
+            iteration: message.iteration,
+          });
 
-      case 'pong':
-        // WebSocket keepalive - no action needed, just acknowledge
-        break;
+          // Add to code-flow events
+          setCodeFlowEvents((prev) => [
+            ...prev.slice(-99), // Keep last 100 events
+            {
+              id: generateLogId(),
+              timestamp,
+              event_type: message.event_type as CodeFlowEvent['event_type'],
+              iteration: message.iteration,
+              strategy: message.strategy,
+              reasoning: message.reasoning,
+              previous_score: message.previous_score,
+              threshold: message.threshold,
+              original_prompt: message.original_prompt,
+              mutated_prompt: message.mutated_prompt,
+              latency_ms: message.latency_ms,
+              overall_score: message.overall_score,
+              all_scores: message.all_scores,
+              target_response: message.target_response,
+              decision_type: message.decision_type,
+              condition: message.condition,
+              decision_result: message.decision_result as boolean | undefined,
+              description: message.description,
+              // Function call fields
+              function_name: message.function_name,
+              parameters: message.parameters,
+              result: message.result,
+            },
+          ]);
 
-      default:
-        console.log('[MONITOR]  Unknown message type:', message.type);
-    }
-    
-    console.log('[MONITOR] ========== handleMessage COMPLETE ==========');
-  }, [addLog]);
+          // Also add to logs for visibility
+          addLog({
+            timestamp,
+            type: 'info',
+            content: `Code Flow: ${message.event_type?.replace(/_/g, ' ')} ${message.description || ''}`,
+          });
+          break;
+
+        case 'pong':
+          // WebSocket keepalive - no action needed, just acknowledge
+          break;
+
+        default:
+          console.log('[MONITOR]  Unknown message type:', message.type);
+      }
+
+      console.log('[MONITOR] ========== handleMessage COMPLETE ==========');
+    },
+    [addLog]
+  );
 
   // Load stored verbosity level when experimentId changes
   useEffect(() => {
     if (experimentId) {
       const storedVerbosity = getStoredVerbosity(experimentId);
       setVerbosity(storedVerbosity);
-      console.log(`[ExperimentMonitor] Loaded verbosity level ${storedVerbosity} for experiment ${experimentId}`);
+      console.log(
+        `[ExperimentMonitor] Loaded verbosity level ${storedVerbosity} for experiment ${experimentId}`
+      );
     }
   }, [experimentId]);
 
@@ -589,8 +613,8 @@ const ExperimentMonitor: React.FC = () => {
         const data = await apiClient.getExperiment(experimentId);
         setExperiment(data);
         setTotalIterations(data.max_iterations);
-        setBackendStatus(data.status as ExperimentStatus);  // Use backendStatus
-        
+        setBackendStatus(data.status as ExperimentStatus); // Use backendStatus
+
         // Load selected strategies from experiment (strategies is already an array of strings)
         if (data.strategies && Array.isArray(data.strategies)) {
           setSelectedStrategies(data.strategies);
@@ -607,12 +631,12 @@ const ExperimentMonitor: React.FC = () => {
           // Convert audit log entries to LiveLogEntry format
           const historicalLogs: LiveLogEntry[] = [];
           const historicalCodeFlowEvents: CodeFlowEvent[] = [];
-          
+
           logsData.entries.forEach((entry: any, index: number) => {
             // AuditLogEntry structure from backend:
             // timestamp, event_type, experiment_id, iteration_number, model_attacker, model_target,
             // strategy, prompt_hash, success_score, latency_ms, tokens_used, error, metadata
-            
+
             // Check if this is a code-flow event (strategy_transition or code_flow)
             if (entry.event_type === 'code_flow' || entry.event_type === 'strategy_transition') {
               historicalCodeFlowEvents.push({
@@ -632,7 +656,7 @@ const ExperimentMonitor: React.FC = () => {
               // Regular log entry - build meaningful content from available fields
               let content = '';
               const eventType = entry.event_type || 'info';
-              
+
               // Build human-readable content based on event type
               switch (eventType) {
                 case 'attack_attempt':
@@ -678,7 +702,7 @@ const ExperimentMonitor: React.FC = () => {
                     content = `${eventType} event`;
                   }
               }
-              
+
               historicalLogs.push({
                 id: `historical-${entry.timestamp}-${index}`,
                 timestamp: entry.timestamp,
@@ -693,17 +717,28 @@ const ExperimentMonitor: React.FC = () => {
                   success_score: entry.success_score,
                   error: entry.error,
                 },
-                role: entry.metadata?.role || (eventType === 'attack_attempt' ? 'attacker' : eventType === 'judge_evaluation' ? 'judge' : 'target'),
-                provider: entry.metadata?.provider || entry.model_attacker?.split('/')[0] || entry.model_target?.split('/')[0],
+                role:
+                  entry.metadata?.role ||
+                  (eventType === 'attack_attempt'
+                    ? 'attacker'
+                    : eventType === 'judge_evaluation'
+                      ? 'judge'
+                      : 'target'),
+                provider:
+                  entry.metadata?.provider ||
+                  entry.model_attacker?.split('/')[0] ||
+                  entry.model_target?.split('/')[0],
                 model: entry.metadata?.model || entry.model_attacker || entry.model_target,
               });
             }
           });
-          
+
           // Set historical logs and code-flow events
           setLogs(historicalLogs);
           setCodeFlowEvents(historicalCodeFlowEvents);
-          console.log(`Loaded ${historicalLogs.length} historical log entries and ${historicalCodeFlowEvents.length} code-flow events`);
+          console.log(
+            `Loaded ${historicalLogs.length} historical log entries and ${historicalCodeFlowEvents.length} code-flow events`
+          );
         }
       } catch (error) {
         console.error('Failed to fetch historical logs:', error);
@@ -711,17 +746,17 @@ const ExperimentMonitor: React.FC = () => {
     };
 
     fetchExperiment();
-    fetchHistoricalLogs();  // Load ALL historical logs from database
+    fetchHistoricalLogs(); // Load ALL historical logs from database
   }, [experimentId]);
 
   // Connect to WebSocket (only if experiment is running or pending)
   useEffect(() => {
     if (!experimentId) return;
-    
+
     // Only connect if experiment is running or pending (for live updates)
     // For completed/failed experiments, we rely on historical data from API
     if (status === 'running' || status === 'pending' || !status) {
-      wsClient.connect(experimentId, verbosity);  // Pass verbosity
+      wsClient.connect(experimentId, verbosity); // Pass verbosity
       const unsubscribe = wsClient.onMessage(handleMessage);
 
       return () => {
@@ -729,7 +764,7 @@ const ExperimentMonitor: React.FC = () => {
         wsClient.disconnect();
       };
     }
-  }, [experimentId, handleMessage, status]);  // Re-connect if status changes to running
+  }, [experimentId, handleMessage, status]); // Re-connect if status changes to running
 
   // Poll for status updates (fallback)
   useEffect(() => {
@@ -738,25 +773,25 @@ const ExperimentMonitor: React.FC = () => {
     const pollStatus = async () => {
       try {
         const [statusData, statisticsData] = await Promise.all([
-          apiClient.getScanStatus(experimentId).catch(err => {
+          apiClient.getScanStatus(experimentId).catch((err) => {
             console.error('Failed to poll status:', err);
             return null;
           }),
-          apiClient.getExperimentStatistics(experimentId).catch(err => {
+          apiClient.getExperimentStatistics(experimentId).catch((err) => {
             console.error('Failed to poll statistics:', err);
             return null;
-          })
+          }),
         ]);
-        
+
         if (statusData) {
           // Update iteration counts (hook will calculate progress)
           setCurrentIteration(Math.min(statusData.current_iteration, statusData.total_iterations));
           setTotalIterations(statusData.total_iterations);
           setElapsedSeconds(statusData.elapsed_time_seconds);
-          
+
           // Update backend status (hook will determine display status)
           setBackendStatus(statusData.status as ExperimentStatus);
-          
+
           if (statisticsData) {
             setSuccessfulIterations(statisticsData.successful_iterations);
             setVulnerabilitiesFound(statisticsData.vulnerabilities_found);
@@ -792,7 +827,7 @@ const ExperimentMonitor: React.FC = () => {
           name: `Iteration ${iterationNum}: Mutate Prompt`,
           status: 'completed',
           iteration: iterationNum,
-          strategy: iter.strategy_used || 'unknown'
+          strategy: iter.strategy_used || 'unknown',
         });
 
         // Add log entry for mutation
@@ -805,8 +840,8 @@ const ExperimentMonitor: React.FC = () => {
           metadata: {
             prompt: iter.mutated_prompt,
             strategy: iter.strategy_used,
-            iteration: iterationNum
-          }
+            iteration: iterationNum,
+          },
         });
       }
 
@@ -817,7 +852,7 @@ const ExperimentMonitor: React.FC = () => {
           name: `Iteration ${iterationNum}: Query Target LLM`,
           status: 'completed',
           iteration: iterationNum,
-          strategy: iter.strategy_used || 'unknown'
+          strategy: iter.strategy_used || 'unknown',
         });
 
         // Add log entry for target response
@@ -826,14 +861,16 @@ const ExperimentMonitor: React.FC = () => {
           timestamp,
           type: 'llm_response',
           role: 'target',
-          content: iter.target_response.substring(0, 200) + (iter.target_response.length > 200 ? '...' : ''),
+          content:
+            iter.target_response.substring(0, 200) +
+            (iter.target_response.length > 200 ? '...' : ''),
           metadata: {
             response: iter.target_response,
             prompt: iter.mutated_prompt || iter.original_prompt,
             latency_ms: iter.latency_ms,
             tokens: iter.tokens_used?.response || 0,
-            iteration: iterationNum
-          }
+            iteration: iterationNum,
+          },
         });
       }
 
@@ -844,7 +881,7 @@ const ExperimentMonitor: React.FC = () => {
           name: `Iteration ${iterationNum}: Judge Evaluation`,
           status: 'completed',
           iteration: iterationNum,
-          strategy: iter.strategy_used || 'unknown'
+          strategy: iter.strategy_used || 'unknown',
         });
 
         // Add log entry for judge evaluation
@@ -858,26 +895,27 @@ const ExperimentMonitor: React.FC = () => {
             score: iter.judge_score,
             success: iter.success,
             reasoning: iter.judge_reasoning,
-            iteration: iterationNum
-          }
+            iteration: iterationNum,
+          },
         });
-        
+
         // Check if this iteration resulted in a vulnerability
-        if (iter.success && iter.judge_score >= 7.0) {  // Assuming threshold is 7.0
+        if (iter.success && iter.judge_score >= 7.0) {
+          // Assuming threshold is 7.0
           reconstructedLogs.push({
             id: `log-vulnerability-${iterationNum}`,
             timestamp,
-            type: 'error',  // Vulnerabilities use 'error' type
+            type: 'error', // Vulnerabilities use 'error' type
             content: `VULNERABILITY FOUND in Iteration ${iterationNum}: ${iter.strategy_used || 'unknown'} attack succeeded (Score: ${iter.judge_score.toFixed(2)})`,
             metadata: {
-              vulnerability_id: iter.vulnerability_id || `vuln-iter-${iterationNum}`,  // Use actual ID if available
+              vulnerability_id: iter.vulnerability_id || `vuln-iter-${iterationNum}`, // Use actual ID if available
               severity: iter.severity || 'high',
               iteration: iterationNum,
               strategy: iter.strategy_used,
               judge_score: iter.judge_score,
               successful_prompt: iter.mutated_prompt,
               target_response: iter.target_response,
-            }
+            },
           });
         }
       }
@@ -891,8 +929,8 @@ const ExperimentMonitor: React.FC = () => {
         metadata: {
           iteration: iterationNum,
           success: iter.success,
-          score: iter.judge_score
-        }
+          score: iter.judge_score,
+        },
       });
     });
 
@@ -907,19 +945,19 @@ const ExperimentMonitor: React.FC = () => {
       try {
         console.log('Fetching iterations for experiment:', experimentId);
         const [iterationsData, vulnerabilitiesData] = await Promise.all([
-          apiClient.getExperimentIterations(experimentId).catch(err => {
+          apiClient.getExperimentIterations(experimentId).catch((err) => {
             console.error('Failed to fetch iterations:', err);
             return { iterations: [], total: 0 };
           }),
-          apiClient.getVulnerabilities({ experiment_id: experimentId }).catch(err => {
+          apiClient.getVulnerabilities({ experiment_id: experimentId }).catch((err) => {
             console.error('Failed to fetch vulnerabilities:', err);
             return { vulnerabilities: [], total: 0 };
-          })
+          }),
         ]);
-        
+
         const iterData = iterationsData.iterations || [];
         console.log('Received iterations:', iterData.length, iterData);
-        
+
         // Set iterations
         setIterations(
           iterData.map((iter: any) => ({
@@ -947,39 +985,40 @@ const ExperimentMonitor: React.FC = () => {
               bias: 0,
               logical_consistency: 0,
               sycophancy: 0,
-              policy_violation: 0
+              policy_violation: 0,
             },
-            confidence: iter.confidence
+            confidence: iter.confidence,
           }))
         );
-        
+
         // Reconstruct logs and tasks from iterations (for historical data)
         if (iterData.length > 0) {
-          const { logs: reconstructedLogs, tasks: reconstructedTasks } = reconstructLogsFromIterations(iterData);
-          
+          const { logs: reconstructedLogs, tasks: reconstructedTasks } =
+            reconstructLogsFromIterations(iterData);
+
           // Only set logs/tasks if they're empty (don't overwrite live WebSocket data)
           setLogs((prev) => {
             // If we have live logs, merge with reconstructed (avoid duplicates)
             if (prev.length > 0) {
-              const existingIds = new Set(prev.map(l => l.id));
-              const newLogs = reconstructedLogs.filter(l => !existingIds.has(l.id));
+              const existingIds = new Set(prev.map((l) => l.id));
+              const newLogs = reconstructedLogs.filter((l) => !existingIds.has(l.id));
               return [...prev, ...newLogs].slice(-500); // Keep last 500
             }
             // If no live logs, use reconstructed
             return reconstructedLogs;
           });
-          
+
           setTasks((prev) => {
             // If we have live tasks, merge with reconstructed (avoid duplicates)
             if (prev.length > 0) {
-              const existingIds = new Set(prev.map(t => t.id));
-              const newTasks = reconstructedTasks.filter(t => !existingIds.has(t.id));
+              const existingIds = new Set(prev.map((t) => t.id));
+              const newTasks = reconstructedTasks.filter((t) => !existingIds.has(t.id));
               return [...prev, ...newTasks];
             }
             // If no live tasks, use reconstructed
             return reconstructedTasks;
           });
-          
+
           // Reconstruct usedStrategies from iterations (count strategy usage)
           const strategyCounts: Record<string, number> = {};
           iterData.forEach((iter: any) => {
@@ -988,7 +1027,7 @@ const ExperimentMonitor: React.FC = () => {
               strategyCounts[strategy] = (strategyCounts[strategy] || 0) + 1;
             }
           });
-          
+
           // Merge with existing usedStrategies (preserve live WebSocket data)
           setUsedStrategies((prev) => {
             // If we have live data, merge with reconstructed
@@ -1003,53 +1042,59 @@ const ExperimentMonitor: React.FC = () => {
             return strategyCounts;
           });
         }
-        
+
         const successfulCount = iterData.filter((i: any) => i.success).length;
         setSuccessfulIterations(successfulCount);
-        
+
         // Update vulnerabilities count from API
         const vulnCount = vulnerabilitiesData.vulnerabilities?.length || 0;
         setVulnerabilitiesFound(vulnCount);
         console.log('Vulnerabilities found:', vulnCount);
-        
+
         // Convert vulnerabilities to LiveLogEntry format
         if (vulnerabilitiesData.vulnerabilities && vulnerabilitiesData.vulnerabilities.length > 0) {
-          const vulnerabilityLogs: LiveLogEntry[] = vulnerabilitiesData.vulnerabilities.map((vuln: VulnerabilityFinding) => ({
-            id: `vuln-${vuln.vulnerability_id}`,
-            timestamp: vuln.discovered_at,
-            type: 'error' as const,  // Vulnerabilities use 'error' type
-            content: `VULNERABILITY FOUND: ${vuln.title} (Severity: ${vuln.severity})`,
-            metadata: {
-              vulnerability_id: vuln.vulnerability_id,
-              severity: vuln.severity,
-              iteration: vuln.iteration_number,
-              strategy: vuln.attack_strategy,
-              judge_score: vuln.judge_score,
-              successful_prompt: vuln.successful_prompt,
-              target_response: vuln.target_response,
-              description: vuln.description,
-              mitigation_suggestions: vuln.mitigation_suggestions,
-              cve_references: vuln.cve_references,
-            }
-          }));
-          
+          const vulnerabilityLogs: LiveLogEntry[] = vulnerabilitiesData.vulnerabilities.map(
+            (vuln: VulnerabilityFinding) => ({
+              id: `vuln-${vuln.vulnerability_id}`,
+              timestamp: vuln.discovered_at,
+              type: 'error' as const, // Vulnerabilities use 'error' type
+              content: `VULNERABILITY FOUND: ${vuln.title} (Severity: ${vuln.severity})`,
+              metadata: {
+                vulnerability_id: vuln.vulnerability_id,
+                severity: vuln.severity,
+                iteration: vuln.iteration_number,
+                strategy: vuln.attack_strategy,
+                judge_score: vuln.judge_score,
+                successful_prompt: vuln.successful_prompt,
+                target_response: vuln.target_response,
+                description: vuln.description,
+                mitigation_suggestions: vuln.mitigation_suggestions,
+                cve_references: vuln.cve_references,
+              },
+            })
+          );
+
           // Merge vulnerability logs with existing logs - API logs replace existing ones with same vulnerability_id
           setLogs((prev) => {
             // Get set of API vulnerability IDs (these have richer details)
             const apiVulnIds = new Set(
-              vulnerabilityLogs.map(vl => vl.metadata!.vulnerability_id as string)
+              vulnerabilityLogs.map((vl) => vl.metadata!.vulnerability_id as string)
             );
-            
+
             // Remove existing logs that match API vulnerability IDs (to be replaced with richer API data)
             const filteredPrev = prev.filter(
-              l => !l.metadata?.vulnerability_id || !apiVulnIds.has(l.metadata.vulnerability_id as string)
+              (l) =>
+                !l.metadata?.vulnerability_id ||
+                !apiVulnIds.has(l.metadata.vulnerability_id as string)
             );
-            
+
             // Add all API vulnerability logs (they have richer fields like title, description, mitigation_suggestions)
             return [...filteredPrev, ...vulnerabilityLogs];
           });
-          
-          console.log(`Added ${vulnerabilityLogs.length} vulnerability log entries (replaced existing with richer API data)`);
+
+          console.log(
+            `Added ${vulnerabilityLogs.length} vulnerability log entries (replaced existing with richer API data)`
+          );
         }
       } catch (error) {
         console.error('Failed to fetch data:', error);
@@ -1058,7 +1103,7 @@ const ExperimentMonitor: React.FC = () => {
 
     // Fetch immediately on mount - ALWAYS, not just when running
     fetchData();
-    
+
     // Also poll every 3 seconds while running
     let interval: ReturnType<typeof setInterval> | null = null;
     if (status === 'running') {
@@ -1090,9 +1135,7 @@ const ExperimentMonitor: React.FC = () => {
             >
               ← Back
             </Link>
-            <h1 className="text-xl font-bold">
-              Live Monitor
-            </h1>
+            <h1 className="text-xl font-bold">Live Monitor</h1>
           </div>
           <div className="flex items-center gap-4">
             <button
@@ -1174,11 +1217,10 @@ const ExperimentMonitor: React.FC = () => {
           >
             Strategy Usage
           </button>
-
         </div>
 
         {/* Verbosity Selector */}
-        <VerbositySelector 
+        <VerbositySelector
           value={verbosity}
           onChange={handleVerbosityChange}
           isConnected={isConnected}
@@ -1187,11 +1229,7 @@ const ExperimentMonitor: React.FC = () => {
         {/* Content Panels */}
         <div className="h-[calc(100vh-400px)] min-h-[400px]">
           {activeTab === 'logs' && (
-            <LiveLogPanel 
-              logs={logs} 
-              tasks={tasks}
-              codeFlowEvents={codeFlowEvents}
-            />
+            <LiveLogPanel logs={logs} tasks={tasks} codeFlowEvents={codeFlowEvents} />
           )}
           {activeTab === 'iterations' && (
             <IterationResultsPanel
@@ -1199,29 +1237,25 @@ const ExperimentMonitor: React.FC = () => {
               successThreshold={experiment?.success_threshold || 7.0}
             />
           )}
-          {activeTab === 'tasks' && (
-            <TaskQueuePanel tasks={tasks} />
-          )}
-        {activeTab === 'code-flow' && (
-          <CodeFlowPanel events={codeFlowEvents} />
-        )}
+          {activeTab === 'tasks' && <TaskQueuePanel tasks={tasks} />}
+          {activeTab === 'code-flow' && <CodeFlowPanel events={codeFlowEvents} />}
 
-        {activeTab === 'strategy-usage' && (
-          <StrategyUsagePanel
-            selectedStrategies={selectedStrategies}
-            usedStrategies={usedStrategies}
-          />
-        )}
+          {activeTab === 'strategy-usage' && (
+            <StrategyUsagePanel
+              selectedStrategies={selectedStrategies}
+              usedStrategies={usedStrategies}
+            />
+          )}
         </div>
       </main>
 
       {/* Failure Analysis Modal */}
       {showFailureModal && failureAnalysis && (
-        <div 
+        <div
           className="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
           onClick={() => setShowFailureModal(false)}
         >
-          <div 
+          <div
             className="bg-slate-900 rounded-lg max-w-6xl w-full max-h-[90vh] overflow-hidden m-4 shadow-2xl"
             onClick={(e) => e.stopPropagation()}
           >

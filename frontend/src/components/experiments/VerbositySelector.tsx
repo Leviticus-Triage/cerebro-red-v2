@@ -1,6 +1,6 @@
 /**
  * Verbosity Level Selector component.
- * 
+ *
  * Allows users to set the verbosity level for experiment monitoring.
  */
 
@@ -32,16 +32,14 @@ const VERBOSITY_LEVELS = [
     level: 3,
     name: 'Debug',
     description: 'Full code-flow tracking, function calls, parameters',
-  }
+  },
 ];
 
 export function VerbositySelector({ value, onChange }: VerbositySelectorProps) {
   return (
     <Card className="bg-slate-800 border-slate-700">
       <CardHeader>
-        <CardTitle className="text-lg flex items-center gap-2">
-          Verbosity Level
-        </CardTitle>
+        <CardTitle className="text-lg flex items-center gap-2">Verbosity Level</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="space-y-2">
@@ -56,9 +54,10 @@ export function VerbositySelector({ value, onChange }: VerbositySelectorProps) {
                 onClick={() => onChange(level)}
                 className={`
                   p-3 rounded-lg border-2 transition-all text-left
-                  ${value === level
-                    ? 'border-blue-500 bg-blue-500/10'
-                    : 'border-slate-600 bg-slate-700 hover:border-slate-500'
+                  ${
+                    value === level
+                      ? 'border-blue-500 bg-blue-500/10'
+                      : 'border-slate-600 bg-slate-700 hover:border-slate-500'
                   }
                 `}
               >
@@ -74,9 +73,7 @@ export function VerbositySelector({ value, onChange }: VerbositySelectorProps) {
                         </span>
                       )}
                     </div>
-                    <p className="text-sm text-slate-400 mt-1">
-                      {description}
-                    </p>
+                    <p className="text-sm text-slate-400 mt-1">{description}</p>
                   </div>
                 </div>
               </button>
@@ -87,8 +84,8 @@ export function VerbositySelector({ value, onChange }: VerbositySelectorProps) {
         {/* Info Box */}
         <div className="bg-slate-700/50 rounded-lg p-3 border border-slate-600">
           <p className="text-xs text-slate-300">
-            <strong>Tip:</strong> Higher verbosity levels provide more insight but may impact performance.
-            Use Level 2-3 for debugging, Level 1 for production monitoring.
+            <strong>Tip:</strong> Higher verbosity levels provide more insight but may impact
+            performance. Use Level 2-3 for debugging, Level 1 for production monitoring.
           </p>
         </div>
       </CardContent>

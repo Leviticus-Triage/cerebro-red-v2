@@ -1,6 +1,6 @@
 /**
  * Tooltip component (ShadcnUI-style).
- * 
+ *
  * Simple tooltip implementation for showing additional information on hover.
  */
 
@@ -43,10 +43,10 @@ interface TooltipContentProps {
   side?: 'top' | 'bottom' | 'left' | 'right';
 }
 
-export const TooltipContent: React.FC<TooltipContentProps> = ({ 
-  children, 
+export const TooltipContent: React.FC<TooltipContentProps> = ({
+  children,
   className,
-  side = 'top'
+  side = 'top',
 }) => {
   const sideClasses = {
     top: 'bottom-full left-1/2 -translate-x-1/2 mb-2',
@@ -56,9 +56,9 @@ export const TooltipContent: React.FC<TooltipContentProps> = ({
   };
 
   return (
-    <div 
+    <div
       className={cn(
-        "absolute z-50 hidden group-hover:block bg-slate-800 text-slate-200 px-3 py-2 rounded-lg shadow-lg text-xs max-w-xs",
+        'absolute z-50 hidden group-hover:block bg-slate-800 text-slate-200 px-3 py-2 rounded-lg shadow-lg text-xs max-w-xs',
         sideClasses[side],
         className
       )}
@@ -66,13 +66,13 @@ export const TooltipContent: React.FC<TooltipContentProps> = ({
     >
       {children}
       {/* Arrow */}
-      <div 
+      <div
         className={cn(
-          "absolute w-2 h-2 bg-slate-800 rotate-45",
+          'absolute w-2 h-2 bg-slate-800 rotate-45',
           side === 'top' && 'top-full left-1/2 -translate-x-1/2 -mt-1',
           side === 'bottom' && 'bottom-full left-1/2 -translate-x-1/2 -mb-1',
           side === 'left' && 'left-full top-1/2 -translate-y-1/2 -ml-1',
-          side === 'right' && 'right-full top-1/2 -translate-y-1/2 -mr-1',
+          side === 'right' && 'right-full top-1/2 -translate-y-1/2 -mr-1'
         )}
       />
     </div>

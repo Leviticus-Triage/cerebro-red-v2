@@ -16,8 +16,8 @@ export const TokenPieChart: React.FC<TokenPieChartProps> = ({ token_breakdown })
   const data = [
     { name: 'Attacker', value: token_breakdown.attacker },
     { name: 'Target', value: token_breakdown.target },
-    { name: 'Judge', value: token_breakdown.judge }
-  ].filter(d => d.value > 0);  // Only show non-zero
+    { name: 'Judge', value: token_breakdown.judge },
+  ].filter((d) => d.value > 0); // Only show non-zero
 
   return (
     <div className="bg-slate-900 rounded-lg p-4 border border-slate-700">
@@ -40,9 +40,7 @@ export const TokenPieChart: React.FC<TokenPieChartProps> = ({ token_breakdown })
               <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
             ))}
           </Pie>
-          <Tooltip 
-            contentStyle={{ backgroundColor: '#1e293b', border: '1px solid #475569' }}
-          />
+          <Tooltip contentStyle={{ backgroundColor: '#1e293b', border: '1px solid #475569' }} />
         </PieChart>
       </ResponsiveContainer>
     </div>

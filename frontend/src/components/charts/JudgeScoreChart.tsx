@@ -2,7 +2,16 @@
  * Judge score line chart using Recharts.
  */
 
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+} from 'recharts';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import type { AttackIteration } from '@/types/api';
 
@@ -52,4 +61,3 @@ export function JudgeScoreChart({ iterations }: JudgeScoreChartProps) {
     </Card>
   );
 }
-

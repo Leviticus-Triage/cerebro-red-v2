@@ -1,6 +1,6 @@
 /**
  * ProgressOverview - Shows experiment progress and key metrics
- * 
+ *
  * Displays progress bar, elapsed time, current iteration, and summary stats.
  */
 
@@ -34,7 +34,7 @@ const formatDuration = (seconds: number): string => {
   const hours = Math.floor(seconds / 3600);
   const minutes = Math.floor((seconds % 3600) / 60);
   const secs = Math.floor(seconds % 60);
-  
+
   if (hours > 0) {
     return `${hours}h ${minutes}m ${secs}s`;
   }
@@ -59,28 +59,29 @@ export const ProgressOverview: React.FC<ProgressOverviewProps> = ({
   successThreshold = 7.0,
 }) => {
   const config = statusConfig[status] || statusConfig.pending;
-  
+
   // Determine failure explanation
   const getFailureExplanation = () => {
     if (status !== 'failed') return null;
-    
+
     if (failureReason) return failureReason;
-    
+
     // IMPORTANT: Check if there were successful iterations - if yes, don't show failure message
     if (successfulIterations > 0) {
       return `Experiment abgeschlossen. ${successfulIterations} erfolgreiche Jailbreak(s) gefunden.`;
     }
-    
+
     // Infer reason from data
     if (successfulIterations === 0 && currentIteration > 0) {
       return `Kein Jailbreak erfolgreich. Alle ${currentIteration} Iterationen hatten einen Score unter ${successThreshold} (Threshold). Das Target-Modell hat allen Angriffen widerstanden. Das ist ein POSITIVES Ergebnis für die Sicherheit!`;
     }
-    
+
     return 'Experiment wurde ohne erfolgreichen Jailbreak beendet.';
   };
-  const estimatedRemaining = totalIterations > 0 && currentIteration > 0
-    ? (elapsedSeconds / currentIteration) * (totalIterations - currentIteration)
-    : 0;
+  const estimatedRemaining =
+    totalIterations > 0 && currentIteration > 0
+      ? (elapsedSeconds / currentIteration) * (totalIterations - currentIteration)
+      : 0;
 
   return (
     <div className="bg-slate-950 rounded-lg border border-slate-800 p-4">
@@ -97,10 +98,12 @@ export const ProgressOverview: React.FC<ProgressOverviewProps> = ({
             </div>
           </div>
         </div>
-        
+
         {/* Connection Status */}
         <div className="flex items-center gap-2">
-          <div className={`w-2 h-2 rounded-full ${isConnected ? 'bg-green-500 animate-pulse' : 'bg-red-500'}`} />
+          <div
+            className={`w-2 h-2 rounded-full ${isConnected ? 'bg-green-500 animate-pulse' : 'bg-red-500'}`}
+          />
           <span className={`text-xs ${isConnected ? 'text-green-400' : 'text-red-400'}`}>
             {isConnected ? 'Live' : 'Disconnected'}
           </span>
@@ -111,7 +114,9 @@ export const ProgressOverview: React.FC<ProgressOverviewProps> = ({
       <div className="mb-4">
         <div className="flex items-center justify-between text-sm mb-1">
           <span className="text-slate-400">Progress</span>
-          <span className="text-slate-300 font-mono">{Math.min(progressPercent, 100).toFixed(1)}%</span>
+          <span className="text-slate-300 font-mono">
+            {Math.min(progressPercent, 100).toFixed(1)}%
+          </span>
         </div>
         <div className="h-3 bg-slate-800 rounded-full overflow-hidden">
           <div
@@ -119,10 +124,10 @@ export const ProgressOverview: React.FC<ProgressOverviewProps> = ({
               status === 'running'
                 ? 'bg-gradient-to-r from-cyan-600 to-cyan-400'
                 : status === 'completed'
-                ? 'bg-gradient-to-r from-green-600 to-green-400'
-                : status === 'failed'
-                ? 'bg-gradient-to-r from-red-600 to-red-400'
-                : 'bg-slate-600'
+                  ? 'bg-gradient-to-r from-green-600 to-green-400'
+                  : status === 'failed'
+                    ? 'bg-gradient-to-r from-red-600 to-red-400'
+                    : 'bg-slate-600'
             }`}
             style={{ width: `${Math.min(progressPercent, 100)}%` }}
           />
@@ -142,9 +147,7 @@ export const ProgressOverview: React.FC<ProgressOverviewProps> = ({
         {/* Elapsed Time */}
         <div className="bg-slate-900/50 rounded-lg p-3">
           <div className="text-xs text-slate-500 mb-1">Elapsed</div>
-          <div className="text-xl font-bold text-slate-200">
-            {formatDuration(elapsedSeconds)}
-          </div>
+          <div className="text-xl font-bold text-slate-200">{formatDuration(elapsedSeconds)}</div>
         </div>
 
         {/* Estimated Remaining */}
@@ -158,13 +161,17 @@ export const ProgressOverview: React.FC<ProgressOverviewProps> = ({
         </div>
 
         {/* Vulnerabilities */}
-        <div className={`rounded-lg p-3 ${
-          vulnerabilitiesFound > 0 ? 'bg-red-950/50' : 'bg-slate-900/50'
-        }`}>
+        <div
+          className={`rounded-lg p-3 ${
+            vulnerabilitiesFound > 0 ? 'bg-red-950/50' : 'bg-slate-900/50'
+          }`}
+        >
           <div className="text-xs text-slate-500 mb-1">Vulnerabilities</div>
-          <div className={`text-xl font-bold ${
-            vulnerabilitiesFound > 0 ? 'text-red-400' : 'text-green-400'
-          }`}>
+          <div
+            className={`text-xl font-bold ${
+              vulnerabilitiesFound > 0 ? 'text-red-400' : 'text-green-400'
+            }`}
+          >
             {vulnerabilitiesFound}
           </div>
         </div>
@@ -175,10 +182,12 @@ export const ProgressOverview: React.FC<ProgressOverviewProps> = ({
         <div className="mt-4 p-3 bg-red-950/30 border border-red-800 rounded-lg">
           <div className="flex items-center gap-2 text-red-400">
             <span className="font-medium">
-              {successfulIterations} successful jailbreak{successfulIterations > 1 ? 's' : ''} detected
+              {successfulIterations} successful jailbreak{successfulIterations > 1 ? 's' : ''}{' '}
+              detected
             </span>
             <span className="text-xs text-red-500">
-              ({((successfulIterations / Math.max(currentIteration, 1)) * 100).toFixed(1)}% success rate)
+              ({((successfulIterations / Math.max(currentIteration, 1)) * 100).toFixed(1)}% success
+              rate)
             </span>
           </div>
         </div>
@@ -190,9 +199,7 @@ export const ProgressOverview: React.FC<ProgressOverviewProps> = ({
           <div className="flex items-start gap-2 text-amber-400">
             <div>
               <span className="font-medium block mb-1">Experiment Status: Failed</span>
-              <span className="text-sm text-amber-300/80">
-                {getFailureExplanation()}
-              </span>
+              <span className="text-sm text-amber-300/80">{getFailureExplanation()}</span>
             </div>
           </div>
         </div>

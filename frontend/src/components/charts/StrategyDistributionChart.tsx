@@ -9,7 +9,16 @@ interface StrategyDistributionChartProps {
   data: Record<string, number>;
 }
 
-const COLORS = ['#3b82f6', '#8b5cf6', '#ec4899', '#f59e0b', '#10b981', '#06b6d4', '#6366f1', '#f43f5e'];
+const COLORS = [
+  '#3b82f6',
+  '#8b5cf6',
+  '#ec4899',
+  '#f59e0b',
+  '#10b981',
+  '#06b6d4',
+  '#6366f1',
+  '#f43f5e',
+];
 
 export function StrategyDistributionChart({ data }: StrategyDistributionChartProps) {
   // Filter out strategies with 0 values and sort by value descending
@@ -63,4 +72,3 @@ export function StrategyDistributionChart({ data }: StrategyDistributionChartPro
     </Card>
   );
 }
-

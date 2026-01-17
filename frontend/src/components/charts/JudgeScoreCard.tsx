@@ -42,7 +42,8 @@ export function JudgeScoreCard({ iterations }: JudgeScoreCardProps) {
   const lastAvg = lastThree.reduce((a, b) => a + b, 0) / lastThree.length;
   const trend = lastAvg - firstAvg;
   const TrendIcon = trend > 0.5 ? TrendingUp : trend < -0.5 ? TrendingDown : Minus;
-  const trendColor = trend > 0.5 ? 'text-green-500' : trend < -0.5 ? 'text-red-500' : 'text-gray-500';
+  const trendColor =
+    trend > 0.5 ? 'text-green-500' : trend < -0.5 ? 'text-red-500' : 'text-gray-500';
 
   // Strategy effectiveness
   const strategyScores: Record<string, number[]> = {};
@@ -58,9 +59,7 @@ export function JudgeScoreCard({ iterations }: JudgeScoreCardProps) {
     strategyAvg[strategy] = scores.reduce((a, b) => a + b, 0) / scores.length;
   });
 
-  const bestStrategy = Object.entries(strategyAvg).reduce((a, b) => 
-    a[1] > b[1] ? a : b
-  );
+  const bestStrategy = Object.entries(strategyAvg).reduce((a, b) => (a[1] > b[1] ? a : b));
 
   return (
     <Card>
@@ -91,7 +90,8 @@ export function JudgeScoreCard({ iterations }: JudgeScoreCardProps) {
           <span className="text-sm text-muted-foreground">Trend:</span>
           <TrendIcon className={`h-4 w-4 ${trendColor}`} />
           <span className={`text-sm font-medium ${trendColor}`}>
-            {trend > 0 ? '+' : ''}{trend.toFixed(2)} points
+            {trend > 0 ? '+' : ''}
+            {trend.toFixed(2)} points
           </span>
           <span className="text-xs text-muted-foreground">
             (comparing last 3 vs first 3 iterations)
@@ -103,9 +103,7 @@ export function JudgeScoreCard({ iterations }: JudgeScoreCardProps) {
             <p className="text-sm text-muted-foreground mb-2">Most Effective Strategy</p>
             <div className="flex items-center justify-between">
               <Badge variant="outline">{bestStrategy[0]}</Badge>
-              <span className="text-sm font-semibold">
-                Avg Score: {bestStrategy[1].toFixed(2)}
-              </span>
+              <span className="text-sm font-semibold">Avg Score: {bestStrategy[1].toFixed(2)}</span>
             </div>
           </div>
         )}
@@ -113,4 +111,3 @@ export function JudgeScoreCard({ iterations }: JudgeScoreCardProps) {
     </Card>
   );
 }
-

@@ -23,12 +23,12 @@ export function AttackProgress({ experimentId }: AttackProgressProps) {
   const [currentStrategy, setCurrentStrategy] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  
+
   // Use centralized progress hook
   const { progressPercent, displayStatus } = useExperimentProgress({
     currentIteration: statusData?.current_iteration || 0,
     totalIterations: statusData?.total_iterations || 0,
-    backendStatus: statusData?.status as ExperimentStatus || 'pending',
+    backendStatus: (statusData?.status as ExperimentStatus) || 'pending',
   });
 
   // Fetch status from API (for initial load and when WebSocket is not connected)
@@ -37,10 +37,10 @@ export function AttackProgress({ experimentId }: AttackProgressProps) {
       try {
         setIsLoading(true);
         setError(null);
-        
+
         const statusData = await apiClient.getScanStatus(experimentId);
         console.log('[AttackProgress] Fetched status:', statusData);
-        
+
         // Robuste Validierung
         if (!statusData) {
           console.warn('[AttackProgress] Status data is null/undefined');
@@ -48,27 +48,29 @@ export function AttackProgress({ experimentId }: AttackProgressProps) {
           setIsLoading(false);
           return;
         }
-        
+
         // Validiere dass alle erforderlichen Felder vorhanden sind
-        if (typeof statusData.current_iteration !== 'number' || 
-            typeof statusData.total_iterations !== 'number') {
+        if (
+          typeof statusData.current_iteration !== 'number' ||
+          typeof statusData.total_iterations !== 'number'
+        ) {
           console.error('[AttackProgress] Invalid status data structure:', statusData);
           setError('Invalid status data structure');
           setIsLoading(false);
           return;
         }
-        
+
         // Store status data (hook will calculate progress and status)
         setStatusData(statusData);
         setCurrentIteration(statusData.current_iteration);
         setTotalIterations(statusData.total_iterations);
         setIsLoading(false);
-        
+
         console.log('[AttackProgress] Updated state:', {
           progress: statusData.progress_percent,
           current: statusData.current_iteration,
           total: statusData.total_iterations,
-          status: statusData.status
+          status: statusData.status,
         });
       } catch (error) {
         console.error('[AttackProgress] Failed to fetch scan status:', error);
@@ -155,7 +157,9 @@ export function AttackProgress({ experimentId }: AttackProgressProps) {
           <>
             <div>
               <div className="flex justify-between text-sm mb-2">
-                <span>Iteration {currentIteration} / {totalIterations}</span>
+                <span>
+                  Iteration {currentIteration} / {totalIterations}
+                </span>
                 <span>{progressPercent.toFixed(1)}%</span>
               </div>
               <Progress value={progressPercent} />
@@ -172,4 +176,3 @@ export function AttackProgress({ experimentId }: AttackProgressProps) {
     </Card>
   );
 }
-

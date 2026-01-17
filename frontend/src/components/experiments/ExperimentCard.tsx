@@ -37,7 +37,9 @@ export function ExperimentCard({ experiment }: ExperimentCardProps) {
       // Navigate to the new experiment
       navigate(`/experiments/${newExperiment.experiment_id}`);
     } catch (error) {
-      toast.error(`Fehler beim Wiederholen des Experiments: ${error instanceof Error ? error.message : 'Unbekannter Fehler'}`);
+      toast.error(
+        `Fehler beim Wiederholen des Experiments: ${error instanceof Error ? error.message : 'Unbekannter Fehler'}`
+      );
     } finally {
       setIsRepeating(false);
     }
@@ -86,9 +88,7 @@ export function ExperimentCard({ experiment }: ExperimentCardProps) {
               <span>{formatDate(experiment.created_at)}</span>
             </div>
             <div className="flex items-center gap-2">
-              <Badge variant="outline">
-                {experiment.strategies.length} strategies
-              </Badge>
+              <Badge variant="outline">{experiment.strategies.length} strategies</Badge>
               <div className="flex items-center gap-1">
                 {experiment.status === 'running' && (
                   <div title="Pause">
@@ -112,7 +112,7 @@ export function ExperimentCard({ experiment }: ExperimentCardProps) {
                     onClick={handleRepeat}
                     disabled={isDemoMode || isRepeating}
                     className="h-7 px-2 disabled:opacity-50 disabled:cursor-not-allowed"
-                    title={isDemoMode ? "Demo mode - read only" : "Experiment wiederholen"}
+                    title={isDemoMode ? 'Demo mode - read only' : 'Experiment wiederholen'}
                   >
                     <Repeat className={`h-3.5 w-3.5 ${isRepeating ? 'animate-spin' : ''}`} />
                   </Button>
@@ -125,4 +125,3 @@ export function ExperimentCard({ experiment }: ExperimentCardProps) {
     </Link>
   );
 }
-

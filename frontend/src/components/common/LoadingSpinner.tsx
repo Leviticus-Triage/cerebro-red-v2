@@ -21,4 +21,3 @@ export function LoadingSpinner({ className, size = 'md' }: LoadingSpinnerProps) 
     <Loader2 className={cn('animate-spin text-muted-foreground', sizeClasses[size], className)} />
   );
 }
-

@@ -1,6 +1,6 @@
 /**
  * CodeFlowPanel - Displays code execution flow for verbosity level 3
- * 
+ *
  * Shows:
  * - Function calls with parameters
  * - Strategy selections with reasoning
@@ -24,14 +24,22 @@ const CodeFlowPanel: React.FC<CodeFlowPanelProps> = ({ events }) => {
 
   const getEventColor = (eventType: string) => {
     switch (eventType) {
-      case 'strategy_selection': return 'text-cyan-400';
-      case 'mutation_start': return 'text-yellow-400';
-      case 'mutation_end': return 'text-green-400';
-      case 'judge_start': return 'text-purple-400';
-      case 'judge_end': return 'text-blue-400';
-      case 'decision_point': return 'text-orange-400';
-      case 'function_call': return 'text-indigo-400';
-      default: return 'text-slate-400';
+      case 'strategy_selection':
+        return 'text-cyan-400';
+      case 'mutation_start':
+        return 'text-yellow-400';
+      case 'mutation_end':
+        return 'text-green-400';
+      case 'judge_start':
+        return 'text-purple-400';
+      case 'judge_end':
+        return 'text-blue-400';
+      case 'decision_point':
+        return 'text-orange-400';
+      case 'function_call':
+        return 'text-indigo-400';
+      default:
+        return 'text-slate-400';
     }
   };
 
@@ -77,9 +85,7 @@ const CodeFlowPanel: React.FC<CodeFlowPanelProps> = ({ events }) => {
                     {event.event_type.replace(/_/g, ' ').toUpperCase()}
                   </span>
                   {event.iteration && (
-                    <span className="text-xs text-slate-500">
-                      Iteration {event.iteration}
-                    </span>
+                    <span className="text-xs text-slate-500">Iteration {event.iteration}</span>
                   )}
                   <span className="text-xs text-slate-600 ml-auto">
                     {new Date(event.timestamp).toLocaleTimeString()}
@@ -92,12 +98,11 @@ const CodeFlowPanel: React.FC<CodeFlowPanelProps> = ({ events }) => {
                     <p className="text-sm text-slate-300">
                       Strategy: <span className="text-cyan-400 font-mono">{event.strategy}</span>
                     </p>
-                    {event.reasoning && (
-                      <p className="text-xs text-slate-400">{event.reasoning}</p>
-                    )}
+                    {event.reasoning && <p className="text-xs text-slate-400">{event.reasoning}</p>}
                     {event.previous_score !== undefined && (
                       <p className="text-xs text-slate-500">
-                        Previous Score: {event.previous_score.toFixed(2)} | Threshold: {event.threshold?.toFixed(2)}
+                        Previous Score: {event.previous_score.toFixed(2)} | Threshold:{' '}
+                        {event.threshold?.toFixed(2)}
                       </p>
                     )}
                   </div>
@@ -117,7 +122,8 @@ const CodeFlowPanel: React.FC<CodeFlowPanelProps> = ({ events }) => {
                 {event.event_type === 'mutation_end' && (
                   <div className="space-y-1">
                     <p className="text-sm text-slate-300">
-                      Mutated in <span className="text-green-400">{event.latency_ms?.toFixed(0)}ms</span>
+                      Mutated in{' '}
+                      <span className="text-green-400">{event.latency_ms?.toFixed(0)}ms</span>
                     </p>
                     <p className="text-xs text-slate-400 font-mono truncate">
                       {event.mutated_prompt}
@@ -137,14 +143,20 @@ const CodeFlowPanel: React.FC<CodeFlowPanelProps> = ({ events }) => {
                 {event.event_type === 'judge_end' && (
                   <div className="space-y-1">
                     <p className="text-sm text-slate-300">
-                      Score: <span className="text-blue-400 font-bold">{event.overall_score?.toFixed(2)}/10</span>
-                      <span className="text-slate-500 ml-2">({event.latency_ms?.toFixed(0)}ms)</span>
+                      Score:{' '}
+                      <span className="text-blue-400 font-bold">
+                        {event.overall_score?.toFixed(2)}/10
+                      </span>
+                      <span className="text-slate-500 ml-2">
+                        ({event.latency_ms?.toFixed(0)}ms)
+                      </span>
                     </p>
                     {event.all_scores && (
                       <div className="grid grid-cols-2 gap-1 text-xs text-slate-500 mt-2">
                         {Object.entries(event.all_scores).map(([key, value]) => (
                           <div key={key}>
-                            {key}: <span className="text-slate-400">{(value as number).toFixed(1)}</span>
+                            {key}:{' '}
+                            <span className="text-slate-400">{(value as number).toFixed(1)}</span>
                           </div>
                         ))}
                       </div>
@@ -160,16 +172,15 @@ const CodeFlowPanel: React.FC<CodeFlowPanelProps> = ({ events }) => {
                     <p className="text-sm text-slate-300">
                       {event.decision_result ? 'PASS' : 'FAIL'} {event.description}
                     </p>
-                    <p className="text-xs text-slate-400 font-mono">
-                      Condition: {event.condition}
-                    </p>
+                    <p className="text-xs text-slate-400 font-mono">Condition: {event.condition}</p>
                   </div>
                 )}
 
                 {event.event_type === 'function_call' && (
                   <div className="space-y-2">
                     <p className="text-sm text-slate-300">
-                      Function: <span className="text-indigo-400 font-mono">{event.function_name}</span>
+                      Function:{' '}
+                      <span className="text-indigo-400 font-mono">{event.function_name}</span>
                     </p>
                     {event.parameters && Object.keys(event.parameters).length > 0 && (
                       <div className="bg-slate-900 rounded p-2 border border-slate-700">
@@ -183,8 +194,8 @@ const CodeFlowPanel: React.FC<CodeFlowPanelProps> = ({ events }) => {
                       <div className="bg-slate-900 rounded p-2 border border-slate-700">
                         <p className="text-xs text-slate-400 mb-1">Result:</p>
                         <pre className="text-xs text-slate-300 font-mono overflow-x-auto">
-                          {typeof event.result === 'string' 
-                            ? event.result 
+                          {typeof event.result === 'string'
+                            ? event.result
                             : JSON.stringify(event.result, null, 2)}
                         </pre>
                       </div>

@@ -32,28 +32,32 @@ const TOUR_STEPS: TourStep[] = [
   {
     id: 'step-1-running',
     title: 'Running Experiment',
-    description: 'This experiment is actively testing the target LLM with various attack strategies. Watch the progress in real-time.',
+    description:
+      'This experiment is actively testing the target LLM with various attack strategies. Watch the progress in real-time.',
     target: '[data-tour="experiment-running"]',
     position: 'bottom',
   },
   {
     id: 'step-2-failed',
     title: 'Failed Experiment',
-    description: 'This experiment encountered an error during execution. Click to view detailed error logs and troubleshooting information.',
+    description:
+      'This experiment encountered an error during execution. Click to view detailed error logs and troubleshooting information.',
     target: '[data-tour="experiment-failed"]',
     position: 'bottom',
   },
   {
     id: 'step-3-completed',
     title: 'Completed Experiment',
-    description: 'This experiment has finished successfully. Click to explore discovered vulnerabilities and attack results.',
+    description:
+      'This experiment has finished successfully. Click to explore discovered vulnerabilities and attack results.',
     target: '[data-tour="experiment-completed"]',
     position: 'bottom',
   },
   {
     id: 'step-4-monitoring',
     title: 'Real-Time Monitoring',
-    description: 'Monitor experiment progress, view live attack iterations, and track vulnerability discoveries in the dashboard.',
+    description:
+      'Monitor experiment progress, view live attack iterations, and track vulnerability discoveries in the dashboard.',
     target: '[data-tour="monitoring-section"]',
     position: 'left',
   },

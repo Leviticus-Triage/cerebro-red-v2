@@ -1,6 +1,6 @@
 /**
  * IterationResultsPanel - Shows detailed results for each iteration
- * 
+ *
  * Displays prompts, responses, scores, and success status for each iteration.
  */
 
@@ -111,37 +111,33 @@ export const IterationResultsPanel: React.FC<IterationResultsPanelProps> = ({
                   >
                     <div className="flex items-center gap-2">
                       <span className="text-xl">{scoreEmoji}</span>
-                      <span className="font-bold text-slate-200">
-                        #{iter.iteration_number}
-                      </span>
+                      <span className="font-bold text-slate-200">#{iter.iteration_number}</span>
                     </div>
-                    
+
                     <span className="px-2 py-0.5 text-xs bg-slate-700 text-slate-300 rounded">
                       {iter.strategy}
                     </span>
-                    
+
                     <div className={`px-2 py-0.5 text-sm font-mono rounded ${scoreColor}`}>
                       Score: {iter.judge_score.toFixed(2)}
                     </div>
-                    
+
                     {/* Token badge */}
                     {iter.token_breakdown && iter.token_breakdown.total > 0 && (
                       <span className="text-xs text-slate-500">
                         {iter.token_breakdown.total} tokens
                       </span>
                     )}
-                    
+
                     <span className="text-xs text-slate-500">
                       {iter.latency_breakdown?.total_ms.toFixed(0) || iter.latency_ms.toFixed(0)}ms
                     </span>
-                    
+
                     <span className="text-xs text-slate-500 ml-auto">
                       {formatTimestamp(iter.timestamp)}
                     </span>
-                    
-                    <span className="text-slate-400">
-                      {isExpanded ? '▼' : '▶'}
-                    </span>
+
+                    <span className="text-slate-400">{isExpanded ? '▼' : '▶'}</span>
                   </div>
 
                   {/* Expanded Content */}
@@ -178,24 +174,24 @@ export const IterationResultsPanel: React.FC<IterationResultsPanelProps> = ({
                           </div>
                         </div>
                       )}
-                      
+
                       {/* Charts Section */}
                       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mt-4">
                         {/* Latency Breakdown Chart */}
                         {iter.latency_breakdown && (
                           <LatencyBreakdownChart latency_breakdown={iter.latency_breakdown} />
                         )}
-                        
+
                         {/* Token Pie Chart */}
                         {iter.token_breakdown && iter.token_breakdown.total > 0 && (
                           <TokenPieChart token_breakdown={iter.token_breakdown} />
                         )}
                       </div>
-                      
+
                       {/* Judge Scores Radar (Full Width) */}
                       {iter.sub_scores && (
-                        <JudgeScoresRadar 
-                          sub_scores={iter.sub_scores} 
+                        <JudgeScoresRadar
+                          sub_scores={iter.sub_scores}
                           overall_score={iter.judge_score}
                           confidence={iter.confidence}
                         />
@@ -248,7 +244,9 @@ export const IterationResultsPanel: React.FC<IterationResultsPanelProps> = ({
                         )}
                       </td>
                       <td className="px-3 py-2 text-slate-400">{iter.latency_ms.toFixed(0)}ms</td>
-                      <td className="px-3 py-2 text-slate-500">{formatTimestamp(iter.timestamp)}</td>
+                      <td className="px-3 py-2 text-slate-500">
+                        {formatTimestamp(iter.timestamp)}
+                      </td>
                     </tr>
                   );
                 })}

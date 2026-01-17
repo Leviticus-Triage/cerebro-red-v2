@@ -1,6 +1,6 @@
 /**
  * Template selector component for experiment form.
- * 
+ *
  * Allows loading saved templates into the experiment form.
  */
 
@@ -23,24 +23,28 @@ export function TemplateSelector({ onTemplateLoad }: TemplateSelectorProps) {
 
   const handleLoadTemplate = async () => {
     if (!selectedTemplateId) return;
-    
+
     try {
       const template = await useTemplate.mutateAsync(selectedTemplateId);
       onTemplateLoad(template.config);
-      
+
       // Show success notification
-      import('@/lib/toast').then(({ toast }) => {
-        toast.success(`Template "${template.name}" loaded successfully`);
-      }).catch(() => {
-        // Toast not available, use console
-        console.log(`Template "${template.name}" loaded successfully`);
-      });
+      import('@/lib/toast')
+        .then(({ toast }) => {
+          toast.success(`Template "${template.name}" loaded successfully`);
+        })
+        .catch(() => {
+          // Toast not available, use console
+          console.log(`Template "${template.name}" loaded successfully`);
+        });
     } catch (error) {
-      import('@/lib/toast').then(({ toast }) => {
-        toast.error('Failed to load template');
-      }).catch(() => {
-        console.error('Failed to load template', error);
-      });
+      import('@/lib/toast')
+        .then(({ toast }) => {
+          toast.error('Failed to load template');
+        })
+        .catch(() => {
+          console.error('Failed to load template', error);
+        });
     }
   };
 
@@ -76,7 +80,8 @@ export function TemplateSelector({ onTemplateLoad }: TemplateSelectorProps) {
             <option value="">-- Select a template --</option>
             {templates.map((template) => (
               <option key={template.template_id} value={template.template_id}>
-                {template.name} ({template.config.strategies.length} strategies, used {template.usage_count || 0}x)
+                {template.name} ({template.config.strategies.length} strategies, used{' '}
+                {template.usage_count || 0}x)
               </option>
             ))}
           </select>
@@ -85,9 +90,9 @@ export function TemplateSelector({ onTemplateLoad }: TemplateSelectorProps) {
         {selectedTemplateId && (
           <div className="space-y-2">
             {(() => {
-              const template = templates.find(t => t.template_id === selectedTemplateId);
+              const template = templates.find((t) => t.template_id === selectedTemplateId);
               if (!template) return null;
-              
+
               return (
                 <div className="p-3 bg-gray-50 dark:bg-gray-800 rounded-md space-y-2">
                   <p className="text-sm">{template.description || 'No description'}</p>
@@ -99,7 +104,8 @@ export function TemplateSelector({ onTemplateLoad }: TemplateSelectorProps) {
                     ))}
                   </div>
                   <div className="text-xs text-gray-500">
-                    Target: {template.config.target_model_provider}/{template.config.target_model_name}
+                    Target: {template.config.target_model_provider}/
+                    {template.config.target_model_name}
                   </div>
                 </div>
               );

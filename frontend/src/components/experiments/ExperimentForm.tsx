@@ -33,13 +33,13 @@ function generateUUID(): string {
 interface ExperimentFormProps {
   onSubmit: (data: any) => void;
   isLoading?: boolean;
-  initialConfig?: ExperimentConfig;  // NEW: For template loading
+  initialConfig?: ExperimentConfig; // NEW: For template loading
 }
 
 export function ExperimentForm({ onSubmit, isLoading, initialConfig }: ExperimentFormProps) {
   const createTemplate = useCreateTemplate();
   const { data: templatesData } = useTemplates(1, 100);
-  
+
   const [formData, setFormData] = useState({
     name: initialConfig?.name || '',
     description: initialConfig?.description || '',
@@ -50,7 +50,7 @@ export function ExperimentForm({ onSubmit, isLoading, initialConfig }: Experimen
     judge_model_provider: initialConfig?.judge_model_provider || LLMProvider.OLLAMA,
     judge_model_name: initialConfig?.judge_model_name || '',
     initial_prompts: initialConfig?.initial_prompts || [''],
-    strategies: initialConfig?.strategies || [] as AttackStrategyType[],
+    strategies: initialConfig?.strategies || ([] as AttackStrategyType[]),
     max_iterations: initialConfig?.max_iterations || 20,
     max_concurrent_attacks: initialConfig?.max_concurrent_attacks || 5,
     success_threshold: initialConfig?.success_threshold || 7.0,
@@ -83,7 +83,7 @@ export function ExperimentForm({ onSubmit, isLoading, initialConfig }: Experimen
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     const config = {
       experiment_id: generateUUID(),
       name: formData.name,
@@ -94,7 +94,7 @@ export function ExperimentForm({ onSubmit, isLoading, initialConfig }: Experimen
       attacker_model_name: formData.attacker_model_name,
       judge_model_provider: formData.judge_model_provider,
       judge_model_name: formData.judge_model_name,
-      initial_prompts: formData.initial_prompts.filter(p => p.trim()),
+      initial_prompts: formData.initial_prompts.filter((p) => p.trim()),
       strategies: formData.strategies,
       max_iterations: formData.max_iterations,
       max_concurrent_attacks: formData.max_concurrent_attacks,
@@ -106,53 +106,65 @@ export function ExperimentForm({ onSubmit, isLoading, initialConfig }: Experimen
   };
 
   const toggleStrategy = (strategy: AttackStrategyType) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       strategies: prev.strategies.includes(strategy)
-        ? prev.strategies.filter(s => s !== strategy)
+        ? prev.strategies.filter((s) => s !== strategy)
         : [...prev.strategies, strategy],
     }));
   };
 
   const addPrompt = () => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       initial_prompts: [...prev.initial_prompts, ''],
     }));
   };
 
   const updatePrompt = (index: number, value: string) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      initial_prompts: prev.initial_prompts.map((p, i) => i === index ? value : p),
+      initial_prompts: prev.initial_prompts.map((p, i) => (i === index ? value : p)),
     }));
   };
 
   const handleSaveAsTemplate = async () => {
     // Validate required fields
-    if (!formData.name || !formData.target_model_name || !formData.attacker_model_name || !formData.judge_model_name) {
-      alert('Please fill in all required fields (Experiment Name, Target Model, Attacker Model, Judge Model) before saving as template.');
+    if (
+      !formData.name ||
+      !formData.target_model_name ||
+      !formData.attacker_model_name ||
+      !formData.judge_model_name
+    ) {
+      alert(
+        'Please fill in all required fields (Experiment Name, Target Model, Attacker Model, Judge Model) before saving as template.'
+      );
       return;
     }
-    
+
     if (formData.strategies.length === 0) {
       alert('Please select at least one attack strategy before saving as template.');
       return;
     }
-    
-    if (formData.initial_prompts.filter(p => p.trim()).length === 0) {
+
+    if (formData.initial_prompts.filter((p) => p.trim()).length === 0) {
       alert('Please add at least one initial prompt before saving as template.');
       return;
     }
-    
+
     const templateName = prompt('Enter template name:');
     if (!templateName) return;
-    
+
     const templateDescription = prompt('Enter template description (optional):');
     const tagsInput = prompt('Enter tags (comma-separated, optional):');
-    
-    const tags = tagsInput ? tagsInput.split(',').map(t => t.trim()).filter(Boolean) : [];
-    
+
+    const tags = tagsInput
+      ? tagsInput
+          .split(',')
+          .map((t) => t.trim())
+          .filter(Boolean)
+      : [];
+
     try {
       await createTemplate.mutateAsync({
         name: templateName,
@@ -167,7 +179,7 @@ export function ExperimentForm({ onSubmit, isLoading, initialConfig }: Experimen
           attacker_model_name: formData.attacker_model_name,
           judge_model_provider: formData.judge_model_provider,
           judge_model_name: formData.judge_model_name,
-          initial_prompts: formData.initial_prompts.filter(p => p.trim()),
+          initial_prompts: formData.initial_prompts.filter((p) => p.trim()),
           strategies: formData.strategies,
           max_iterations: formData.max_iterations,
           max_concurrent_attacks: formData.max_concurrent_attacks,
@@ -177,18 +189,22 @@ export function ExperimentForm({ onSubmit, isLoading, initialConfig }: Experimen
         tags,
         is_public: false,
       });
-      
-      import('@/lib/toast').then(({ toast }) => {
-        toast.success('Template saved successfully');
-      }).catch(() => {
-        console.log('Template saved successfully');
-      });
+
+      import('@/lib/toast')
+        .then(({ toast }) => {
+          toast.success('Template saved successfully');
+        })
+        .catch(() => {
+          console.log('Template saved successfully');
+        });
     } catch (error) {
-      import('@/lib/toast').then(({ toast }) => {
-        toast.error('Failed to save template');
-      }).catch(() => {
-        console.error('Failed to save template', error);
-      });
+      import('@/lib/toast')
+        .then(({ toast }) => {
+          toast.error('Failed to save template');
+        })
+        .catch(() => {
+          console.error('Failed to save template', error);
+        });
     }
   };
 
@@ -215,17 +231,21 @@ export function ExperimentForm({ onSubmit, isLoading, initialConfig }: Experimen
   const handleTemplateImport = async (template: any) => {
     try {
       await createTemplate.mutateAsync(template);
-      import('@/lib/toast').then(({ toast }) => {
-        toast.success(`Template "${template.name}" imported successfully`);
-      }).catch(() => {
-        console.log(`Template "${template.name}" imported successfully`);
-      });
+      import('@/lib/toast')
+        .then(({ toast }) => {
+          toast.success(`Template "${template.name}" imported successfully`);
+        })
+        .catch(() => {
+          console.log(`Template "${template.name}" imported successfully`);
+        });
     } catch (error) {
-      import('@/lib/toast').then(({ toast }) => {
-        toast.error('Failed to import template');
-      }).catch(() => {
-        console.error('Failed to import template', error);
-      });
+      import('@/lib/toast')
+        .then(({ toast }) => {
+          toast.error('Failed to import template');
+        })
+        .catch(() => {
+          console.error('Failed to import template', error);
+        });
     }
   };
 
@@ -233,19 +253,19 @@ export function ExperimentForm({ onSubmit, isLoading, initialConfig }: Experimen
     <form onSubmit={handleSubmit} className="space-y-6">
       {/* Template Selector */}
       <TemplateSelector onTemplateLoad={handleTemplateLoad} />
-      
+
       {/* Import/Export */}
-      <TemplateImportExport 
+      <TemplateImportExport
         templates={templatesData?.items || []}
         onImport={handleTemplateImport}
       />
-      
+
       {/* Verbosity Level */}
-      <VerbositySelector 
+      <VerbositySelector
         value={formData.verbosity}
-        onChange={(value) => setFormData(prev => ({ ...prev, verbosity: value }))}
+        onChange={(value) => setFormData((prev) => ({ ...prev, verbosity: value }))}
       />
-      
+
       {/* Save as Template Button */}
       <div className="flex justify-end">
         <DemoTooltip message="Demo mode is read-only. Deploy locally to save templates." side="top">
@@ -260,7 +280,7 @@ export function ExperimentForm({ onSubmit, isLoading, initialConfig }: Experimen
           </Button>
         </DemoTooltip>
       </div>
-      
+
       <Card>
         <CardHeader>
           <CardTitle>Basic Information</CardTitle>
@@ -271,7 +291,7 @@ export function ExperimentForm({ onSubmit, isLoading, initialConfig }: Experimen
             <Input
               id="name"
               value={formData.name}
-              onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
+              onChange={(e) => setFormData((prev) => ({ ...prev, name: e.target.value }))}
               required
               placeholder="e.g., LLM Safety Test - Qwen3"
             />
@@ -282,7 +302,7 @@ export function ExperimentForm({ onSubmit, isLoading, initialConfig }: Experimen
             <Textarea
               id="description"
               value={formData.description}
-              onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
+              onChange={(e) => setFormData((prev) => ({ ...prev, description: e.target.value }))}
               placeholder="Optional description of the experiment"
               rows={3}
             />
@@ -300,10 +320,17 @@ export function ExperimentForm({ onSubmit, isLoading, initialConfig }: Experimen
               <Label>Target Model Provider</Label>
               <Select
                 value={formData.target_model_provider}
-                onChange={(e) => setFormData(prev => ({ ...prev, target_model_provider: e.target.value as LLMProvider }))}
+                onChange={(e) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    target_model_provider: e.target.value as LLMProvider,
+                  }))
+                }
               >
                 {Object.values(LLMProvider).map((provider) => (
-                  <option key={provider} value={provider}>{provider}</option>
+                  <option key={provider} value={provider}>
+                    {provider}
+                  </option>
                 ))}
               </Select>
             </div>
@@ -311,7 +338,9 @@ export function ExperimentForm({ onSubmit, isLoading, initialConfig }: Experimen
               <Label>Target Model Name *</Label>
               <Input
                 value={formData.target_model_name}
-                onChange={(e) => setFormData(prev => ({ ...prev, target_model_name: e.target.value }))}
+                onChange={(e) =>
+                  setFormData((prev) => ({ ...prev, target_model_name: e.target.value }))
+                }
                 required
                 placeholder="e.g., qwen3:8b"
               />
@@ -323,10 +352,17 @@ export function ExperimentForm({ onSubmit, isLoading, initialConfig }: Experimen
               <Label>Attacker Model Provider</Label>
               <Select
                 value={formData.attacker_model_provider}
-                onChange={(e) => setFormData(prev => ({ ...prev, attacker_model_provider: e.target.value as LLMProvider }))}
+                onChange={(e) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    attacker_model_provider: e.target.value as LLMProvider,
+                  }))
+                }
               >
                 {Object.values(LLMProvider).map((provider) => (
-                  <option key={provider} value={provider}>{provider}</option>
+                  <option key={provider} value={provider}>
+                    {provider}
+                  </option>
                 ))}
               </Select>
             </div>
@@ -334,7 +370,9 @@ export function ExperimentForm({ onSubmit, isLoading, initialConfig }: Experimen
               <Label>Attacker Model Name *</Label>
               <Input
                 value={formData.attacker_model_name}
-                onChange={(e) => setFormData(prev => ({ ...prev, attacker_model_name: e.target.value }))}
+                onChange={(e) =>
+                  setFormData((prev) => ({ ...prev, attacker_model_name: e.target.value }))
+                }
                 required
                 placeholder="e.g., qwen3:8b"
               />
@@ -346,10 +384,17 @@ export function ExperimentForm({ onSubmit, isLoading, initialConfig }: Experimen
               <Label>Judge Model Provider</Label>
               <Select
                 value={formData.judge_model_provider}
-                onChange={(e) => setFormData(prev => ({ ...prev, judge_model_provider: e.target.value as LLMProvider }))}
+                onChange={(e) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    judge_model_provider: e.target.value as LLMProvider,
+                  }))
+                }
               >
                 {Object.values(LLMProvider).map((provider) => (
-                  <option key={provider} value={provider}>{provider}</option>
+                  <option key={provider} value={provider}>
+                    {provider}
+                  </option>
                 ))}
               </Select>
             </div>
@@ -357,7 +402,9 @@ export function ExperimentForm({ onSubmit, isLoading, initialConfig }: Experimen
               <Label>Judge Model Name *</Label>
               <Input
                 value={formData.judge_model_name}
-                onChange={(e) => setFormData(prev => ({ ...prev, judge_model_name: e.target.value }))}
+                onChange={(e) =>
+                  setFormData((prev) => ({ ...prev, judge_model_name: e.target.value }))
+                }
                 required
                 placeholder="e.g., qwen3:14b"
               />
@@ -382,7 +429,10 @@ export function ExperimentForm({ onSubmit, isLoading, initialConfig }: Experimen
               />
             </div>
           ))}
-          <DemoTooltip message="Demo mode is read-only. Deploy locally to modify experiments." side="top">
+          <DemoTooltip
+            message="Demo mode is read-only. Deploy locally to modify experiments."
+            side="top"
+          >
             <Button
               type="button"
               variant="outline"
@@ -430,7 +480,12 @@ export function ExperimentForm({ onSubmit, isLoading, initialConfig }: Experimen
                 min={1}
                 max={100}
                 value={formData.max_iterations}
-                onChange={(e) => setFormData(prev => ({ ...prev, max_iterations: parseInt(e.target.value) || 20 }))}
+                onChange={(e) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    max_iterations: parseInt(e.target.value) || 20,
+                  }))
+                }
               />
             </div>
             <div className="space-y-2">
@@ -441,7 +496,12 @@ export function ExperimentForm({ onSubmit, isLoading, initialConfig }: Experimen
                 max={10}
                 step="0.1"
                 value={formData.success_threshold}
-                onChange={(e) => setFormData(prev => ({ ...prev, success_threshold: parseFloat(e.target.value) || 7.0 }))}
+                onChange={(e) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    success_threshold: parseFloat(e.target.value) || 7.0,
+                  }))
+                }
               />
             </div>
             <div className="space-y-2">
@@ -450,14 +510,22 @@ export function ExperimentForm({ onSubmit, isLoading, initialConfig }: Experimen
                 type="number"
                 min={1}
                 value={formData.timeout_seconds}
-                onChange={(e) => setFormData(prev => ({ ...prev, timeout_seconds: parseInt(e.target.value) || 3600 }))}
+                onChange={(e) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    timeout_seconds: parseInt(e.target.value) || 3600,
+                  }))
+                }
               />
             </div>
           </div>
         </CardContent>
       </Card>
 
-      <DemoTooltip message="Demo mode is read-only. Deploy locally to create experiments." side="top">
+      <DemoTooltip
+        message="Demo mode is read-only. Deploy locally to create experiments."
+        side="top"
+      >
         <Button
           type="submit"
           disabled={isDemoMode || isLoading}
@@ -469,4 +537,3 @@ export function ExperimentForm({ onSubmit, isLoading, initialConfig }: Experimen
     </form>
   );
 }
-

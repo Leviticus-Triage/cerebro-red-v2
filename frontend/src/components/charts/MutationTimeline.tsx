@@ -2,7 +2,16 @@
  * Mutation timeline chart showing prompt mutations over iterations.
  */
 
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+} from 'recharts';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import type { AttackIteration } from '@/types/api';
 
@@ -17,7 +26,7 @@ export function MutationTimeline({ iterations }: MutationTimelineProps) {
     const strategyCount = previousIterations.filter(
       (prev) => prev.strategy_used === it.strategy_used
     ).length;
-    
+
     return {
       iteration: it.iteration_number,
       timestamp: new Date(it.timestamp).getTime(),
@@ -51,21 +60,21 @@ export function MutationTimeline({ iterations }: MutationTimelineProps) {
         <ResponsiveContainer width="100%" height={300}>
           <LineChart data={data}>
             <CartesianGrid strokeDasharray="3 3" />
-            <XAxis 
-              dataKey="iteration" 
+            <XAxis
+              dataKey="iteration"
               label={{ value: 'Iteration', position: 'insideBottom', offset: -5 }}
             />
-            <YAxis 
+            <YAxis
               yAxisId="left"
               label={{ value: 'Strategy Count', angle: -90, position: 'insideLeft' }}
             />
-            <YAxis 
-              yAxisId="right" 
+            <YAxis
+              yAxisId="right"
               orientation="right"
               domain={[0, 10]}
               label={{ value: 'Judge Score', angle: 90, position: 'insideRight' }}
             />
-            <Tooltip 
+            <Tooltip
               content={({ active, payload }) => {
                 if (active && payload && payload.length) {
                   const data = payload[0].payload as any;
@@ -82,19 +91,19 @@ export function MutationTimeline({ iterations }: MutationTimelineProps) {
               }}
             />
             <Legend />
-            <Line 
+            <Line
               yAxisId="left"
-              type="monotone" 
-              dataKey="strategyCount" 
-              stroke="#8b5cf6" 
+              type="monotone"
+              dataKey="strategyCount"
+              stroke="#8b5cf6"
               strokeWidth={2}
               name="Strategy Usage Count"
             />
-            <Line 
+            <Line
               yAxisId="right"
-              type="monotone" 
-              dataKey="score" 
-              stroke="#3b82f6" 
+              type="monotone"
+              dataKey="score"
+              stroke="#3b82f6"
               strokeWidth={2}
               name="Judge Score"
             />
@@ -104,4 +113,3 @@ export function MutationTimeline({ iterations }: MutationTimelineProps) {
     </Card>
   );
 }
-

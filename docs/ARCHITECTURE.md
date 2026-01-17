@@ -45,6 +45,18 @@ The frontend provides a modern, responsive dashboard for experiment management a
 
 *Figure 4: Experiment management view with real-time status updates.*
 
+![Frontend UI Overview](images/frontend-ui-2026-01-03.jpeg)
+
+*Figure 4a: Complete user interface overview showing all available features and navigation.*
+
+![Frontend Results](images/frontend-results-2025-12-23.jpeg)
+
+*Figure 4b: Results view displaying experiment outcomes and vulnerability findings.*
+
+![Frontend Settings](images/frontend-settings-2026-01-03.jpeg)
+
+*Figure 4c: Settings and configuration panel for customizing experiment parameters.*
+
 ---
 
 ## Data Flow
@@ -106,6 +118,10 @@ The REST API follows RESTful principles with WebSocket support for real-time upd
 
 *Figure 9: API endpoint structure and request/response flow.*
 
+![Frontend API Documentation](images/frontend-api-2026-01-03.jpeg)
+
+*Figure 9a: Interactive API documentation interface with endpoint explorer.*
+
 ---
 
 ## Deployment Architecture
@@ -129,6 +145,22 @@ The system includes comprehensive monitoring and telemetry capabilities.
 ![Telemetry View](images/frontend-telemetry-2026-01-03.jpeg)
 
 *Figure 12: Telemetry view showing detailed audit logs and system events.*
+
+![Logs View](images/detail-logs-2025-12-23.jpeg)
+
+*Figure 12a: Detailed logs view with filtering and search capabilities.*
+
+![Metrics Dashboard](images/detail-metrics-2025-12-23.jpeg)
+
+*Figure 12b: Performance metrics and statistics dashboard.*
+
+![Status Overview](images/detail-status-2025-12-23.jpeg)
+
+*Figure 12c: System status overview showing health checks and component status.*
+
+![Health Monitoring](images/detail-health-2025-12-23.jpeg)
+
+*Figure 12d: Health monitoring view with system component status.*
 
 ---
 

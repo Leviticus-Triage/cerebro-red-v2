@@ -34,13 +34,57 @@ A research-grade framework for automated vulnerability discovery in local LLMs u
 
 ### Frontend Dashboard
 
+The React-based frontend provides a comprehensive interface for managing experiments, monitoring progress, and analyzing results.
+
 ![Frontend Dashboard](docs/images/frontend-dashboard-2025-12-23.jpeg)
 
-*Main dashboard interface for experiment management*
+*Main dashboard interface showing experiment overview and statistics*
 
 ![Frontend Experiments](docs/images/frontend-experiments-2025-12-23.jpeg)
 
-*Experiment management view with real-time status updates*
+*Experiment management view with real-time status updates and experiment list*
+
+![Frontend UI Overview](docs/images/frontend-ui-2026-01-03.jpeg)
+
+*Complete user interface overview showing all available features*
+
+#### Experiment Results & Analysis
+
+![Frontend Results](docs/images/frontend-results-2025-12-23.jpeg)
+
+*Results view displaying experiment outcomes, vulnerability findings, and detailed analysis*
+
+![Frontend Settings](docs/images/frontend-settings-2026-01-03.jpeg)
+
+*Settings and configuration panel for customizing experiment parameters*
+
+#### Real-Time Monitoring
+
+![Frontend Monitoring](docs/images/frontend-monitoring-2025-12-23.jpeg)
+
+*Real-time monitoring dashboard with live experiment progress and status indicators*
+
+![Frontend Telemetry](docs/images/frontend-telemetry-2026-01-03.jpeg)
+
+*Telemetry view showing detailed audit logs, system events, and performance metrics*
+
+![Logs View](docs/images/detail-logs-2025-12-23.jpeg)
+
+*Detailed logs view with filtering and search capabilities*
+
+![Metrics Dashboard](docs/images/detail-metrics-2025-12-23.jpeg)
+
+*Performance metrics and statistics dashboard*
+
+![Status Overview](docs/images/detail-status-2025-12-23.jpeg)
+
+*System status overview showing health checks and component status*
+
+#### API Documentation
+
+![Frontend API](docs/images/frontend-api-2026-01-03.jpeg)
+
+*Interactive API documentation interface with endpoint explorer*
 
 For detailed architecture documentation, see [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 
@@ -1234,6 +1278,26 @@ CEREBRO-RED v2 provides comprehensive real-time monitoring of all LLM interactio
 ![Telemetry View](docs/images/frontend-telemetry-2026-01-03.jpeg)
 
 *Telemetry view showing detailed audit logs and system events*
+
+![Logs View](docs/images/detail-logs-2025-12-23.jpeg)
+
+*Detailed logs view with filtering, search, and color-coded entries*
+
+![Metrics Dashboard](docs/images/detail-metrics-2025-12-23.jpeg)
+
+*Performance metrics and statistics dashboard with real-time updates*
+
+![Status Overview](docs/images/detail-status-2025-12-23.jpeg)
+
+*System status overview showing health checks and component status*
+
+![Performance Monitoring](docs/images/detail-performance-2026-01-08.jpeg)
+
+*Performance monitoring view with resource usage and response times*
+
+![Monitoring Details](docs/images/detail-monitoring-2026-01-08.jpeg)
+
+*Advanced monitoring interface with detailed system metrics*
 
 ### What You Can See
 

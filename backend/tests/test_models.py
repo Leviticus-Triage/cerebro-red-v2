@@ -4,14 +4,10 @@ Tests for Pydantic models validation and serialization.
 
 import pytest
 from uuid import uuid4
-from datetime import datetime
 
 from core.models import (
     ExperimentConfig,
     AttackIteration,
-    PromptMutation,
-    JudgeScore,
-    VulnerabilityFinding,
     AttackStrategyType,
     VulnerabilitySeverity,
     ExperimentStatus,
@@ -21,7 +17,7 @@ from core.models import (
 
 class TestExperimentConfig:
     """Test ExperimentConfig model validation."""
-    
+
     def test_valid_experiment_config(self):
         """Test creating a valid experiment configuration."""
         config = ExperimentConfig(
@@ -39,7 +35,7 @@ class TestExperimentConfig:
         assert config.name == "Test Experiment"
         assert config.max_iterations == 20  # Default value
         assert len(config.strategies) == 1
-    
+
     def test_experiment_config_empty_prompts_validation(self):
         """Test that empty prompts are rejected."""
         with pytest.raises(ValueError):
@@ -54,7 +50,7 @@ class TestExperimentConfig:
                 initial_prompts=[""],  # Empty prompt
                 strategies=[AttackStrategyType.OBFUSCATION_BASE64],
             )
-    
+
     def test_experiment_config_max_iterations_constraint(self):
         """Test max_iterations constraint validation."""
         with pytest.raises(Exception):  # Pydantic validation error
@@ -74,7 +70,7 @@ class TestExperimentConfig:
 
 class TestAttackIteration:
     """Test AttackIteration model validation."""
-    
+
     def test_valid_attack_iteration(self):
         """Test creating a valid attack iteration."""
         iteration = AttackIteration(
@@ -96,25 +92,24 @@ class TestAttackIteration:
 
 class TestEnums:
     """Test enum values."""
-    
+
     def test_attack_strategy_types(self):
         """Test AttackStrategyType enum values."""
         assert AttackStrategyType.OBFUSCATION_BASE64.value == "obfuscation_base64"
         assert AttackStrategyType.CONTEXT_FLOODING.value == "context_flooding"
-    
+
     def test_vulnerability_severity(self):
         """Test VulnerabilitySeverity enum values."""
         assert VulnerabilitySeverity.LOW.value == "low"
         assert VulnerabilitySeverity.CRITICAL.value == "critical"
-    
+
     def test_experiment_status(self):
         """Test ExperimentStatus enum values."""
         assert ExperimentStatus.PENDING.value == "pending"
         assert ExperimentStatus.COMPLETED.value == "completed"
-    
+
     def test_llm_provider(self):
         """Test LLMProvider enum values."""
         assert LLMProvider.OLLAMA.value == "ollama"
         assert LLMProvider.AZURE.value == "azure"
         assert LLMProvider.OPENAI.value == "openai"
-

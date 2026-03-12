@@ -255,7 +255,7 @@ const ExperimentMonitor: React.FC = () => {
           ]);
           break;
 
-        case 'llm_request':
+        case 'llm_request': {
           console.log('[MONITOR] Processing llm_request');
           console.log('[MONITOR] Role:', message.role, 'Prompt length:', message.prompt?.length);
 
@@ -278,8 +278,9 @@ const ExperimentMonitor: React.FC = () => {
           addLog(requestLog);
           console.log('[MONITOR]  llm_request log added');
           break;
+        }
 
-        case 'llm_response':
+        case 'llm_response': {
           console.log('[MONITOR] Processing llm_response');
           console.log(
             '[MONITOR] Role:',
@@ -309,6 +310,7 @@ const ExperimentMonitor: React.FC = () => {
           addLog(responseLog);
           console.log('[MONITOR]  llm_response log added');
           break;
+        }
 
         case 'llm_error':
           addLog({
@@ -343,7 +345,7 @@ const ExperimentMonitor: React.FC = () => {
           });
           break;
 
-        case 'judge_evaluation':
+        case 'judge_evaluation': {
           console.log('[MONITOR] Processing judge_evaluation');
           console.log('[MONITOR] Score:', message.judge_score, 'Success:', message.success);
 
@@ -367,6 +369,7 @@ const ExperimentMonitor: React.FC = () => {
           addLog(judgeLog);
           console.log('[MONITOR]  judge_evaluation log added');
           break;
+        }
 
         case 'iteration_complete':
           addLog({
@@ -512,7 +515,7 @@ const ExperimentMonitor: React.FC = () => {
           });
           break;
 
-        case 'failure_analysis': // Comment 2: Handle failure_analysis messages
+        case 'failure_analysis': { // Comment 2: Handle failure_analysis messages
           const analysis: FailureAnalysis = {
             failure_reason: message.failure_reason || 'Unknown',
             iterations_executed: message.iterations_executed || 0,
@@ -534,6 +537,7 @@ const ExperimentMonitor: React.FC = () => {
             content: `Experiment Failed: ${message.failure_reason || 'Unknown reason'}`,
           });
           break;
+        }
 
         case 'code_flow':
           console.log('[ExperimentMonitor] Code Flow Event received:', {

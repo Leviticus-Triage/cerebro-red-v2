@@ -4,6 +4,7 @@ Tests for strategy persistence and fallback tracking.
 Tests that strategies are correctly persisted to the database,
 including intended vs executed strategy tracking.
 """
+
 import pytest
 from uuid import uuid4
 from datetime import datetime
@@ -18,7 +19,7 @@ from core.attack_strategies import AttackStrategyType
 async def test_strategy_persistence_on_success(session: AsyncSession):
     """Test that strategy is correctly persisted when mutation succeeds."""
     repo = AttackIterationRepository(session)
-    
+
     # Create iteration with jailbreak_dan (no fallback)
     iteration = AttackIteration(
         iteration_id=uuid4(),
@@ -35,16 +36,16 @@ async def test_strategy_persistence_on_success(session: AsyncSession):
         judge_reasoning="Test reasoning",
         success=False,
         latency_ms=1000,
-        timestamp=datetime.utcnow()
+        timestamp=datetime.utcnow(),
     )
-    
+
     # Save to DB
     db_iteration = await repo.create(iteration)
     await session.commit()
-    
+
     # Retrieve from DB
     retrieved = await session.get(AttackIterationDB, db_iteration.iteration_id)
-    
+
     # Assert: strategy_used == "jailbreak_dan"
     assert retrieved.strategy_used == "jailbreak_dan"
     # Assert: intended_strategy == "jailbreak_dan"
@@ -59,7 +60,7 @@ async def test_strategy_persistence_on_success(session: AsyncSession):
 async def test_strategy_persistence_on_fallback(session: AsyncSession):
     """Test that both intended and executed strategies are persisted on fallback."""
     repo = AttackIterationRepository(session)
-    
+
     # Create iteration with fallback (intended: jailbreak_dan, executed: roleplay_injection)
     iteration = AttackIteration(
         iteration_id=uuid4(),
@@ -76,16 +77,16 @@ async def test_strategy_persistence_on_fallback(session: AsyncSession):
         judge_reasoning="Test reasoning",
         success=False,
         latency_ms=500,
-        timestamp=datetime.utcnow()
+        timestamp=datetime.utcnow(),
     )
-    
+
     # Save to DB
     db_iteration = await repo.create(iteration)
     await session.commit()
-    
+
     # Retrieve from DB
     retrieved = await session.get(AttackIterationDB, db_iteration.iteration_id)
-    
+
     # Assert: strategy_used == "roleplay_injection"
     assert retrieved.strategy_used == "roleplay_injection"
     # Assert: intended_strategy == "jailbreak_dan"
@@ -102,7 +103,7 @@ async def test_api_serialization_consistency(session: AsyncSession):
     """Test that database stores consistent strategy values (API serialization tested separately)."""
     from core.database import ExperimentRepository, AttackIterationRepository
     from core.models import ExperimentConfig
-    
+
     # Create experiment
     exp_repo = ExperimentRepository(session)
     experiment_config = ExperimentConfig(
@@ -118,14 +119,14 @@ async def test_api_serialization_consistency(session: AsyncSession):
         initial_prompts=["Test prompt"],
         strategies=[AttackStrategyType.JAILBREAK_DAN, AttackStrategyType.JAILBREAK_AIM],
         max_iterations=5,
-        success_threshold=7.0
+        success_threshold=7.0,
     )
     db_experiment = await exp_repo.create(experiment_config)
     await session.commit()
-    
+
     # Create iterations with various strategies
     iter_repo = AttackIterationRepository(session)
-    
+
     # Iteration 1: No fallback
     iter1 = AttackIteration(
         iteration_id=uuid4(),
@@ -142,10 +143,10 @@ async def test_api_serialization_consistency(session: AsyncSession):
         judge_reasoning="Test",
         success=False,
         latency_ms=1000,
-        timestamp=datetime.utcnow()
+        timestamp=datetime.utcnow(),
     )
     db_iter1 = await iter_repo.create(iter1)
-    
+
     # Iteration 2: With fallback
     iter2 = AttackIteration(
         iteration_id=uuid4(),
@@ -162,27 +163,27 @@ async def test_api_serialization_consistency(session: AsyncSession):
         judge_reasoning="Test",
         success=False,
         latency_ms=500,
-        timestamp=datetime.utcnow()
+        timestamp=datetime.utcnow(),
     )
     db_iter2 = await iter_repo.create(iter2)
     await session.commit()
-    
+
     # Retrieve from DB and verify values
     retrieved1 = await session.get(AttackIterationDB, db_iter1.iteration_id)
     retrieved2 = await session.get(AttackIterationDB, db_iter2.iteration_id)
-    
+
     # Assert: All strategies are strings in DB
     assert isinstance(retrieved1.strategy_used, str)
     assert isinstance(retrieved2.strategy_used, str)
     assert isinstance(retrieved1.intended_strategy, str)
     assert isinstance(retrieved2.intended_strategy, str)
-    
+
     # Assert: Correct values stored
     assert retrieved1.strategy_used == "jailbreak_dan"
     assert retrieved2.strategy_used == "roleplay_injection"
     assert retrieved1.intended_strategy == "jailbreak_dan"
     assert retrieved2.intended_strategy == "jailbreak_aim"
-    
+
     # Assert: Fallback flags are correct
     assert retrieved1.strategy_fallback_occurred is False
     assert retrieved2.strategy_fallback_occurred is True
@@ -194,9 +195,9 @@ async def test_websocket_database_consistency(session: AsyncSession):
     """Test that WebSocket events match database records."""
     # This test would require WebSocket mocking, which is complex
     # For now, we test that the data structure supports consistency
-    
+
     repo = AttackIterationRepository(session)
-    
+
     # Create iteration with known values
     iteration = AttackIteration(
         iteration_id=uuid4(),
@@ -213,15 +214,15 @@ async def test_websocket_database_consistency(session: AsyncSession):
         judge_reasoning="Test",
         success=False,
         latency_ms=1000,
-        timestamp=datetime.utcnow()
+        timestamp=datetime.utcnow(),
     )
-    
+
     db_iteration = await repo.create(iteration)
     await session.commit()
-    
+
     # Assert: Database has correct values
     retrieved = await session.get(AttackIterationDB, db_iteration.iteration_id)
-    
+
     # These values should match what would be sent via WebSocket
     assert retrieved.intended_strategy == "jailbreak_dan"
     assert retrieved.strategy_used == "jailbreak_dan"

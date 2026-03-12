@@ -27,7 +27,7 @@
     - GitHub: https://github.com/your-org/cerebro-red-v2
     
 
-**Last Updated:** 2026-01-13
+**Last Updated:** 2026-03-12
 
 ---
 
@@ -675,7 +675,7 @@ Args:
         - categories: List[str]
         - license: str
         - source: str
-        
+
 Returns:
     Success status and repository name
 
@@ -737,7 +737,7 @@ Get a specific repository configuration.
 
 Args:
     repo_name: Name of repository
-    
+
 Returns:
     Repository configuration
 
@@ -793,7 +793,7 @@ Update an existing repository configuration.
 Args:
     repo_name: Name of repository to update
     repo_config: Updated repository configuration
-    
+
 Returns:
     Success status
 
@@ -859,7 +859,7 @@ Delete a repository configuration.
 
 Args:
     repo_name: Name of repository to delete
-    
+
 Returns:
     Success status
 
@@ -915,7 +915,7 @@ Get update history for a specific repository.
 Args:
     repo_name: Name of repository
     limit: Maximum number of entries to return
-    
+
 Returns:
     List of update history entries
 
@@ -1085,7 +1085,7 @@ This endpoint:
 Args:
     repository: Optional repository name to update. If None, updates all.
     create_backup: Whether to create backup before update
-    
+
 Returns:
     Update results with templates added/updated counts
 
@@ -1617,7 +1617,7 @@ Force an error for testing traceback logging.
 
 Args:
     error_type: Type of error to raise (generic, value, key, type, zero_division)
-    
+
 Available in all environments for testing purposes.
 
 **Query Parameters:**
@@ -2179,7 +2179,7 @@ Returns:
     - components: Status of each component (database, LLM providers, telemetry)
     - version: API version
     - timestamp: Current timestamp
-    
+
 Note: Response is automatically wrapped in {data: ...} by middleware.
 
 **Responses:**
@@ -3222,7 +3222,7 @@ Reset circuit breaker for a specific provider.
 
 Args:
     provider: LLM provider name (e.g., "ollama", "openai", "azure")
-    
+
 Returns:
     Success message
 
@@ -3393,7 +3393,9 @@ Request to start a new scan.
     {}
   ],
   "msg": "string",
-  "type": "string"
+  "type": "string",
+  "input": {},
+  "ctx": {}
 }
 ```
 

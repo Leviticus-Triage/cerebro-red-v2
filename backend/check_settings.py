@@ -22,7 +22,11 @@ print("=" * 60)
 print("CEREBRO-RED v2 - Settings Verification")
 print("=" * 60)
 print(f"\n API_KEY_ENABLED: {settings.security.api_key_enabled}")
-print(f" API_KEY: {settings.security.api_key[:20]}..." if settings.security.api_key else " API_KEY: None")
+print(
+    f" API_KEY: {settings.security.api_key[:20]}..."
+    if settings.security.api_key
+    else " API_KEY: None"
+)
 print(f" CORS_ORIGINS: {settings.security.cors_origins}")
 print(f" DATABASE_URL: {settings.database.url}")
 print(f" OLLAMA_BASE_URL: {settings.ollama.base_url}")
@@ -37,7 +41,6 @@ if not settings.security.api_key_enabled:
 else:
     print(" API Key Authentication ist noch AKTIV!")
     print(" Prüfen Sie die .env Datei:")
-    print(f"   backend/.env sollte enthalten: API_KEY_ENABLED=false")
+    print("   backend/.env sollte enthalten: API_KEY_ENABLED=false")
 
 print("=" * 60)
-

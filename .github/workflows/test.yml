@@ -98,17 +98,22 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '18'
+          node-version: '20'
       
       - name: Install dependencies
         run: |
           cd frontend
           npm ci
       
-      - name: Run frontend tests
+      - name: Run frontend unit tests
         run: |
           cd frontend
           npm run test
+      
+      - name: Install Playwright browsers
+        run: |
+          cd frontend
+          npx playwright install --with-deps chromium
       
       - name: Run E2E tests
         run: |

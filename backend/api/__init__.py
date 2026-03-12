@@ -24,4 +24,3 @@ __all__ = [
     "debug_router",
     "demo_router",
 ]
-

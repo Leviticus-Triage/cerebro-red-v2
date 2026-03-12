@@ -1397,7 +1397,7 @@
           "Templates"
         ],
         "summary": "Update Jailbreak Templates",
-        "description": "Update jailbreak templates from external repositories.\n\nThis endpoint:\n- Updates specified repository (or all repositories if none specified)\n- Extracts templates from updated repositories\n- Merges templates into advanced_payloads.json\n- Creates backup before update (if create_backup=True)\n\nArgs:\n    repository: Optional repository name to update. If None, updates all.\n    create_backup: Whether to create backup before update\n    \nReturns:\n    Update results with templates added/updated counts",
+        "description": "Update jailbreak templates from external repositories.\n\nThis endpoint:\n- Updates specified repository (or all repositories if none specified)\n- Extracts templates from updated repositories\n- Merges templates into advanced_payloads.json\n- Creates backup before update (if create_backup=True)\n\nArgs:\n    repository: Optional repository name to update. If None, updates all.\n    create_backup: Whether to create backup before update\n\nReturns:\n    Update results with templates added/updated counts",
         "operationId": "update_jailbreak_templates_api_v1_templates_jailbreak_update_post",
         "security": [
           {
@@ -1512,7 +1512,7 @@
           "Templates"
         ],
         "summary": "Add Template Repository",
-        "description": "Add a new repository configuration.\n\nArgs:\n    repo_config: Repository configuration with:\n        - name: str (required)\n        - url: str (required)\n        - path: str (required)\n        - extraction_script: Optional[str]\n        - categories: List[str]\n        - license: str\n        - source: str\n        \nReturns:\n    Success status and repository name",
+        "description": "Add a new repository configuration.\n\nArgs:\n    repo_config: Repository configuration with:\n        - name: str (required)\n        - url: str (required)\n        - path: str (required)\n        - extraction_script: Optional[str]\n        - categories: List[str]\n        - license: str\n        - source: str\n\nReturns:\n    Success status and repository name",
         "operationId": "add_template_repository_api_v1_templates_jailbreak_repositories_post",
         "requestBody": {
           "content": {
@@ -1559,7 +1559,7 @@
           "Templates"
         ],
         "summary": "Get Template Repository",
-        "description": "Get a specific repository configuration.\n\nArgs:\n    repo_name: Name of repository\n    \nReturns:\n    Repository configuration",
+        "description": "Get a specific repository configuration.\n\nArgs:\n    repo_name: Name of repository\n\nReturns:\n    Repository configuration",
         "operationId": "get_template_repository_api_v1_templates_jailbreak_repositories__repo_name__get",
         "security": [
           {
@@ -1603,7 +1603,7 @@
           "Templates"
         ],
         "summary": "Update Template Repository",
-        "description": "Update an existing repository configuration.\n\nArgs:\n    repo_name: Name of repository to update\n    repo_config: Updated repository configuration\n    \nReturns:\n    Success status",
+        "description": "Update an existing repository configuration.\n\nArgs:\n    repo_name: Name of repository to update\n    repo_config: Updated repository configuration\n\nReturns:\n    Success status",
         "operationId": "update_template_repository_api_v1_templates_jailbreak_repositories__repo_name__put",
         "security": [
           {
@@ -1659,7 +1659,7 @@
           "Templates"
         ],
         "summary": "Delete Template Repository",
-        "description": "Delete a repository configuration.\n\nArgs:\n    repo_name: Name of repository to delete\n    \nReturns:\n    Success status",
+        "description": "Delete a repository configuration.\n\nArgs:\n    repo_name: Name of repository to delete\n\nReturns:\n    Success status",
         "operationId": "delete_template_repository_api_v1_templates_jailbreak_repositories__repo_name__delete",
         "security": [
           {
@@ -1705,7 +1705,7 @@
           "Templates"
         ],
         "summary": "Get Repository Update History",
-        "description": "Get update history for a specific repository.\n\nArgs:\n    repo_name: Name of repository\n    limit: Maximum number of entries to return\n    \nReturns:\n    List of update history entries",
+        "description": "Get update history for a specific repository.\n\nArgs:\n    repo_name: Name of repository\n    limit: Maximum number of entries to return\n\nReturns:\n    List of update history entries",
         "operationId": "get_repository_update_history_api_v1_templates_jailbreak_repositories__repo_name__history_get",
         "security": [
           {
@@ -2663,7 +2663,7 @@
           "debug"
         ],
         "summary": "Force Error",
-        "description": "Force an error for testing traceback logging.\n\nArgs:\n    error_type: Type of error to raise (generic, value, key, type, zero_division)\n    \nAvailable in all environments for testing purposes.",
+        "description": "Force an error for testing traceback logging.\n\nArgs:\n    error_type: Type of error to raise (generic, value, key, type, zero_division)\n\nAvailable in all environments for testing purposes.",
         "operationId": "force_error_api_v1_debug_force_error_post",
         "parameters": [
           {
@@ -2757,7 +2757,7 @@
     "/health": {
       "get": {
         "summary": "Health Check",
-        "description": "Comprehensive health check endpoint.\n\nReturns:\n    - status: \"healthy\" | \"degraded\" | \"unhealthy\"\n    - components: Status of each component (database, LLM providers, telemetry)\n    - version: API version\n    - timestamp: Current timestamp\n    \nNote: Response is automatically wrapped in {data: ...} by middleware.",
+        "description": "Comprehensive health check endpoint.\n\nReturns:\n    - status: \"healthy\" | \"degraded\" | \"unhealthy\"\n    - components: Status of each component (database, LLM providers, telemetry)\n    - version: API version\n    - timestamp: Current timestamp\n\nNote: Response is automatically wrapped in {data: ...} by middleware.",
         "operationId": "health_check_health_get",
         "responses": {
           "200": {
@@ -2802,7 +2802,7 @@
     "/health/circuit-breakers/{provider}/reset": {
       "post": {
         "summary": "Reset Circuit Breaker Endpoint",
-        "description": "Reset circuit breaker for a specific provider.\n\nArgs:\n    provider: LLM provider name (e.g., \"ollama\", \"openai\", \"azure\")\n    \nReturns:\n    Success message",
+        "description": "Reset circuit breaker for a specific provider.\n\nArgs:\n    provider: LLM provider name (e.g., \"ollama\", \"openai\", \"azure\")\n\nReturns:\n    Success message",
         "operationId": "reset_circuit_breaker_endpoint_health_circuit_breakers__provider__reset_post",
         "security": [
           {
@@ -3232,6 +3232,13 @@
           "type": {
             "type": "string",
             "title": "Error Type"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "ctx": {
+            "type": "object",
+            "title": "Context"
           }
         },
         "type": "object",

@@ -1,9 +1,9 @@
 """
 Benchmark: Measure system throughput.
 """
+
 import pytest
 import time
-import asyncio
 from uuid import uuid4
 
 from core.orchestrator import RedTeamOrchestrator
@@ -16,10 +16,11 @@ from core.database import (
     ExperimentRepository,
     AttackIterationRepository,
     VulnerabilityRepository,
-    JudgeScoreRepository
+    JudgeScoreRepository,
 )
 from utils.llm_client import get_llm_client
 from utils.config import get_settings
+
 
 @pytest.mark.benchmark
 @pytest.mark.asyncio(loop_scope="function")
@@ -27,7 +28,7 @@ from utils.config import get_settings
 async def test_throughput_benchmark():
     """
     Measure how many experiments can be processed per minute.
-    
+
     Test configuration:
     - 10 concurrent experiments
     - 3 iterations each
@@ -35,19 +36,19 @@ async def test_throughput_benchmark():
     """
     num_experiments = 10
     iterations_per_experiment = 3
-    
+
     settings = get_settings()
     llm_client = get_llm_client()
     audit_logger = get_audit_logger()
-    
+
     start_time = time.time()
-    
+
     # Run experiments sequentially to avoid SQLite database locking
     # SQLite doesn't handle concurrent writes well
     results = []
     for i in range(num_experiments):
         experiment_id = uuid4()
-        
+
         config = ExperimentConfig(
             experiment_id=experiment_id,
             name=f"Throughput Test {i}",
@@ -61,30 +62,25 @@ async def test_throughput_benchmark():
             initial_prompts=["Test prompt"],
             strategies=[AttackStrategyType.ROLEPLAY_INJECTION],
             max_iterations=iterations_per_experiment,
-            success_threshold=7.0
+            success_threshold=7.0,
         )
-        
+
         async def run_experiment(config, exp_id):
             """Run a single experiment with its own mutator and judge instances."""
             # Create mutator and judge for this specific experiment
             task_mutator = PromptMutator(
-                llm_client=llm_client,
-                audit_logger=audit_logger,
-                experiment_id=exp_id
+                llm_client=llm_client, audit_logger=audit_logger, experiment_id=exp_id
             )
-            
-            task_judge = SecurityJudge(
-                llm_client=llm_client,
-                audit_logger=audit_logger
-            )
+
+            task_judge = SecurityJudge(llm_client=llm_client, audit_logger=audit_logger)
             task_judge.experiment_id = exp_id
-            
+
             async with AsyncSessionLocal() as session:
                 experiment_repo = ExperimentRepository(session)
                 iteration_repo = AttackIterationRepository(session)
                 vulnerability_repo = VulnerabilityRepository(session)
                 judge_score_repo = JudgeScoreRepository(session)
-                
+
                 orchestrator = RedTeamOrchestrator(
                     mutator=task_mutator,
                     judge=task_judge,
@@ -93,30 +89,29 @@ async def test_throughput_benchmark():
                     experiment_repo=experiment_repo,
                     iteration_repo=iteration_repo,
                     vulnerability_repo=vulnerability_repo,
-                    judge_score_repo=judge_score_repo
+                    judge_score_repo=judge_score_repo,
                 )
-                
+
                 return await orchestrator.run_experiment(config)
-        
+
         result = await run_experiment(config, experiment_id)
         results.append(result)
-    
+
     end_time = time.time()
     total_time = end_time - start_time
-    
+
     # Calculate metrics
     total_iterations = sum(r.get("total_iterations", 0) for r in results)
     throughput_per_minute = (total_iterations / total_time) * 60 if total_time > 0 else 0
-    
-    print(f"\n Throughput Benchmark Results:")
+
+    print("\n Throughput Benchmark Results:")
     print(f"   - Total Experiments: {num_experiments}")
     print(f"   - Total Iterations: {total_iterations}")
     print(f"   - Total Time: {total_time:.2f}s")
     print(f"   - Throughput: {throughput_per_minute:.2f} iterations/minute")
     if total_iterations > 0:
         print(f"   - Average Time per Iteration: {total_time/total_iterations:.2f}s")
-    
+
     # Assertions
     assert throughput_per_minute > 0
     assert total_time < 600  # Should complete within 10 minutes
-

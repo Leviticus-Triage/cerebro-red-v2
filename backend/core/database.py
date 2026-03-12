@@ -26,29 +26,46 @@ Implements async SQLAlchemy with SQLite backend, providing:
 """
 
 from datetime import datetime
-from typing import AsyncGenerator, List, Optional, Tuple
+from typing import TYPE_CHECKING, AsyncGenerator, List, Optional
 from uuid import UUID, uuid4
 
+if TYPE_CHECKING:
+    from core.models import (
+        AttackIteration,
+        ExperimentConfig,
+        ExperimentTemplateCreate,
+        ExperimentTemplateUpdate,
+        VulnerabilityFinding,
+    )
+
 from sqlalchemy import (
-    String, Integer, Float, Boolean, DateTime, Text, JSON, Index,
-    ForeignKey, UniqueConstraint, text
+    String,
+    Integer,
+    Float,
+    Boolean,
+    DateTime,
+    Text,
+    JSON,
+    Index,
+    ForeignKey,
+    UniqueConstraint,
+    text,
 )
-from sqlalchemy.ext.asyncio import (
-    create_async_engine, AsyncSession, async_sessionmaker
-)
+from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession, async_sessionmaker
 from sqlalchemy.orm import DeclarativeBase, relationship, Mapped, mapped_column
 from sqlalchemy.types import Uuid as SQLiteUUID
-from sqlalchemy.pool import NullPool, StaticPool
+from sqlalchemy.pool import StaticPool
 
 from utils.config import get_settings
-
 
 # ============================================================================
 # Database Setup
 # ============================================================================
 
+
 class Base(DeclarativeBase):
     """Base class for all ORM models."""
+
     pass
 
 
@@ -86,11 +103,7 @@ else:
     )
 
 AsyncSessionLocal = async_sessionmaker(
-    _engine,
-    class_=AsyncSession,
-    expire_on_commit=False,
-    autocommit=False,
-    autoflush=False
+    _engine, class_=AsyncSession, expire_on_commit=False, autocommit=False, autoflush=False
 )
 
 
@@ -98,14 +111,13 @@ AsyncSessionLocal = async_sessionmaker(
 # ORM Models
 # ============================================================================
 
+
 class ExperimentDB(Base):
     """Experiment table."""
-    
+
     __tablename__ = "experiments"
-    
-    experiment_id: Mapped[UUID] = mapped_column(
-        SQLiteUUID, primary_key=True, default=uuid4
-    )
+
+    experiment_id: Mapped[UUID] = mapped_column(SQLiteUUID, primary_key=True, default=uuid4)
     name: Mapped[str] = mapped_column(String(200), nullable=False)
     description: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
     target_model_provider: Mapped[str] = mapped_column(String(50), nullable=False)
@@ -122,8 +134,10 @@ class ExperimentDB(Base):
     timeout_seconds: Mapped[int] = mapped_column(Integer, nullable=False, default=3600)
     status: Mapped[str] = mapped_column(String(50), nullable=False, default="pending")
     created_at: Mapped[datetime] = mapped_column(DateTime, nullable=False, default=datetime.utcnow)
-    experiment_metadata: Mapped[dict] = mapped_column("metadata", JSON, nullable=False, default=dict)
-    
+    experiment_metadata: Mapped[dict] = mapped_column(
+        "metadata", JSON, nullable=False, default=dict
+    )
+
     # Relationships
     iterations: Mapped[List["AttackIterationDB"]] = relationship(
         "AttackIterationDB", back_populates="experiment", cascade="all, delete-orphan"
@@ -131,20 +145,16 @@ class ExperimentDB(Base):
     vulnerabilities: Mapped[List["VulnerabilityDB"]] = relationship(
         "VulnerabilityDB", back_populates="experiment", cascade="all, delete-orphan"
     )
-    
-    __table_args__ = (
-        Index("idx_experiments_created_at", "created_at"),
-    )
+
+    __table_args__ = (Index("idx_experiments_created_at", "created_at"),)
 
 
 class AttackIterationDB(Base):
     """Attack iteration table."""
-    
+
     __tablename__ = "attack_iterations"
-    
-    iteration_id: Mapped[UUID] = mapped_column(
-        SQLiteUUID, primary_key=True, default=uuid4
-    )
+
+    iteration_id: Mapped[UUID] = mapped_column(SQLiteUUID, primary_key=True, default=uuid4)
     experiment_id: Mapped[UUID] = mapped_column(
         SQLiteUUID, ForeignKey("experiments.experiment_id", ondelete="CASCADE"), nullable=False
     )
@@ -152,22 +162,20 @@ class AttackIterationDB(Base):
     strategy_used: Mapped[str] = mapped_column(String(50), nullable=False)
     # NEW: Originally intended strategy (before fallbacks)
     intended_strategy: Mapped[Optional[str]] = mapped_column(
-        String(50), 
+        String(50),
         nullable=True,  # Nullable for backward compatibility
-        comment="Originally selected strategy before any fallbacks"
+        comment="Originally selected strategy before any fallbacks",
     )
     # NEW: Whether a fallback occurred
     strategy_fallback_occurred: Mapped[bool] = mapped_column(
-        Boolean, 
-        nullable=False, 
+        Boolean,
+        nullable=False,
         default=False,
-        comment="True if executed_strategy differs from intended_strategy"
+        comment="True if executed_strategy differs from intended_strategy",
     )
     # NEW: Reason for fallback (if any)
     fallback_reason: Mapped[Optional[str]] = mapped_column(
-        Text,
-        nullable=True,
-        comment="Exception message or reason for strategy fallback"
+        Text, nullable=True, comment="Exception message or reason for strategy fallback"
     )
     original_prompt: Mapped[str] = mapped_column(Text, nullable=False)
     mutated_prompt: Mapped[str] = mapped_column(Text, nullable=False)
@@ -178,7 +186,7 @@ class AttackIterationDB(Base):
     latency_ms: Mapped[int] = mapped_column(Integer, nullable=False)
     timestamp: Mapped[datetime] = mapped_column(DateTime, nullable=False)
     attacker_feedback: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
-    
+
     # Relationships
     experiment: Mapped["ExperimentDB"] = relationship("ExperimentDB", back_populates="iterations")
     mutations: Mapped[List["PromptMutationDB"]] = relationship(
@@ -187,7 +195,7 @@ class AttackIterationDB(Base):
     judge_scores: Mapped[List["JudgeScoreDB"]] = relationship(
         "JudgeScoreDB", back_populates="iteration", cascade="all, delete-orphan"
     )
-    
+
     __table_args__ = (
         Index("idx_attack_iterations_experiment_number", "experiment_id", "iteration_number"),
     )
@@ -195,12 +203,10 @@ class AttackIterationDB(Base):
 
 class PromptMutationDB(Base):
     """Prompt mutation table."""
-    
+
     __tablename__ = "prompt_mutations"
-    
-    mutation_id: Mapped[UUID] = mapped_column(
-        SQLiteUUID, primary_key=True, default=uuid4
-    )
+
+    mutation_id: Mapped[UUID] = mapped_column(SQLiteUUID, primary_key=True, default=uuid4)
     iteration_id: Mapped[UUID] = mapped_column(
         SQLiteUUID, ForeignKey("attack_iterations.iteration_id", ondelete="CASCADE"), nullable=False
     )
@@ -210,25 +216,21 @@ class PromptMutationDB(Base):
     mutation_params: Mapped[dict] = mapped_column(JSON, nullable=False, default=dict)
     prompt_hash: Mapped[str] = mapped_column(String(64), nullable=False)  # SHA256
     timestamp: Mapped[datetime] = mapped_column(DateTime, nullable=False)
-    
+
     # Relationships
     iteration: Mapped["AttackIterationDB"] = relationship(
         "AttackIterationDB", back_populates="mutations"
     )
-    
-    __table_args__ = (
-        Index("idx_prompt_mutations_hash", "prompt_hash"),
-    )
+
+    __table_args__ = (Index("idx_prompt_mutations_hash", "prompt_hash"),)
 
 
 class JudgeScoreDB(Base):
     """Judge score table."""
-    
+
     __tablename__ = "judge_scores"
-    
-    score_id: Mapped[UUID] = mapped_column(
-        SQLiteUUID, primary_key=True, default=uuid4
-    )
+
+    score_id: Mapped[UUID] = mapped_column(SQLiteUUID, primary_key=True, default=uuid4)
     iteration_id: Mapped[UUID] = mapped_column(
         SQLiteUUID, ForeignKey("attack_iterations.iteration_id", ondelete="CASCADE"), nullable=False
     )
@@ -245,25 +247,21 @@ class JudgeScoreDB(Base):
     fallback_used: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
     judge_model: Mapped[str] = mapped_column(String(200), nullable=False)
     timestamp: Mapped[datetime] = mapped_column(DateTime, nullable=False)
-    
+
     # Relationships
     iteration: Mapped["AttackIterationDB"] = relationship(
         "AttackIterationDB", back_populates="judge_scores"
     )
-    
-    __table_args__ = (
-        Index("idx_judge_scores_overall", "overall_score"),
-    )
+
+    __table_args__ = (Index("idx_judge_scores_overall", "overall_score"),)
 
 
 class VulnerabilityDB(Base):
     """Vulnerability finding table."""
-    
+
     __tablename__ = "vulnerabilities"
-    
-    vulnerability_id: Mapped[UUID] = mapped_column(
-        SQLiteUUID, primary_key=True, default=uuid4
-    )
+
+    vulnerability_id: Mapped[UUID] = mapped_column(SQLiteUUID, primary_key=True, default=uuid4)
     experiment_id: Mapped[UUID] = mapped_column(
         SQLiteUUID, ForeignKey("experiments.experiment_id", ondelete="CASCADE"), nullable=False
     )
@@ -279,13 +277,15 @@ class VulnerabilityDB(Base):
     cve_references: Mapped[List[str]] = mapped_column(JSON, nullable=False, default=list)
     mitigation_suggestions: Mapped[List[str]] = mapped_column(JSON, nullable=False, default=list)
     discovered_at: Mapped[datetime] = mapped_column(DateTime, nullable=False)
-    experiment_metadata: Mapped[dict] = mapped_column("metadata", JSON, nullable=False, default=dict)
-    
+    experiment_metadata: Mapped[dict] = mapped_column(
+        "metadata", JSON, nullable=False, default=dict
+    )
+
     # Relationships
     experiment: Mapped["ExperimentDB"] = relationship(
         "ExperimentDB", back_populates="vulnerabilities"
     )
-    
+
     __table_args__ = (
         Index("idx_vulnerabilities_severity", "severity"),
         Index("idx_vulnerabilities_discovered_at", "discovered_at"),
@@ -294,12 +294,10 @@ class VulnerabilityDB(Base):
 
 class ModelConfigDB(Base):
     """Model configuration table."""
-    
+
     __tablename__ = "model_configs"
-    
-    config_id: Mapped[UUID] = mapped_column(
-        SQLiteUUID, primary_key=True, default=uuid4
-    )
+
+    config_id: Mapped[UUID] = mapped_column(SQLiteUUID, primary_key=True, default=uuid4)
     provider: Mapped[str] = mapped_column(String(50), nullable=False)
     model_name: Mapped[str] = mapped_column(String(200), nullable=False)
     api_base: Mapped[Optional[str]] = mapped_column(String(500), nullable=True)
@@ -308,7 +306,7 @@ class ModelConfigDB(Base):
     max_tokens: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
     timeout: Mapped[int] = mapped_column(Integer, nullable=False, default=300)
     additional_params: Mapped[dict] = mapped_column(JSON, nullable=False, default=dict)
-    
+
     __table_args__ = (
         UniqueConstraint("provider", "model_name", name="uq_model_config_provider_model"),
     )
@@ -316,22 +314,24 @@ class ModelConfigDB(Base):
 
 class ExperimentTemplateDB(Base):
     """Experiment template table for saving/loading configurations."""
-    
+
     __tablename__ = "experiment_templates"
-    
-    template_id: Mapped[UUID] = mapped_column(
-        SQLiteUUID, primary_key=True, default=uuid4
-    )
+
+    template_id: Mapped[UUID] = mapped_column(SQLiteUUID, primary_key=True, default=uuid4)
     name: Mapped[str] = mapped_column(String(200), nullable=False)
     description: Mapped[Optional[str]] = mapped_column(String(1000), nullable=True)
-    config_json: Mapped[str] = mapped_column(Text, nullable=False)  # JSON string of ExperimentConfig
+    config_json: Mapped[str] = mapped_column(
+        Text, nullable=False
+    )  # JSON string of ExperimentConfig
     tags: Mapped[List[str]] = mapped_column(JSON, nullable=False, default=list)
     is_public: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
     created_by: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime, nullable=False, default=datetime.utcnow)
-    updated_at: Mapped[datetime] = mapped_column(DateTime, nullable=False, default=datetime.utcnow, onupdate=datetime.utcnow)
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime, nullable=False, default=datetime.utcnow, onupdate=datetime.utcnow
+    )
     usage_count: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
-    
+
     __table_args__ = (
         Index("idx_templates_created_at", "created_at"),
         Index("idx_templates_name", "name"),
@@ -343,13 +343,14 @@ class ExperimentTemplateDB(Base):
 # Database Initialization
 # ============================================================================
 
+
 async def init_db() -> None:
     """
     Initialize database by creating all tables.
-    
+
     This function should be called on application startup to ensure
     all tables exist before processing requests.
-    
+
     For SQLite, enables WAL mode for better concurrency.
     """
     async with _engine.begin() as conn:
@@ -364,7 +365,7 @@ async def init_db() -> None:
 async def close_db() -> None:
     """
     Close database connections.
-    
+
     This function should be called on application shutdown to properly
     clean up database connections.
     """
@@ -374,10 +375,10 @@ async def close_db() -> None:
 async def get_session() -> AsyncGenerator[AsyncSession, None]:
     """
     Dependency injection for FastAPI routes.
-    
+
     Yields:
         AsyncSession: Database session
-        
+
     Example:
         >>> @app.get("/experiments")
         >>> async def list_experiments(session: AsyncSession = Depends(get_session)):
@@ -398,24 +399,29 @@ async def get_session() -> AsyncGenerator[AsyncSession, None]:
 # Repository Pattern for CRUD Operations
 # ============================================================================
 
+
 class ExperimentRepository:
     """Repository for experiment CRUD operations."""
-    
+
     def __init__(self, session: AsyncSession):
         self.session = session
-    
+
     async def create(self, experiment: "ExperimentConfig") -> ExperimentDB:
         """Create a new experiment with transaction logging."""
         import logging
         from datetime import datetime
-        
+
         logger = logging.getLogger(__name__)
         logger.debug(f"Creating experiment: {experiment.name}")
-        
+
         try:
             # Ensure created_at is set
-            created_at = experiment.created_at if hasattr(experiment, 'created_at') and experiment.created_at else datetime.utcnow()
-            
+            created_at = (
+                experiment.created_at
+                if hasattr(experiment, "created_at") and experiment.created_at
+                else datetime.utcnow()
+            )
+
             db_experiment = ExperimentDB(
                 experiment_id=experiment.experiment_id,
                 name=experiment.name,
@@ -438,26 +444,32 @@ class ExperimentRepository:
             )
             self.session.add(db_experiment)
             await self.session.flush()  # Flush to catch DB errors before commit
-            
+
             logger.debug(f"Experiment flushed to DB: {db_experiment.experiment_id}")
-            
+
             return db_experiment
-            
+
         except Exception as e:
             logger.error(f"Database error creating experiment: {type(e).__name__} - {str(e)}")
             raise
-    
+
     async def get_by_id(self, experiment_id: UUID) -> Optional[ExperimentDB]:
         """Get experiment by ID."""
         return await self.session.get(ExperimentDB, experiment_id)
-    
+
     async def list_all(self, limit: int = 100, offset: int = 0) -> List[ExperimentDB]:
         """List all experiments with pagination."""
         from sqlalchemy import select
-        stmt = select(ExperimentDB).limit(limit).offset(offset).order_by(ExperimentDB.created_at.desc())
+
+        stmt = (
+            select(ExperimentDB)
+            .limit(limit)
+            .offset(offset)
+            .order_by(ExperimentDB.created_at.desc())
+        )
         result = await self.session.execute(stmt)
         return list(result.scalars().all())
-    
+
     async def update_status(self, experiment_id: UUID, status: str) -> Optional[ExperimentDB]:
         """Update experiment status."""
         experiment = await self.get_by_id(experiment_id)
@@ -465,7 +477,7 @@ class ExperimentRepository:
             experiment.status = status
             await self.session.flush()
         return experiment
-    
+
     async def delete(self, experiment_id: UUID) -> bool:
         """Delete an experiment."""
         experiment = await self.get_by_id(experiment_id)
@@ -478,30 +490,39 @@ class ExperimentRepository:
 
 class AttackIterationRepository:
     """Repository for attack iteration CRUD operations."""
-    
+
     def __init__(self, session: AsyncSession):
         self.session = session
-    
+
     async def create(self, iteration: "AttackIteration") -> AttackIterationDB:
         """Create a new attack iteration."""
-        
+
         # Convert enums to strings with validation
-        strategy_used_str = iteration.strategy_used.value if hasattr(iteration.strategy_used, 'value') else str(iteration.strategy_used)
-        
+        strategy_used_str = (
+            iteration.strategy_used.value
+            if hasattr(iteration.strategy_used, "value")
+            else str(iteration.strategy_used)
+        )
+
         # NEW: Handle intended_strategy (may be None for old data)
         intended_strategy_str = None
         if iteration.intended_strategy:
-            intended_strategy_str = iteration.intended_strategy.value if hasattr(iteration.intended_strategy, 'value') else str(iteration.intended_strategy)
-        
+            intended_strategy_str = (
+                iteration.intended_strategy.value
+                if hasattr(iteration.intended_strategy, "value")
+                else str(iteration.intended_strategy)
+            )
+
         # NEW: Log if strategies differ (data integrity check)
         if intended_strategy_str and intended_strategy_str != strategy_used_str:
             import logging
+
             logger = logging.getLogger(__name__)
             logger.warning(
                 f"Strategy mismatch detected: intended={intended_strategy_str}, "
                 f"executed={strategy_used_str}, fallback={iteration.strategy_fallback_occurred}"
             )
-        
+
         db_iteration = AttackIterationDB(
             iteration_id=iteration.iteration_id,
             experiment_id=iteration.experiment_id,
@@ -523,12 +544,13 @@ class AttackIterationRepository:
         self.session.add(db_iteration)
         await self.session.flush()
         return db_iteration
-    
+
     async def get_by_experiment(
         self, experiment_id: UUID, limit: int = 100
     ) -> List[AttackIterationDB]:
         """Get all iterations for an experiment."""
         from sqlalchemy import select
+
         stmt = (
             select(AttackIterationDB)
             .where(AttackIterationDB.experiment_id == experiment_id)
@@ -537,17 +559,16 @@ class AttackIterationRepository:
         )
         result = await self.session.execute(stmt)
         return list(result.scalars().all())
-    
-    async def get_successful_attacks(
-        self, experiment_id: UUID
-    ) -> List[AttackIterationDB]:
+
+    async def get_successful_attacks(self, experiment_id: UUID) -> List[AttackIterationDB]:
         """Get all successful attacks for an experiment."""
         from sqlalchemy import select
+
         stmt = (
             select(AttackIterationDB)
             .where(
                 AttackIterationDB.experiment_id == experiment_id,
-                AttackIterationDB.success == True
+                AttackIterationDB.success.is_(True),
             )
             .order_by(AttackIterationDB.iteration_number)
         )
@@ -557,10 +578,10 @@ class AttackIterationRepository:
 
 class VulnerabilityRepository:
     """Repository for vulnerability CRUD operations."""
-    
+
     def __init__(self, session: AsyncSession):
         self.session = session
-    
+
     async def create(self, vulnerability: "VulnerabilityFinding") -> VulnerabilityDB:
         """Create a new vulnerability finding."""
         db_vulnerability = VulnerabilityDB(
@@ -583,12 +604,11 @@ class VulnerabilityRepository:
         self.session.add(db_vulnerability)
         await self.session.flush()
         return db_vulnerability
-    
-    async def get_by_severity(
-        self, severity: str, limit: int = 100
-    ) -> List[VulnerabilityDB]:
+
+    async def get_by_severity(self, severity: str, limit: int = 100) -> List[VulnerabilityDB]:
         """Get vulnerabilities by severity level."""
         from sqlalchemy import select
+
         stmt = (
             select(VulnerabilityDB)
             .where(VulnerabilityDB.severity == severity)
@@ -597,12 +617,11 @@ class VulnerabilityRepository:
         )
         result = await self.session.execute(stmt)
         return list(result.scalars().all())
-    
-    async def get_by_experiment(
-        self, experiment_id: UUID
-    ) -> List[VulnerabilityDB]:
+
+    async def get_by_experiment(self, experiment_id: UUID) -> List[VulnerabilityDB]:
         """Get all vulnerabilities for an experiment."""
         from sqlalchemy import select
+
         stmt = (
             select(VulnerabilityDB)
             .where(VulnerabilityDB.experiment_id == experiment_id)
@@ -614,17 +633,17 @@ class VulnerabilityRepository:
 
 class JudgeScoreRepository:
     """Repository for judge score CRUD operations."""
-    
+
     def __init__(self, session: AsyncSession):
         self.session = session
-    
+
     async def create(self, judge_score) -> JudgeScoreDB:
         """
         Create a new judge score record.
-        
+
         Args:
             judge_score: JudgeScore Pydantic model instance
-            
+
         Returns:
             Created JudgeScoreDB instance
         """
@@ -648,12 +667,11 @@ class JudgeScoreRepository:
         self.session.add(db_score)
         await self.session.flush()
         return db_score
-    
-    async def get_by_iteration(
-        self, iteration_id: UUID
-    ) -> Optional[JudgeScoreDB]:
+
+    async def get_by_iteration(self, iteration_id: UUID) -> Optional[JudgeScoreDB]:
         """Get judge score for a specific iteration."""
         from sqlalchemy import select
+
         stmt = (
             select(JudgeScoreDB)
             .where(JudgeScoreDB.iteration_id == iteration_id)
@@ -662,14 +680,11 @@ class JudgeScoreRepository:
         )
         result = await self.session.execute(stmt)
         return result.scalar_one_or_none()
-    
-    async def get_by_experiment(
-        self, experiment_id: UUID, limit: int = 100
-    ) -> List[JudgeScoreDB]:
+
+    async def get_by_experiment(self, experiment_id: UUID, limit: int = 100) -> List[JudgeScoreDB]:
         """Get all judge scores for an experiment (via iterations)."""
         from sqlalchemy import select
-        from sqlalchemy.orm import aliased
-        
+
         # Join with attack_iterations to filter by experiment_id
         stmt = (
             select(JudgeScoreDB)
@@ -684,18 +699,16 @@ class JudgeScoreRepository:
 
 class ExperimentTemplateRepository:
     """Repository for experiment template CRUD operations."""
-    
+
     def __init__(self, session: AsyncSession):
         self.session = session
-    
+
     async def create(self, template: "ExperimentTemplateCreate") -> ExperimentTemplateDB:
         """Create a new experiment template."""
-        from core.models import ExperimentConfig
-        import json
-        
+
         # Serialize ExperimentConfig to JSON string
         config_json = template.config.model_dump_json()
-        
+
         db_template = ExperimentTemplateDB(
             template_id=uuid4(),
             name=template.name,
@@ -711,34 +724,34 @@ class ExperimentTemplateRepository:
         self.session.add(db_template)
         await self.session.flush()
         return db_template
-    
+
     async def get_by_id(self, template_id: UUID) -> Optional[ExperimentTemplateDB]:
         """Get template by ID."""
         return await self.session.get(ExperimentTemplateDB, template_id)
-    
+
     async def list_all(
-        self, 
-        limit: int = 100, 
+        self,
+        limit: int = 100,
         offset: int = 0,
         is_public: Optional[bool] = None,
         created_by: Optional[str] = None,
-        tags: Optional[List[str]] = None
+        tags: Optional[List[str]] = None,
     ) -> tuple[List[ExperimentTemplateDB], int]:
         """
         List templates with optional filters.
-        
+
         Returns:
             Tuple of (filtered_templates, total_count)
             where total_count is the count AFTER tag filtering.
         """
         from sqlalchemy import select, and_
-        
+
         conditions = []
         if is_public is not None:
             conditions.append(ExperimentTemplateDB.is_public == is_public)
         if created_by is not None:
             conditions.append(ExperimentTemplateDB.created_by == created_by)
-        
+
         # Load all candidates first (without limit/offset)
         stmt = (
             select(ExperimentTemplateDB)
@@ -747,29 +760,27 @@ class ExperimentTemplateRepository:
         )
         result = await self.session.execute(stmt)
         all_templates = list(result.scalars().all())
-        
+
         # Apply tag filtering in Python (SQLite JSON limitations)
         if tags:
             all_templates = [t for t in all_templates if any(tag in t.tags for tag in tags)]
-        
+
         # Calculate total count AFTER tag filtering
         total_count = len(all_templates)
-        
+
         # Apply pagination AFTER filtering
-        paginated_templates = all_templates[offset:offset + limit]
-        
+        paginated_templates = all_templates[offset : offset + limit]
+
         return paginated_templates, total_count
-    
+
     async def update(
-        self, 
-        template_id: UUID, 
-        update_data: "ExperimentTemplateUpdate"
+        self, template_id: UUID, update_data: "ExperimentTemplateUpdate"
     ) -> Optional[ExperimentTemplateDB]:
         """Update template."""
         template = await self.get_by_id(template_id)
         if not template:
             return None
-        
+
         # Update fields if provided
         if update_data.name is not None:
             template.name = update_data.name
@@ -781,11 +792,11 @@ class ExperimentTemplateRepository:
             template.tags = update_data.tags
         if update_data.is_public is not None:
             template.is_public = update_data.is_public
-        
+
         template.updated_at = datetime.utcnow()
         await self.session.flush()
         return template
-    
+
     async def delete(self, template_id: UUID) -> bool:
         """Delete template."""
         template = await self.get_by_id(template_id)
@@ -794,7 +805,7 @@ class ExperimentTemplateRepository:
             await self.session.flush()
             return True
         return False
-    
+
     async def increment_usage(self, template_id: UUID) -> None:
         """Increment usage count when template is used."""
         template = await self.get_by_id(template_id)

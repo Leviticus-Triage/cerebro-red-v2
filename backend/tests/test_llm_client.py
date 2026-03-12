@@ -22,14 +22,11 @@ async def test_llm_client_invalid_role():
     """Test that invalid role raises ValueError."""
     client = LLMClient()
     with pytest.raises(ValueError):
-        await client.complete(
-            messages=[{"role": "user", "content": "test"}],
-            role="invalid_role"
-        )
+        await client.complete(messages=[{"role": "user", "content": "test"}], role="invalid_role")
 
 
 @pytest.mark.asyncio
-@patch('utils.llm_client.acompletion')
+@patch("utils.llm_client.acompletion")
 async def test_llm_client_complete_success(mock_acompletion):
     """Test successful LLM completion."""
     # Mock litellm response
@@ -39,7 +36,7 @@ async def test_llm_client_complete_success(mock_acompletion):
     mock_response.choices[0].finish_reason = "stop"
     mock_response.usage.total_tokens = 10
     mock_acompletion.return_value = mock_response
-    
+
     client = LLMClient()
     # Note: This test requires proper provider configuration
     # For now, we'll just test the structure
@@ -76,4 +73,3 @@ def test_llm_response_model():
     assert response.content == "Test content"
     assert response.provider == LLMProvider.OLLAMA
     assert response.latency_ms == 150
-

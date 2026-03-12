@@ -5,7 +5,6 @@ backend/api/demo.py
 Demo mode API endpoints serving mock experiment data.
 """
 
-from typing import List
 from uuid import UUID
 from fastapi import APIRouter, HTTPException, status, Request
 from fastapi.responses import JSONResponse
@@ -33,10 +32,7 @@ async def list_demo_experiments():
     experiments = [ExperimentResponse(**exp) for exp in experiments_data]
 
     response = ExperimentListResponse(
-        items=experiments,
-        total=len(experiments),
-        page=1,
-        page_size=20
+        items=experiments, total=len(experiments), page=1, page_size=20
     )
 
     return api_response(response)
@@ -61,7 +57,7 @@ async def get_demo_experiment(experiment_id: UUID):
     if not experiment_data:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Demo experiment {experiment_id} not found"
+            detail=f"Demo experiment {experiment_id} not found",
         )
 
     # Convert raw dict to ExperimentResponse instance
@@ -73,6 +69,7 @@ async def get_demo_experiment(experiment_id: UUID):
 # ============================================================================
 # Write Operation Blocking (Demo Mode Read-Only Enforcement)
 # ============================================================================
+
 
 def _demo_mode_blocked_response(request: Request, action: str) -> JSONResponse:
     """
@@ -96,26 +93,34 @@ def _demo_mode_blocked_response(request: Request, action: str) -> JSONResponse:
             "path": str(request.url.path),
             "detail": "Deploy CEREBRO-RED v2 locally to create and run experiments.",
             "documentation": "https://github.com/your-org/cerebro-red-v2#quick-start",
-            "quick_start_guide": "/QUICK_START.md"
-        }
+            "quick_start_guide": "/QUICK_START.md",
+        },
     )
 
     # Add CORS headers (same pattern as backend/api/exceptions.py)
     if origin:
-        origins_str = settings.security.cors_origins or "http://localhost:3000,http://localhost:5173"
+        origins_str = (
+            settings.security.cors_origins or "http://localhost:3000,http://localhost:5173"
+        )
         allowed_origins = [o.strip() for o in origins_str.split(",") if o.strip()]
         default_origins = [
-            "http://localhost:3000", "http://localhost:5173",
-            "http://localhost:8000", "http://localhost:9000",
-            "http://127.0.0.1:3000", "http://127.0.0.1:5173",
-            "http://127.0.0.1:8000", "http://127.0.0.1:9000"
+            "http://localhost:3000",
+            "http://localhost:5173",
+            "http://localhost:8000",
+            "http://localhost:9000",
+            "http://127.0.0.1:3000",
+            "http://127.0.0.1:5173",
+            "http://127.0.0.1:8000",
+            "http://127.0.0.1:9000",
         ]
         allowed_origins.extend(default_origins)
 
         if origin in allowed_origins or "*" in allowed_origins:
             response.headers["Access-Control-Allow-Origin"] = origin
             response.headers["Access-Control-Allow-Credentials"] = "true"
-            response.headers["Access-Control-Allow-Methods"] = "GET, POST, PUT, DELETE, OPTIONS, PATCH"
+            response.headers["Access-Control-Allow-Methods"] = (
+                "GET, POST, PUT, DELETE, OPTIONS, PATCH"
+            )
             response.headers["Access-Control-Allow-Headers"] = "*"
 
     return response

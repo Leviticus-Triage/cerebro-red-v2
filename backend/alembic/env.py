@@ -15,14 +15,6 @@ from alembic import context
 
 # Import Base and all models
 from core.database import Base
-from core.database import (
-    ExperimentDB,
-    AttackIterationDB,
-    PromptMutationDB,
-    JudgeScoreDB,
-    VulnerabilityDB,
-    ModelConfigDB,
-)
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
@@ -59,22 +51,24 @@ def run_migrations_offline() -> None:
     if not url:
         # Fallback to settings if not in alembic.ini
         from utils.config import get_settings
+
         settings = get_settings()
         url = settings.database.url
-    
+
     # Ensure database directory exists for SQLite
     if url and url.startswith("sqlite"):
         import os
         import re
-        match = re.search(r'sqlite\+aiosqlite:///(.+)', url)
+
+        match = re.search(r"sqlite\+aiosqlite:///(.+)", url)
         if match:
             db_path = match.group(1)
-            if db_path.startswith('./'):
+            if db_path.startswith("./"):
                 db_path = db_path[2:]
             db_dir = os.path.dirname(db_path)
             if db_dir:
                 os.makedirs(db_dir, exist_ok=True)
-    
+
     context.configure(
         url=url,
         target_metadata=target_metadata,
@@ -100,25 +94,27 @@ async def run_async_migrations() -> None:
     if not database_url:
         # Fallback to settings if not in alembic.ini
         from utils.config import get_settings
+
         settings = get_settings()
         database_url = settings.database.url
-    
+
     # Ensure database directory exists for SQLite
     if database_url.startswith("sqlite"):
         import os
         import re
+
         # Extract path from SQLite URL (sqlite+aiosqlite:///./path/to/db.db)
-        match = re.search(r'sqlite\+aiosqlite:///(.+)', database_url)
+        match = re.search(r"sqlite\+aiosqlite:///(.+)", database_url)
         if match:
             db_path = match.group(1)
             # Remove leading ./ if present
-            if db_path.startswith('./'):
+            if db_path.startswith("./"):
                 db_path = db_path[2:]
             # Get directory path
             db_dir = os.path.dirname(db_path)
             if db_dir:
                 os.makedirs(db_dir, exist_ok=True)
-    
+
     connectable = create_async_engine(
         database_url,
         poolclass=pool.NullPool,
@@ -139,4 +135,3 @@ if context.is_offline_mode():
     run_migrations_offline()
 else:
     run_migrations_online()
-

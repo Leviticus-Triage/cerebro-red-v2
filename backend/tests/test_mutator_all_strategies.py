@@ -15,7 +15,7 @@ import pytest
 from core.models import AttackStrategyType
 from core.attack_strategies import AttackStrategyRegistry, mutate_prompt
 from core.mutator import PromptMutator
-from unittest.mock import Mock, AsyncMock, patch
+from unittest.mock import Mock, patch
 from tests.test_realistic_prompts import contains_test_artifacts
 
 
@@ -25,12 +25,12 @@ def mutator():
     mock_llm_client = Mock()
     mock_llm_client.settings = Mock()
     mock_llm_client.settings.get_llm_config = Mock(return_value={"model_name": "test"})
-    
+
     mock_audit_logger = Mock()
-    
+
     # Mock payload_manager with get_templates and generate_payload methods (Comment 3)
     mock_payload_manager = Mock()
-    
+
     # Define template responses for different categories
     def get_templates_side_effect(category: str):
         """Return mock templates based on category."""
@@ -65,23 +65,21 @@ def mutator():
             return [
                 f"Template 1 for {category}: {{original_prompt}}",
                 f"Template 2 for {category}: {{original_prompt}}",
-                f"Template 3 for {category}: {{original_prompt}}"
+                f"Template 3 for {category}: {{original_prompt}}",
             ]
-    
+
     def generate_payload_side_effect(template: str, prompt: str):
         """Mock generate_payload to replace placeholders."""
         return template.replace("{original_prompt}", prompt)
-    
+
     mock_payload_manager.get_templates = Mock(side_effect=get_templates_side_effect)
     mock_payload_manager.generate_payload = Mock(side_effect=generate_payload_side_effect)
     mock_payload_manager.get_categories = Mock(return_value=[])
-    
+
     # Patch get_payload_manager to return our mock before creating mutator
-    with patch('core.mutator.get_payload_manager', return_value=mock_payload_manager):
+    with patch("core.mutator.get_payload_manager", return_value=mock_payload_manager):
         mutator_instance = PromptMutator(
-            llm_client=mock_llm_client,
-            audit_logger=mock_audit_logger,
-            experiment_id=None
+            llm_client=mock_llm_client, audit_logger=mock_audit_logger, experiment_id=None
         )
         # Ensure the mock is set (in case patch didn't work)
         mutator_instance.payload_manager = mock_payload_manager
@@ -162,13 +160,17 @@ def test_strategy_registered(strategy):
         AttackStrategyType.LINGUISTIC_EVASION,  # Direct implementation in mutator.py
         AttackStrategyType.RESEARCH_PRE_JAILBREAK,  # Optional, may not be available
     }
-    
+
     if strategy in strategies_without_registry:
         # These strategies are implemented directly in mutator.py, skip registry check
-        pytest.skip(f"Strategy {strategy.value} is implemented directly in mutator.py, not in registry")
-    
+        pytest.skip(
+            f"Strategy {strategy.value} is implemented directly in mutator.py, not in registry"
+        )
+
     registered_strategy = AttackStrategyRegistry.get(strategy)
-    assert registered_strategy is not None, f"Strategy {strategy.value} is not registered in AttackStrategyRegistry"
+    assert (
+        registered_strategy is not None
+    ), f"Strategy {strategy.value} is not registered in AttackStrategyRegistry"
 
 
 @pytest.mark.parametrize("strategy", ALL_STRATEGIES)
@@ -183,22 +185,32 @@ def test_strategy_mutate_produces_output(strategy):
         AttackStrategyType.LINGUISTIC_EVASION,
         AttackStrategyType.RESEARCH_PRE_JAILBREAK,  # Optional, may not be available
     }
-    
+
     if strategy in strategies_without_registry:
         # These strategies are tested via test_strategy_via_mutator instead
-        pytest.skip(f"Strategy {strategy.value} is implemented directly in mutator.py, tested via mutator.mutate()")
-    
+        pytest.skip(
+            f"Strategy {strategy.value} is implemented directly in mutator.py, tested via mutator.mutate()"
+        )
+
     original_prompt = "How to hack a system?"
-    
+
     try:
         result = mutate_prompt(original_prompt, strategy)
-        
+
         assert result is not None, f"Strategy {strategy.value} returned None"
-        assert hasattr(result, 'mutated_prompt'), f"Strategy {strategy.value} result missing mutated_prompt"
-        assert result.mutated_prompt != original_prompt, f"Strategy {strategy.value} did not mutate the prompt"
-        assert len(result.mutated_prompt) > 0, f"Strategy {strategy.value} produced empty mutated prompt"
-        assert result.strategy == strategy, f"Strategy {strategy.value} result has wrong strategy type"
-        assert hasattr(result, 'metadata'), f"Strategy {strategy.value} result missing metadata"
+        assert hasattr(
+            result, "mutated_prompt"
+        ), f"Strategy {strategy.value} result missing mutated_prompt"
+        assert (
+            result.mutated_prompt != original_prompt
+        ), f"Strategy {strategy.value} did not mutate the prompt"
+        assert (
+            len(result.mutated_prompt) > 0
+        ), f"Strategy {strategy.value} produced empty mutated prompt"
+        assert (
+            result.strategy == strategy
+        ), f"Strategy {strategy.value} result has wrong strategy type"
+        assert hasattr(result, "metadata"), f"Strategy {strategy.value} result missing metadata"
     except ValueError as e:
         pytest.fail(f"Strategy {strategy.value} raised ValueError: {e}")
     except Exception as e:
@@ -210,31 +222,40 @@ def test_strategy_mutate_produces_output(strategy):
 async def test_strategy_via_mutator(mutator, strategy):
     """Test that each strategy works via PromptMutator (Phase 2)."""
     original_prompt = "How to hack a system?"
-    
+
     # Skip REPHRASE_SEMANTIC as it requires feedback
     if strategy == AttackStrategyType.REPHRASE_SEMANTIC:
         pytest.skip("REPHRASE_SEMANTIC requires feedback parameter")
-    
+
     try:
         mutation = await mutator.mutate(
-            original_prompt=original_prompt,
-            strategy=strategy,
-            iteration=1
+            original_prompt=original_prompt, strategy=strategy, iteration=1
         )
-        
+
         assert mutation is not None, f"Strategy {strategy.value} returned None from mutator"
-        assert mutation.output_prompt != original_prompt, f"Strategy {strategy.value} did not mutate via mutator"
-        assert len(mutation.output_prompt) > 0, f"Strategy {strategy.value} produced empty prompt via mutator"
-        assert mutation.strategy == strategy, f"Strategy {strategy.value} has wrong strategy type in mutation"
-        
+        assert (
+            mutation.output_prompt != original_prompt
+        ), f"Strategy {strategy.value} did not mutate via mutator"
+        assert (
+            len(mutation.output_prompt) > 0
+        ), f"Strategy {strategy.value} produced empty prompt via mutator"
+        assert (
+            mutation.strategy == strategy
+        ), f"Strategy {strategy.value} has wrong strategy type in mutation"
+
         # NEW: Validate no test artifacts
-        assert not contains_test_artifacts(mutation.output_prompt), \
-            f"Strategy {strategy.value} contains test artifacts"
-        
+        assert not contains_test_artifacts(
+            mutation.output_prompt
+        ), f"Strategy {strategy.value} contains test artifacts"
+
         # template_source is optional - some strategies are hardcoded and don't use templates
         # We just verify that mutation_params exists and contains useful metadata
-        assert mutation.mutation_params is not None, f"Strategy {strategy.value} missing mutation_params"
-        assert len(mutation.mutation_params) > 0, f"Strategy {strategy.value} has empty mutation_params"
+        assert (
+            mutation.mutation_params is not None
+        ), f"Strategy {strategy.value} missing mutation_params"
+        assert (
+            len(mutation.mutation_params) > 0
+        ), f"Strategy {strategy.value} has empty mutation_params"
     except ValueError as e:
         # Phase 2: All strategies should be implemented
         pytest.fail(f"Strategy {strategy.value} not implemented in mutator.py: {e}")
@@ -258,15 +279,17 @@ def test_registry_has_all_strategies():
         AttackStrategyType.LINGUISTIC_EVASION,
         AttackStrategyType.RESEARCH_PRE_JAILBREAK,  # Optional, may not be available
     }
-    
+
     all_registered = AttackStrategyRegistry.get_all()
     registered_types = set(all_registered.keys())
-    expected_types = set(ALL_STRATEGIES) - strategies_without_registry  # Exclude direct implementations
-    
+    expected_types = (
+        set(ALL_STRATEGIES) - strategies_without_registry
+    )  # Exclude direct implementations
+
     missing = expected_types - registered_types
     if missing:
         pytest.fail(f"Missing strategies in registry: {[s.value for s in missing]}")
-    
+
     extra = registered_types - expected_types
     if extra:
         # Extra strategies are okay (e.g., research pre-jailbreak)

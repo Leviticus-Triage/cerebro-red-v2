@@ -23,16 +23,18 @@ from pydantic import BaseModel, Field
 from core.models import AttackStrategyType
 from utils.config import get_settings
 
-
 # ============================================================================
 # Audit Log Entry Model
 # ============================================================================
 
+
 class AuditLogEntry(BaseModel):
     """Audit log entry schema for JSONL format."""
-    
+
     timestamp: datetime = Field(default_factory=datetime.utcnow, description="Event timestamp")
-    event_type: str = Field(..., description="Event type (attack_attempt, judge_evaluation, mutation, error)")
+    event_type: str = Field(
+        ..., description="Event type (attack_attempt, judge_evaluation, mutation, error)"
+    )
     experiment_id: UUID = Field(..., description="Experiment ID")
     iteration_number: Optional[int] = Field(None, description="Iteration number")
     model_attacker: str = Field(..., description="Attacker model identifier")
@@ -51,19 +53,20 @@ class AuditLogEntry(BaseModel):
 # Audit Logger Class
 # ============================================================================
 
+
 class AuditLogger:
     """
     Thread-safe JSONL audit logger for research telemetry.
-    
+
     This logger writes structured log entries to JSONL files with automatic
     rotation and retention management. All writes are thread-safe using locks.
-    
+
     Attributes:
         log_path: Directory path for log files
         current_log_file: Path to current log file
         lock: Thread lock for safe concurrent writes
         retention_days: Number of days to retain logs
-        
+
     Example:
         >>> logger = AuditLogger(Path("./data/audit_logs"))
         >>> logger.log_attack_attempt(
@@ -74,11 +77,11 @@ class AuditLogger:
         ...     latency_ms=150
         ... )
     """
-    
+
     def __init__(self, log_path: Path, retention_days: int = 90):
         """
         Initialize audit logger.
-        
+
         Args:
             log_path: Directory path for log files
             retention_days: Number of days to retain logs (default: 90)
@@ -89,16 +92,16 @@ class AuditLogger:
         self.lock = threading.Lock()
         self.current_log_file = self._get_current_log_file()
         self._last_rotation_date = datetime.now().date()
-    
+
     def _get_current_log_file(self) -> Path:
         """Get current log file path based on date."""
         today = datetime.now().strftime("%Y-%m-%d")
         return self.log_path / f"audit_{today}.jsonl"
-    
+
     def _write_entry(self, entry: AuditLogEntry) -> None:
         """
         Thread-safe write of log entry to JSONL file.
-        
+
         Args:
             entry: Audit log entry to write
         """
@@ -109,16 +112,16 @@ class AuditLogger:
                 self.rotate_logs()
                 self._last_rotation_date = current_date
                 self.current_log_file = self._get_current_log_file()
-            
+
             # Serialize entry to JSON
             entry_dict = entry.model_dump(mode="json")
             json_line = json.dumps(entry_dict, ensure_ascii=False, default=str)
-            
+
             # Append to log file
             with open(self.current_log_file, "a", encoding="utf-8") as f:
                 f.write(json_line + "\n")
                 f.flush()  # Flush immediately for real-time analysis
-    
+
     def log_attack_attempt(
         self,
         experiment_id: UUID,
@@ -134,7 +137,7 @@ class AuditLogger:
     ) -> None:
         """
         Log an attack attempt event.
-        
+
         Args:
             experiment_id: Experiment ID
             iteration: Iteration number
@@ -148,8 +151,9 @@ class AuditLogger:
             metadata: Additional metadata (optional)
         """
         import hashlib
+
         prompt_hash = hashlib.sha256(prompt.encode()).hexdigest()
-        
+
         entry = AuditLogEntry(
             event_type="attack_attempt",
             experiment_id=experiment_id,
@@ -164,7 +168,7 @@ class AuditLogger:
             metadata=metadata or {},
         )
         self._write_entry(entry)
-    
+
     def log_judge_evaluation(
         self,
         experiment_id: UUID,
@@ -180,7 +184,7 @@ class AuditLogger:
     ) -> None:
         """
         Log a judge evaluation event.
-        
+
         Args:
             experiment_id: Experiment ID
             iteration: Iteration number
@@ -211,7 +215,7 @@ class AuditLogger:
             },
         )
         self._write_entry(entry)
-    
+
     def log_mutation(
         self,
         experiment_id: UUID,
@@ -226,7 +230,7 @@ class AuditLogger:
     ) -> None:
         """
         Log a prompt mutation event.
-        
+
         Args:
             experiment_id: Experiment ID
             iteration: Iteration number
@@ -239,8 +243,9 @@ class AuditLogger:
             metadata: Additional metadata (optional)
         """
         import hashlib
+
         prompt_hash = hashlib.sha256(output_prompt.encode()).hexdigest()
-        
+
         entry = AuditLogEntry(
             event_type="mutation",
             experiment_id=experiment_id,
@@ -258,7 +263,7 @@ class AuditLogger:
             },
         )
         self._write_entry(entry)
-    
+
     def log_error(
         self,
         experiment_id: UUID,
@@ -271,7 +276,7 @@ class AuditLogger:
     ) -> None:
         """
         Log an error event.
-        
+
         Args:
             experiment_id: Experiment ID
             error_type: Type of error (e.g., "llm_timeout", "validation_error")
@@ -293,25 +298,25 @@ class AuditLogger:
             metadata=metadata or {},
         )
         self._write_entry(entry)
-    
+
     def rotate_logs(self) -> None:
         """
         Rotate log files (creates new file for new day).
-        
+
         This is called automatically when the date changes.
         """
         # Log rotation is handled automatically by date-based filenames
         # This method can be extended for additional rotation logic
         pass
-    
+
     def cleanup_old_logs(self) -> None:
         """
         Delete log files older than retention_days.
-        
+
         This should be called periodically (e.g., daily) to manage disk space.
         """
         cutoff_date = datetime.now() - timedelta(days=self.retention_days)
-        
+
         with self.lock:
             for log_file in self.log_path.glob("audit_*.jsonl"):
                 # Extract date from filename
@@ -323,7 +328,7 @@ class AuditLogger:
                 except ValueError:
                     # Skip files with invalid date format
                     continue
-    
+
     def log_strategy_transition(
         self,
         experiment_id: UUID,
@@ -336,10 +341,10 @@ class AuditLogger:
     ) -> None:
         """
         Log strategy transitions for PAIR algorithm analysis.
-        
+
         This enables research analysis of how the algorithm adapts
         based on feedback (key metric for PAIR paper validation).
-        
+
         Args:
             experiment_id: Experiment ID
             iteration: Current iteration number
@@ -350,11 +355,12 @@ class AuditLogger:
             metadata: Additional metadata (optional)
         """
         import hashlib
+
         # Create a hash for the transition event
         transition_hash = hashlib.sha256(
             f"{experiment_id}{iteration}{from_strategy}{to_strategy}".encode()
         ).hexdigest()
-        
+
         entry = AuditLogEntry(
             event_type="strategy_transition",
             experiment_id=experiment_id,
@@ -372,7 +378,7 @@ class AuditLogger:
             },
         )
         self._write_entry(entry)
-    
+
     def log_strategy_usage_summary(
         self,
         experiment_id: UUID,
@@ -380,11 +386,13 @@ class AuditLogger:
         strategies_selected: List[str],  # User-selected
         strategies_used: Dict[str, int],  # Actually used with counts
         strategies_skipped: List[str],  # Never used
-        strategies_skipped_count: Optional[int] = None  # Comment 2: Explicit count (for test compatibility)
+        strategies_skipped_count: Optional[
+            int
+        ] = None,  # Comment 2: Explicit count (for test compatibility)
     ) -> None:
         """
         Log summary of strategy usage for experiment.
-        
+
         Args:
             experiment_id: Experiment UUID
             total_iterations: Total iterations run
@@ -393,13 +401,16 @@ class AuditLogger:
             strategies_skipped: Strategies that were never used
         """
         import hashlib
-        summary_hash = hashlib.sha256(
-            f"{experiment_id}strategy_usage_summary".encode()
-        ).hexdigest()
-        
+
+        summary_hash = hashlib.sha256(f"{experiment_id}strategy_usage_summary".encode()).hexdigest()
+
         # Use provided count or calculate from list (Comment 2)
-        skipped_count = strategies_skipped_count if strategies_skipped_count is not None else len(strategies_skipped)
-        
+        skipped_count = (
+            strategies_skipped_count
+            if strategies_skipped_count is not None
+            else len(strategies_skipped)
+        )
+
         entry = AuditLogEntry(
             event_type="strategy_usage_summary",
             experiment_id=experiment_id,
@@ -417,11 +428,13 @@ class AuditLogger:
                 "strategies_selected": strategies_selected,
                 "strategies_used": strategies_used,
                 "strategies_skipped": strategies_skipped,
-                "usage_rate": len(strategies_used) / len(strategies_selected) if strategies_selected else 0.0
+                "usage_rate": (
+                    len(strategies_used) / len(strategies_selected) if strategies_selected else 0.0
+                ),
             },
         )
         self._write_entry(entry)
-    
+
     def log_event(
         self,
         event_type: str,
@@ -430,14 +443,13 @@ class AuditLogger:
     ) -> None:
         """
         Log a generic event (e.g., system events, audits).
-        
+
         Args:
             event_type: Type of event (e.g., "payload_coverage_audit")
             metadata: Additional metadata dictionary
             experiment_id: Experiment ID if applicable (optional, uses system UUID if None)
         """
-        from uuid import uuid4 as uuid4_func
-        
+
         # Use system UUID if no experiment_id provided
         system_uuid = UUID("00000000-0000-0000-0000-000000000000")
         entry = AuditLogEntry(
@@ -456,14 +468,14 @@ class AuditLogger:
             metadata=metadata or {},
         )
         self._write_entry(entry)
-    
+
     def get_stats(self, experiment_id: Optional[UUID] = None) -> Dict[str, Any]:
         """
         Get aggregate statistics from log files.
-        
+
         Args:
             experiment_id: Filter by experiment ID (optional)
-            
+
         Returns:
             Dictionary with statistics (total_events, successful_attacks, etc.)
         """
@@ -477,23 +489,23 @@ class AuditLogger:
             "total_latency_ms": 0,
             "total_tokens": 0,
         }
-        
+
         with self.lock:
             for log_file in sorted(self.log_path.glob("audit_*.jsonl")):
                 with open(log_file, "r", encoding="utf-8") as f:
                     for line in f:
                         try:
                             entry_dict = json.loads(line)
-                            
+
                             # Filter by experiment_id if provided
                             if experiment_id:
                                 entry_exp_id = UUID(entry_dict.get("experiment_id", ""))
                                 if entry_exp_id != experiment_id:
                                     continue
-                            
+
                             stats["total_events"] += 1
                             event_type = entry_dict.get("event_type", "")
-                            
+
                             if event_type == "attack_attempt":
                                 stats["attack_attempts"] += 1
                             elif event_type == "judge_evaluation":
@@ -504,13 +516,13 @@ class AuditLogger:
                                 stats["mutations"] += 1
                             elif event_type == "error":
                                 stats["errors"] += 1
-                            
+
                             stats["total_latency_ms"] += entry_dict.get("latency_ms", 0)
                             stats["total_tokens"] += entry_dict.get("tokens_used", 0) or 0
                         except (json.JSONDecodeError, KeyError, ValueError):
                             # Skip invalid log entries
                             continue
-        
+
         return stats
 
 
@@ -524,10 +536,10 @@ _audit_logger_instance: Optional[AuditLogger] = None
 def get_audit_logger() -> AuditLogger:
     """
     Get singleton AuditLogger instance.
-    
+
     Returns:
         Cached AuditLogger instance
-        
+
     Example:
         >>> logger = get_audit_logger()
         >>> logger.log_attack_attempt(...)
@@ -536,7 +548,6 @@ def get_audit_logger() -> AuditLogger:
     if _audit_logger_instance is None:
         settings = get_settings()
         _audit_logger_instance = AuditLogger(
-            settings.telemetry.path,
-            settings.telemetry.retention_days
+            settings.telemetry.path, settings.telemetry.retention_days
         )
     return _audit_logger_instance

@@ -26,7 +26,7 @@ def client():
 def test_cors_preflight_request(client):
     """
     Test OPTIONS preflight request for CORS.
-    
+
     Browser sends OPTIONS before actual request to check CORS policy.
     """
     response = client.options(
@@ -34,22 +34,22 @@ def test_cors_preflight_request(client):
         headers={
             "Origin": "http://localhost:5173",
             "Access-Control-Request-Method": "POST",
-            "Access-Control-Request-Headers": "content-type,x-api-key"
-        }
+            "Access-Control-Request-Headers": "content-type,x-api-key",
+        },
     )
-    
+
     # Should return 200 OK with CORS headers
     assert response.status_code == 200
-    
+
     # Check CORS headers
     assert "access-control-allow-origin" in response.headers
     assert "access-control-allow-methods" in response.headers
     assert "access-control-allow-headers" in response.headers
-    
+
     # Verify allowed methods include POST
     allowed_methods = response.headers["access-control-allow-methods"]
     assert "POST" in allowed_methods
-    
+
     print(f" CORS Preflight: {allowed_methods}")
 
 
@@ -60,17 +60,14 @@ def test_cors_headers_on_actual_request(client):
     """
     # Disable API key for this test
     with patch.dict(os.environ, {"API_KEY_ENABLED": "false"}):
-        response = client.get(
-            "/api/experiments",
-            headers={"Origin": "http://localhost:5173"}
-        )
-        
+        response = client.get("/api/experiments", headers={"Origin": "http://localhost:5173"})
+
         # Should have CORS headers
         assert "access-control-allow-origin" in response.headers
-        
+
         origin = response.headers["access-control-allow-origin"]
         assert origin in ["http://localhost:5173", "*"]
-        
+
         print(f" CORS Headers present: Origin={origin}")
 
 
@@ -82,19 +79,16 @@ def test_cors_multiple_origins(client):
     test_origins = [
         "http://localhost:5173",
         "http://localhost:3000",
-        "https://cerebro-red.example.com"
+        "https://cerebro-red.example.com",
     ]
-    
+
     with patch.dict(os.environ, {"API_KEY_ENABLED": "false"}):
         for origin in test_origins:
             response = client.options(
                 "/api/experiments",
-                headers={
-                    "Origin": origin,
-                    "Access-Control-Request-Method": "GET"
-                }
+                headers={"Origin": origin, "Access-Control-Request-Method": "GET"},
             )
-            
+
             # Should allow configured origins
             if origin in ["http://localhost:5173", "http://localhost:3000"]:
                 assert response.status_code == 200
@@ -112,7 +106,7 @@ def test_api_key_disabled(client):
     with patch.dict(os.environ, {"API_KEY_ENABLED": "false"}):
         # Should work without API key
         response = client.get("/api/experiments")
-        
+
         # Should not return 401
         assert response.status_code != 401
         print(f" API Key disabled: {response.status_code}")
@@ -126,15 +120,15 @@ def test_api_key_enabled_missing(client):
     with patch.dict(os.environ, {"API_KEY_ENABLED": "true", "API_KEY": "test-secret-key"}):
         # Request without API key
         response = client.get("/api/experiments")
-        
+
         # Should return 401 Unauthorized
         assert response.status_code == 401
-        
+
         data = response.json()
         # Backend returns "error" or "detail" field
         error_msg = data.get("error") or data.get("detail", "")
         assert "API key" in error_msg or "API key" in str(data)
-        
+
         print(" API Key required when enabled")
 
 
@@ -145,19 +139,16 @@ def test_api_key_enabled_invalid(client):
     """
     with patch.dict(os.environ, {"API_KEY_ENABLED": "true", "API_KEY": "test-secret-key"}):
         # Request with invalid API key
-        response = client.get(
-            "/api/experiments",
-            headers={"X-API-Key": "wrong-key"}
-        )
-        
+        response = client.get("/api/experiments", headers={"X-API-Key": "wrong-key"})
+
         # Should return 401 Unauthorized
         assert response.status_code == 401
-        
+
         data = response.json()
         # Backend returns "error" or "detail" field
         error_msg = data.get("error") or data.get("detail", "")
         assert "Invalid API key" in error_msg or "Invalid" in error_msg
-        
+
         print(" Invalid API Key rejected")
 
 
@@ -167,21 +158,20 @@ def test_api_key_enabled_valid(client):
     Test that valid API key is accepted.
     """
     from utils.config import get_settings
-    
+
     with patch.dict(os.environ, {"API_KEY_ENABLED": "true", "API_KEY": "test-secret-key"}):
         # Clear settings cache to force reload
         get_settings.cache_clear()
-        
+
         # Request with valid API key
-        response = client.get(
-            "/api/experiments",
-            headers={"X-API-Key": "test-secret-key"}
-        )
-        
+        response = client.get("/api/experiments", headers={"X-API-Key": "test-secret-key"})
+
         # Should not return 401
-        assert response.status_code != 401, f"Expected non-401 status, got {response.status_code}: {response.text}"
+        assert (
+            response.status_code != 401
+        ), f"Expected non-401 status, got {response.status_code}: {response.text}"
         print(f" Valid API Key accepted: {response.status_code}")
-        
+
         # Restore cache
         get_settings.cache_clear()
 
@@ -199,13 +189,13 @@ def test_cors_with_api_key(client):
             headers={
                 "Origin": "http://localhost:5173",
                 "Access-Control-Request-Method": "POST",
-                "Access-Control-Request-Headers": "x-api-key,content-type"
-            }
+                "Access-Control-Request-Headers": "x-api-key,content-type",
+            },
         )
-        
+
         assert response.status_code == 200
         assert "access-control-allow-headers" in response.headers
-        
+
         # Actual request with API key
         response = client.post(
             "/api/experiments",
@@ -219,14 +209,11 @@ def test_cors_with_api_key(client):
                 "judge_model_provider": "ollama",
                 "judge_model_name": "qwen2.5:7b",
                 "initial_prompts": ["test"],
-                "strategies": ["roleplay_injection"]
+                "strategies": ["roleplay_injection"],
             },
-            headers={
-                "Origin": "http://localhost:5173",
-                "X-API-Key": "test-secret-key"
-            }
+            headers={"Origin": "http://localhost:5173", "X-API-Key": "test-secret-key"},
         )
-        
+
         # Should have CORS headers
         assert "access-control-allow-origin" in response.headers
         print(" CORS works with API Key authentication")
@@ -240,16 +227,12 @@ def test_cors_credentials(client):
     with patch.dict(os.environ, {"API_KEY_ENABLED": "false"}):
         response = client.get(
             "/api/experiments",
-            headers={
-                "Origin": "http://localhost:5173",
-                "Cookie": "session=test"
-            }
+            headers={"Origin": "http://localhost:5173", "Cookie": "session=test"},
         )
-        
+
         # Check if credentials are allowed
         if "access-control-allow-credentials" in response.headers:
             credentials = response.headers["access-control-allow-credentials"]
             print(f" CORS Credentials: {credentials}")
         else:
             print("  CORS Credentials header not present")
-

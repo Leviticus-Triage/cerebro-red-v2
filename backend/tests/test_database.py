@@ -3,26 +3,18 @@ Tests for database operations and CRUD functionality.
 """
 
 import pytest
-from uuid import uuid4
-from datetime import datetime
-from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.database import (
     init_db,
     get_session,
-    close_db,
     ExperimentRepository,
     AttackIterationRepository,
-    VulnerabilityRepository,
-    ExperimentDB,
 )
 from core.models import (
     ExperimentConfig,
     AttackIteration,
-    VulnerabilityFinding,
     LLMProvider,
     AttackStrategyType,
-    VulnerabilitySeverity,
 )
 
 
@@ -128,7 +120,7 @@ async def test_attack_iteration_repository_create():
             strategies=[AttackStrategyType.OBFUSCATION_BASE64],
         )
         experiment = await exp_repo.create(experiment_config)
-        
+
         iter_repo = AttackIterationRepository(session)
         iteration = AttackIteration(
             experiment_id=experiment.experiment_id,
@@ -145,4 +137,3 @@ async def test_attack_iteration_repository_create():
         db_iteration = await iter_repo.create(iteration)
         assert db_iteration.iteration_id == iteration.iteration_id
         break
-

@@ -23,13 +23,13 @@ api_key_header = APIKeyHeader(name="X-API-Key", auto_error=False)
 async def verify_api_key(api_key: str = Security(api_key_header)) -> bool:
     """
     Verify API key from request header.
-    
+
     Args:
         api_key: API key from X-API-Key header
-        
+
     Returns:
         True if authentication succeeds
-        
+
     Raises:
         HTTPException: If API key is invalid or missing
     """
@@ -37,12 +37,12 @@ async def verify_api_key(api_key: str = Security(api_key_header)) -> bool:
     api_key_enabled_env = os.environ.get("API_KEY_ENABLED", "").lower()
     if api_key_enabled_env in ("false", "0", "no", "off"):
         return True
-    
+
     # Fallback to settings
     settings = get_settings()
     if not settings.security.api_key_enabled:
         return True
-    
+
     # API key missing
     if not api_key:
         raise HTTPException(
@@ -50,7 +50,7 @@ async def verify_api_key(api_key: str = Security(api_key_header)) -> bool:
             detail="API key required. Provide X-API-Key header.",
             headers={"WWW-Authenticate": "ApiKey"},
         )
-    
+
     # API key invalid
     if api_key != settings.security.api_key:
         raise HTTPException(
@@ -58,6 +58,5 @@ async def verify_api_key(api_key: str = Security(api_key_header)) -> bool:
             detail="Invalid API key",
             headers={"WWW-Authenticate": "ApiKey"},
         )
-    
-    return True
 
+    return True

@@ -3,15 +3,11 @@ Tests for configuration management.
 """
 
 import pytest
-import os
-from pathlib import Path
 
 from utils.config import (
     get_settings,
-    Settings,
     AppSettings,
     DatabaseSettings,
-    LLMProviderSettings,
 )
 
 
@@ -44,7 +40,7 @@ def test_get_llm_config_ollama():
     # Temporarily set provider to ollama
     original_provider = settings.llm_provider.provider
     settings.llm_provider.provider = "ollama"
-    
+
     try:
         config = settings.get_llm_config("attacker")
         assert config["provider"] == "ollama"
@@ -59,7 +55,7 @@ def test_validate_provider_config_ollama():
     settings = get_settings()
     original_provider = settings.llm_provider.provider
     settings.llm_provider.provider = "ollama"
-    
+
     try:
         # Should not raise for Ollama
         settings.validate_provider_config()
@@ -72,14 +68,13 @@ def test_validate_provider_config_azure_missing_key():
     settings = get_settings()
     original_provider = settings.llm_provider.provider
     original_key = settings.azure_openai.api_key
-    
+
     settings.llm_provider.provider = "azure"
     settings.azure_openai.api_key = None
-    
+
     try:
         with pytest.raises(ValueError, match="AZURE_OPENAI_API_KEY"):
             settings.validate_provider_config()
     finally:
         settings.llm_provider.provider = original_provider
         settings.azure_openai.api_key = original_key
-

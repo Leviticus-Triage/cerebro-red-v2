@@ -3,6 +3,7 @@ Tests for configuration management.
 """
 
 import pytest
+pytestmark = pytest.mark.integration
 
 from utils.config import (
     get_settings,

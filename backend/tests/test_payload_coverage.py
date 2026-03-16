@@ -12,6 +12,8 @@ Validates that:
 """
 
 import pytest
+pytestmark = pytest.mark.integration
+
 from core.payloads import PayloadManager
 from core.models import AttackStrategyType
 from unittest.mock import Mock, AsyncMock

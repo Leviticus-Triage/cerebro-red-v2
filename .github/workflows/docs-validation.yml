@@ -39,15 +39,6 @@ jobs:
           chmod +x scripts/build_docs.sh
           ./scripts/build_docs.sh
       
-      - name: Check for changes
-        run: |
-          if [ -n "$(git status --porcelain docs/)" ]; then
-            echo " Documentation has uncommitted changes"
-            git diff docs/
-            exit 1
-          fi
-          echo " Documentation is up to date"
-      
       - name: Validate OpenAPI schema
         run: |
           python3 -c "

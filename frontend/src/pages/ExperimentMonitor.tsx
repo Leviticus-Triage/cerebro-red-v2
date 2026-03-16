@@ -515,7 +515,8 @@ const ExperimentMonitor: React.FC = () => {
           });
           break;
 
-        case 'failure_analysis': { // Comment 2: Handle failure_analysis messages
+        case 'failure_analysis': {
+          // Comment 2: Handle failure_analysis messages
           const analysis: FailureAnalysis = {
             failure_reason: message.failure_reason || 'Unknown',
             iterations_executed: message.iterations_executed || 0,

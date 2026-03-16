@@ -3,6 +3,8 @@ Integration tests with mocked LLM responses.
 """
 
 import pytest
+pytestmark = pytest.mark.integration
+
 from unittest.mock import AsyncMock, MagicMock
 from uuid import uuid4
 

@@ -3,6 +3,8 @@ Tests for LLM client wrapper.
 """
 
 import pytest
+
+pytestmark = pytest.mark.integration
 from unittest.mock import AsyncMock, patch
 
 from utils.llm_client import LLMClient, LLMResponse

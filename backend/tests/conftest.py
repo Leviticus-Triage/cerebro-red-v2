@@ -11,9 +11,9 @@ from sqlalchemy.orm import sessionmaker
 from core.database import Base
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope="function")
 def event_loop():
-    """Create event loop for async tests."""
+    """Create event loop for async tests (function scope to match pytest-asyncio auto mode)."""
     loop = asyncio.get_event_loop_policy().new_event_loop()
     yield loop
     loop.close()

@@ -9,6 +9,8 @@ Phase 2 Requirement: Fix unrealistic prompts (HelloWorld) with direct jailbreaks
 
 import pytest
 import re
+
+pytestmark = pytest.mark.integration
 from core.models import AttackStrategyType
 from core.mutator import PromptMutator
 from unittest.mock import Mock

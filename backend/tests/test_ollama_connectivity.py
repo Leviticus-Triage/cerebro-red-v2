@@ -3,6 +3,8 @@ Test Ollama connectivity and model availability.
 """
 
 import pytest
+
+pytestmark = pytest.mark.integration
 from utils.llm_client import get_llm_client
 from utils.config import get_settings
 

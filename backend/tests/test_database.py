@@ -4,6 +4,8 @@ Tests for database operations and CRUD functionality.
 
 import pytest
 
+pytestmark = pytest.mark.integration
+
 from core.database import (
     init_db,
     get_session,

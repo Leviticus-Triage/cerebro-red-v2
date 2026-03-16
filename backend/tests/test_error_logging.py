@@ -5,6 +5,9 @@ backend/tests/test_error_logging.py
 Tests for error logging and traceback functionality.
 """
 
+import pytest
+pytestmark = pytest.mark.integration
+
 import logging
 from fastapi.testclient import TestClient
 from main import app

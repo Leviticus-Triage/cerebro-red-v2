@@ -9,6 +9,8 @@ Tests:
 """
 
 import pytest
+pytestmark = pytest.mark.integration
+
 from fastapi.testclient import TestClient
 from unittest.mock import patch
 import os

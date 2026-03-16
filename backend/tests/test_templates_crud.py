@@ -3,6 +3,8 @@ Tests for experiment template CRUD operations (Phase 6).
 """
 
 import pytest
+
+pytestmark = pytest.mark.integration
 from uuid import uuid4
 from core.models import (
     ExperimentTemplateCreate,

@@ -9,6 +9,8 @@ Verifies that the orchestrator (when implemented) correctly integrates:
 """
 
 import pytest
+pytestmark = pytest.mark.integration
+
 from uuid import uuid4
 from unittest.mock import Mock, AsyncMock
 

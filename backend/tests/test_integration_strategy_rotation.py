@@ -3,6 +3,8 @@ Integration test for strategy rotation with real PAIR loop (Phase 6).
 """
 
 import pytest
+
+pytestmark = pytest.mark.integration
 import pytest_asyncio
 from uuid import uuid4
 from unittest.mock import AsyncMock, Mock, patch

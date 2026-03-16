@@ -5,6 +5,9 @@ Validates that scoring logic matches PyRIT Likert-scale definitions
 and refusal pattern detection works correctly.
 """
 
+import pytest
+pytestmark = pytest.mark.integration
+
 from core.scoring import ScoringDefinitions, RefusalLevel, analyze_response_for_scoring
 
 

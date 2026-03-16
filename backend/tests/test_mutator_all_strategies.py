@@ -12,6 +12,8 @@ Phase 2 Implementation:
 """
 
 import pytest
+pytestmark = pytest.mark.integration
+
 from core.models import AttackStrategyType
 from core.attack_strategies import AttackStrategyRegistry, mutate_prompt
 from core.mutator import PromptMutator

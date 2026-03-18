@@ -12,11 +12,10 @@ Validates that:
 """
 
 import pytest
-pytestmark = pytest.mark.integration
+from unittest.mock import Mock, AsyncMock
 
 from core.payloads import PayloadManager
 from core.models import AttackStrategyType
-from unittest.mock import Mock, AsyncMock
 
 # Import PromptMutator after mocking LLMClient
 try:
@@ -24,6 +23,8 @@ try:
 except ImportError:
     # If import fails due to LLMClient, we'll mock it in tests
     PromptMutator = None
+
+pytestmark = pytest.mark.integration
 
 
 class TestPayloadCoverageAudit:

@@ -12,13 +12,14 @@ Phase 2 Implementation:
 """
 
 import pytest
-pytestmark = pytest.mark.integration
+from unittest.mock import Mock, patch
 
 from core.models import AttackStrategyType
 from core.attack_strategies import AttackStrategyRegistry, mutate_prompt
 from core.mutator import PromptMutator
-from unittest.mock import Mock, patch
 from tests.test_realistic_prompts import contains_test_artifacts
+
+pytestmark = pytest.mark.integration
 
 
 @pytest.fixture

@@ -6,9 +6,9 @@ and refusal pattern detection works correctly.
 """
 
 import pytest
-pytestmark = pytest.mark.integration
-
 from core.scoring import ScoringDefinitions, RefusalLevel, analyze_response_for_scoring
+
+pytestmark = pytest.mark.integration
 
 
 class TestScoringDefinitions:

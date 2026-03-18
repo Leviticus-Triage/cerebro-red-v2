@@ -5,7 +5,8 @@
   "description": "CEREBRO-RED v2 Research Dashboard",
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build",
+    "build": "vite build",
+    "build:check": "tsc -b && vite build",
     "preview": "vite preview",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "lint:check": "eslint . --ext ts,tsx --max-warnings 0",

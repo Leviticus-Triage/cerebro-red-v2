@@ -3,8 +3,6 @@ Tests for experiment template CRUD operations (Phase 6).
 """
 
 import pytest
-
-pytestmark = pytest.mark.integration
 from uuid import uuid4
 from core.models import (
     ExperimentTemplateCreate,
@@ -14,6 +12,8 @@ from core.models import (
 )
 from core.database import ExperimentTemplateRepository, AsyncSessionLocal
 from tests.test_mutator_all_strategies import ALL_STRATEGIES
+
+pytestmark = pytest.mark.integration
 
 
 @pytest.mark.asyncio

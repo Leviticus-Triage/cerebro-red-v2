@@ -2,12 +2,12 @@
 Test input validation and sanitization.
 """
 
+import os
 import pytest
-pytestmark = pytest.mark.integration
-
 from fastapi.testclient import TestClient
 from main import app
-import os
+
+pytestmark = pytest.mark.integration
 
 client = TestClient(app)
 api_key = os.getenv("API_KEY", "your-secret-api-key-change-this")

@@ -9,8 +9,6 @@ Verifies that the orchestrator (when implemented) correctly integrates:
 """
 
 import pytest
-pytestmark = pytest.mark.integration
-
 from uuid import uuid4
 from unittest.mock import Mock, AsyncMock
 
@@ -23,6 +21,8 @@ from core.models import (
 from core.mutator import PromptMutator
 from core.judge import SecurityJudge
 from core.telemetry import AuditLogger
+
+pytestmark = pytest.mark.integration
 
 
 class TestMutatorNewStrategies:

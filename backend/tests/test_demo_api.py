@@ -6,10 +6,10 @@ with helpful 403 responses.
 """
 
 import pytest
-
-pytestmark = pytest.mark.integration
 from fastapi.testclient import TestClient
 from main import app
+
+pytestmark = pytest.mark.integration
 
 
 @pytest.fixture

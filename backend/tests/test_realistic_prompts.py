@@ -7,13 +7,14 @@ test-related phrases that would make them appear unrealistic.
 Phase 2 Requirement: Fix unrealistic prompts (HelloWorld) with direct jailbreaks.
 """
 
-import pytest
 import re
+import pytest
+from unittest.mock import Mock
 
-pytestmark = pytest.mark.integration
 from core.models import AttackStrategyType
 from core.mutator import PromptMutator
-from unittest.mock import Mock
+
+pytestmark = pytest.mark.integration
 
 
 @pytest.fixture

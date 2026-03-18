@@ -12,12 +12,12 @@ Validates that:
 
 import pytest
 from unittest.mock import AsyncMock, patch
-
-pytestmark = pytest.mark.integration
 from uuid import uuid4
 from fastapi.websockets import WebSocketState
 
 from api.websocket import ConnectionManager
+
+pytestmark = pytest.mark.integration
 
 
 @pytest.mark.asyncio

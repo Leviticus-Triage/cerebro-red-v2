@@ -7,11 +7,12 @@ not just the hardcoded 3 strategies.
 
 import pytest
 from uuid import uuid4
+from unittest.mock import Mock
 
-pytestmark = pytest.mark.integration
 from core.models import AttackStrategyType
 from core.orchestrator import RedTeamOrchestrator
-from unittest.mock import Mock
+
+pytestmark = pytest.mark.integration
 
 
 @pytest.fixture

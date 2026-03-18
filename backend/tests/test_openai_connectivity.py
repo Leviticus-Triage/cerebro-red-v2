@@ -2,12 +2,12 @@
 Test OpenAI connectivity and model availability.
 """
 
-import pytest
 import os
-
-pytestmark = pytest.mark.integration
+import pytest
 from utils.llm_client import get_llm_client
 from utils.config import get_settings
+
+pytestmark = pytest.mark.integration
 
 
 @pytest.mark.skipif(

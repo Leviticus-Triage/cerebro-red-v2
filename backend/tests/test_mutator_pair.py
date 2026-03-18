@@ -7,8 +7,6 @@ the PAIR paper (arxiv.org/abs/2310.08419).
 """
 
 import pytest
-pytestmark = pytest.mark.integration
-
 from uuid import uuid4
 from unittest.mock import AsyncMock, MagicMock
 
@@ -16,6 +14,8 @@ from core.mutator import PromptMutator
 from core.models import AttackStrategyType
 from core.telemetry import AuditLogger
 from utils.llm_client import LLMClient
+
+pytestmark = pytest.mark.integration
 
 
 @pytest.fixture

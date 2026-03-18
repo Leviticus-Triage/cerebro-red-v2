@@ -3,14 +3,15 @@ Integration test for strategy rotation with real PAIR loop (Phase 6).
 """
 
 import pytest
-
-pytestmark = pytest.mark.integration
 import pytest_asyncio
 from uuid import uuid4
 from unittest.mock import AsyncMock, Mock, patch
+
 from core.orchestrator import RedTeamOrchestrator
 from core.models import ExperimentConfig, AttackStrategyType, LLMProvider
 from tests.test_mutator_all_strategies import ALL_STRATEGIES
+
+pytestmark = pytest.mark.integration
 
 
 # Comment 3: Shared fixture for AsyncSessionLocal mock

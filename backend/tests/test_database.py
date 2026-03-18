@@ -3,9 +3,6 @@ Tests for database operations and CRUD functionality.
 """
 
 import pytest
-
-pytestmark = pytest.mark.integration
-
 from core.database import (
     init_db,
     get_session,
@@ -18,6 +15,8 @@ from core.models import (
     LLMProvider,
     AttackStrategyType,
 )
+
+pytestmark = pytest.mark.integration
 
 
 @pytest.mark.asyncio

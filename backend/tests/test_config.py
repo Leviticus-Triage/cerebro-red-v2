@@ -3,13 +3,13 @@ Tests for configuration management.
 """
 
 import pytest
-pytestmark = pytest.mark.integration
-
 from utils.config import (
     get_settings,
     AppSettings,
     DatabaseSettings,
 )
+
+pytestmark = pytest.mark.integration
 
 
 def test_get_settings_singleton():

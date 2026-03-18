@@ -5,10 +5,11 @@ Tests verify that WebSocket endpoint correctly handles verbosity control message
 """
 
 import pytest
+from fastapi.testclient import TestClient
+
+from main import app
 
 pytestmark = pytest.mark.integration
-from fastapi.testclient import TestClient
-from main import app
 
 
 @pytest.mark.asyncio

@@ -6,12 +6,12 @@ attacker LLM interactions during PAIR semantic rephrase operations.
 """
 
 import pytest
-
-pytestmark = pytest.mark.integration
 from unittest.mock import AsyncMock, patch, MagicMock
 from uuid import uuid4
 
 from core.mutator import PromptMutator
+
+pytestmark = pytest.mark.integration
 
 
 @pytest.mark.asyncio

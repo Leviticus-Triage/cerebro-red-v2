@@ -3,8 +3,6 @@ Integration tests with mocked LLM responses.
 """
 
 import pytest
-pytestmark = pytest.mark.integration
-
 from unittest.mock import AsyncMock, MagicMock
 from uuid import uuid4
 
@@ -13,6 +11,8 @@ from core.judge import SecurityJudge
 from core.models import ExperimentConfig
 from core.telemetry import get_audit_logger
 from utils.llm_client import LLMClient
+
+pytestmark = pytest.mark.integration
 
 
 @pytest.mark.asyncio

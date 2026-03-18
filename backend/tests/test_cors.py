@@ -8,14 +8,14 @@ Tests:
 4. Unauthorized requests (401)
 """
 
-import pytest
-pytestmark = pytest.mark.integration
-
-from fastapi.testclient import TestClient
-from unittest.mock import patch
 import os
+import pytest
+from unittest.mock import patch
+from fastapi.testclient import TestClient
 
 from main import app
+
+pytestmark = pytest.mark.integration
 
 
 @pytest.fixture

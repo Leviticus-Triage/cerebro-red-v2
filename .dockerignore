@@ -49,3 +49,20 @@ build/
 
 # Alembic (exclude versions to avoid conflicts)
 alembic/versions/*.pyc
+
+# Repository-local environments and caches
+backend/.venv*/
+backend/.mypy_cache/
+backend/.ruff_cache/
+frontend/node_modules/
+frontend/.vite/
+
+# Large local runtime/artifact directories not required for image builds
+data/
+beta-run_logs/
+recordings/
+test-templates/
+
+# VCS and local tooling artifacts
+.git/
+.github/

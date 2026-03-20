@@ -57,11 +57,12 @@ backend/.ruff_cache/
 frontend/node_modules/
 frontend/.vite/
 
-# Large local runtime/artifact directories not required for image builds
-data/
-beta-run_logs/
-recordings/
-test-templates/
+# Large local runtime/artifact directories at repo root only (leading /).
+# Do NOT use bare `data/` — it would also exclude backend/data/ (payloads.json, etc.).
+/data/
+/beta-run_logs/
+/recordings/
+/test-templates/
 
 # VCS and local tooling artifacts
 .git/

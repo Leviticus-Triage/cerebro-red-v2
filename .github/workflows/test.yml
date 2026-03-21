@@ -186,8 +186,8 @@ jobs:
       - name: Extract CI Metrics
         id: metrics
         run: |
-          # Extract version from pyproject.toml
-          VERSION=$(grep -oP 'version\s*=\s*"\K[^"]+' backend/pyproject.toml)
+          # Extract version from pyproject.toml (avoid naive grep: "target-version = \"py311\"" also matches "version = ...")
+          VERSION=$(python3 -c "import tomllib; print(tomllib.load(open('backend/pyproject.toml', 'rb'))['project']['version'])")
           echo "version=$VERSION" >> $GITHUB_OUTPUT
           
           # Build status (this job only runs if previous jobs succeeded)

@@ -51,10 +51,7 @@ class ApiClient {
     return data;
   }
 
-  async getExperiments(
-    page = 1,
-    pageSize = DEFAULT_PAGE_SIZE
-  ): Promise<ExperimentListResponse> {
+  async getExperiments(page = 1, pageSize = DEFAULT_PAGE_SIZE): Promise<ExperimentListResponse> {
     const { data } = await this.client.get<ExperimentListResponse>('/experiments', {
       params: { page, page_size: pageSize },
     });
@@ -103,9 +100,7 @@ class ApiClient {
   }
 
   async repeatExperiment(id: string): Promise<ExperimentResponse> {
-    const { data } = await this.client.post<ExperimentResponse>(
-      `/experiments/${id}/repeat`
-    );
+    const { data } = await this.client.post<ExperimentResponse>(`/experiments/${id}/repeat`);
     return data;
   }
 
@@ -149,10 +144,9 @@ class ApiClient {
     pageSize: number,
     filters?: Record<string, string>
   ): Promise<ExperimentTemplateListResponse> {
-    const { data } = await this.client.get<ExperimentTemplateListResponse>(
-      '/templates',
-      { params: { page, page_size: pageSize, ...filters } }
-    );
+    const { data } = await this.client.get<ExperimentTemplateListResponse>('/templates', {
+      params: { page, page_size: pageSize, ...filters },
+    });
     return data;
   }
 
@@ -166,14 +160,8 @@ class ApiClient {
     return data;
   }
 
-  async updateTemplate(
-    id: string,
-    u: ExperimentTemplateUpdate
-  ): Promise<ExperimentTemplate> {
-    const { data } = await this.client.put<ExperimentTemplate>(
-      `/templates/${id}`,
-      u
-    );
+  async updateTemplate(id: string, u: ExperimentTemplateUpdate): Promise<ExperimentTemplate> {
+    const { data } = await this.client.put<ExperimentTemplate>(`/templates/${id}`, u);
     return data;
   }
 
@@ -208,10 +196,7 @@ class ApiClient {
     return data;
   }
 
-  async updateTemplateRepository(
-    name: string,
-    body: Record<string, unknown>
-  ): Promise<unknown> {
+  async updateTemplateRepository(name: string, body: Record<string, unknown>): Promise<unknown> {
     const { data } = await this.client.put(
       `/templates/repositories/${encodeURIComponent(name)}`,
       body
@@ -238,10 +223,7 @@ class ApiClient {
     return data.categories ?? [];
   }
 
-  async getJailbreakTemplates(
-    category?: string,
-    search?: string
-  ): Promise<unknown> {
+  async getJailbreakTemplates(category?: string, search?: string): Promise<unknown> {
     const { data } = await this.client.get('/jailbreak-templates', {
       params: { category, search },
     });
@@ -277,9 +259,7 @@ class ApiClient {
   }
 
   async deleteJailbreakTemplate(category: string, index: number): Promise<void> {
-    await this.client.delete(
-      `/jailbreak-templates/${encodeURIComponent(category)}/${index}`
-    );
+    await this.client.delete(`/jailbreak-templates/${encodeURIComponent(category)}/${index}`);
   }
 
   async deleteJailbreakCategory(category: string): Promise<void> {

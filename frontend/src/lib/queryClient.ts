@@ -7,10 +7,7 @@ export const queryClient = new QueryClient({
   },
 });
 
-export async function prefetchNextExperimentsPage(
-  page: number,
-  pageSize: number
-): Promise<void> {
+export async function prefetchNextExperimentsPage(page: number, pageSize: number): Promise<void> {
   await queryClient.prefetchQuery({
     queryKey: ['experiments', page + 1, pageSize],
     queryFn: () => apiClient.getExperiments(page + 1, pageSize),

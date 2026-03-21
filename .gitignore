@@ -23,8 +23,9 @@ dist/
 downloads/
 eggs/
 .eggs/
-lib/
-lib64/
+# Only repo-root Python setuptools dirs — bare `lib/` ignored frontend/src/lib/ (TanStack Query client, etc.)
+/lib/
+/lib64/
 parts/
 sdist/
 var/

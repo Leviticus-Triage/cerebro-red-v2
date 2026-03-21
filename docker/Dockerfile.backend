@@ -1,7 +1,8 @@
 # ============================================================================
 # Builder Stage: Install dependencies
 # ============================================================================
-FROM python:3.11-slim AS builder
+# mirror.gcr.io proxies Docker Hub — avoids anonymous pull rate limits on shared CI runners
+FROM mirror.gcr.io/library/python:3.11-slim AS builder
 
 # Environment Variables
 ENV PYTHONDONTWRITEBYTECODE=1 \
@@ -29,7 +30,7 @@ COPY backend/ ./
 # ============================================================================
 # Runtime Stage: Minimal production image
 # ============================================================================
-FROM python:3.11-slim AS runtime
+FROM mirror.gcr.io/library/python:3.11-slim AS runtime
 
 # Environment Variables
 ENV PYTHONDONTWRITEBYTECODE=1 \

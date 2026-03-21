@@ -42,9 +42,9 @@ Thumbs.db
 *.temp
 .cache/
 
-# Build artifacts
-dist/
-build/
+# Build artifacts (leading / = repo root only; bare `dist/` would match nested dirs)
+/dist/
+/build/
 *.egg-info/
 
 # Alembic (exclude versions to avoid conflicts)

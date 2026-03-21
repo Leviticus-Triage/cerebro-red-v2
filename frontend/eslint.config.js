@@ -52,6 +52,8 @@ export default [
         Blob: 'readonly',
         File: 'readonly',
         URL: 'readonly',
+        WebSocket: 'readonly',
+        URLSearchParams: 'readonly',
         FileReader: 'readonly',
         localStorage: 'readonly',
         __dirname: 'readonly',
